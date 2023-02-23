@@ -13,10 +13,9 @@ public class MemoryUserRepository implements UserRepository {
 
 
     @Override
-    public User save(User user) {
+    public void save(User user) {
         user.setUserId(sequeunce++);
         store.put(user.getUserId(), user);
-        return user;
     }
 
     @Override
@@ -30,8 +29,10 @@ public class MemoryUserRepository implements UserRepository {
                 .findAny();
     }
 
-    @Override
-    public List<User> findAll() {
-        return new ArrayList<>(store.values());
-    }
+//    // TODO: null인 값은 변경하지 않게 해야함. (profileImage를 내릴 경우(null) 어떻게 처리할지?)
+//    @Override
+//    public void update(Long userId, User newUserData) {
+//        System.out.println(newUserData.toString());
+//        store.replace(userId, newUserData);
+//    }
 }

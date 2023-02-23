@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @Service
 public class UserService {
+
     private final UserRepository userRepository;
 
     @Autowired
@@ -28,10 +29,13 @@ public class UserService {
                 .ifPresent(m -> {
                     throw new IllegalStateException("이미 존재하는 유저입니다.");
                 });
-
     }
 
     public Optional<User> findOne(Long userId) {
         return userRepository.findById(userId);
     }
+//
+//    public void updateProfile(Long userId, User newUserData) {
+//        userRepository.update(userId, newUserData);
+//    }
 }
