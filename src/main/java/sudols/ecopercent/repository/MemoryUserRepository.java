@@ -6,9 +6,9 @@ import sudols.ecopercent.domain.User;
 import java.util.*;
 
 @Repository
-public class MemoryUserRepository implements UserRepository{
+public class MemoryUserRepository implements UserRepository {
 
-    private static Map<Long, User> store = new HashMap<>();
+    private static final Map<Long, User> store = new HashMap<>();
     private static long sequeunce = 0L;
 
 
@@ -26,7 +26,8 @@ public class MemoryUserRepository implements UserRepository{
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return Optional.ofNullable(store.get(email));
+        return store.values().stream().filter(member -> member.getEmail().equals(email))
+                .findAny();
     }
 
     @Override
