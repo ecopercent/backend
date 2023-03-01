@@ -1,10 +1,13 @@
 package sudols.ecopercent.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import sudols.ecopercent.domain.User;
+import sudols.ecopercent.dto.UserPatchDto;
+import sudols.ecopercent.dto.UserPostDto;
 import sudols.ecopercent.service.UserService;
 
 import java.util.Optional;
@@ -19,12 +22,11 @@ public class UserController {
         this.userService = userService;
     }
 
-    // TODO: 고민. User Dto 를 따로 만들어야하는지?
     @PostMapping("/users")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void CreateUser(@RequestBody User userData) {
-        userService.join(userData);
+    public Long CreateUser(@RequestBody UserPostDto userData) {
+        return userService.join(userData);
     }
 
     @GetMapping("/users/{userid}")
@@ -33,12 +35,19 @@ public class UserController {
     public Optional<User> GetUserData(@PathVariable("userid") Long userId) {
         return userService.findOne(userId);
     }
-//
-//    @PutMapping("/users/{userid}")
-//    @ResponseBody
-//    @ResponseStatus(code = HttpStatus.OK)
-//    public void UpdateUserProfile(@PathVariable("userid") Long userId,
-//                                  @RequestBody User newUserData) {
-//        userService.updateProfile(userId, newUserData);
-//    }
+
+    @PatchMapping("/users/{userid}")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public void UpdateUserProfile(@PathVariable("userid") Long userId,
+                                  @Valid @RequestBody UserPatchDto newUserData) {
+        userService.updateProfile(userId, newUserData);
+    }
+
+    @DeleteMapping("/users/{userid}")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public void DeleteUser(@PathVariable("userid") Long userId) {
+        userService.deleteOne(userId);
+    }
 }

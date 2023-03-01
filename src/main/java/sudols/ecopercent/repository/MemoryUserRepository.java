@@ -2,6 +2,8 @@ package sudols.ecopercent.repository;
 
 import org.springframework.stereotype.Repository;
 import sudols.ecopercent.domain.User;
+import sudols.ecopercent.dto.UserPatchDto;
+import sudols.ecopercent.dto.UserPostDto;
 
 import java.util.*;
 
@@ -13,9 +15,9 @@ public class MemoryUserRepository implements UserRepository {
 
 
     @Override
-    public void save(User user) {
+    public void save(UserPostDto user) {
         user.setUserId(sequeunce++);
-        store.put(user.getUserId(), user);
+        store.put(user.getUserId(), user.toEntity());
     }
 
     @Override
@@ -25,14 +27,24 @@ public class MemoryUserRepository implements UserRepository {
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return store.values().stream().filter(member -> member.getEmail().equals(email))
+        return store.values().stream().filter(user -> user.getEmail().equals(email))
                 .findAny();
     }
 
-//    // TODO: null인 값은 변경하지 않게 해야함. (profileImage를 내릴 경우(null) 어떻게 처리할지?)
-//    @Override
-//    public void update(Long userId, User newUserData) {
-//        System.out.println(newUserData.toString());
-//        store.replace(userId, newUserData);
-//    }
+    @Override
+    public void update(Long userId, UserPatchDto newUserData) {
+        String nickname = newUserData.getNickname();
+        String profileImage = newUserData.getProfileImage();
+        String profileMessage = newUserData.getProfileMessage();
+        User user = store.get(userId);
+        user.setNickname(nickname);
+        user.setProfileImage(profileImage);
+        user.setProfileMessage(profileMessage);
+        store.replace(userId, user);
+    }
+
+    @Override
+    public void delete(Long userId) {
+        store.remove(userId);
+    }
 }

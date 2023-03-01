@@ -1,12 +1,15 @@
-package sudols.ecopercent.domain;
+package sudols.ecopercent.dto;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-import lombok.*;
-
-@Builder
-@Setter
 @Getter
-public class User {
+@Setter
+@ToString
+@RequiredArgsConstructor
+public class UserResponseDto {
     private Long userId;
     private String nickname;
     private String email;
