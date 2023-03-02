@@ -5,12 +5,12 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import sudols.ecopercent.domain.User;
 
+@Builder
 @Getter
 @Setter
 @ToString
-@AllArgsConstructor
 @RequiredArgsConstructor
-//@JsonInclude(JsonInclude.Include.NON_NULL)
+@AllArgsConstructor
 public class UserPostDto {
 
     private Long userId;
