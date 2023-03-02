@@ -2,6 +2,7 @@ package sudols.ecopercent.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.UserPatchDto;
 import sudols.ecopercent.dto.UserPostDto;
@@ -9,20 +10,18 @@ import sudols.ecopercent.repository.UserRepository;
 
 import java.util.Optional;
 
-@Service
+@Transactional
+//@Service
 public class UserService {
-
     private final UserRepository userRepository;
 
-    @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     public Long join(UserPostDto user) {
-        validateDuplicateUser(user);
-        userRepository.save(user);
-        return user.getUserId();
+        User userEntity = user.toEntity();
+        return userRepository.save(userEntity).getUserId();
     }
 
     private void validateDuplicateUser(UserPostDto user) {
@@ -37,10 +36,14 @@ public class UserService {
     }
 
     public void updateProfile(Long userId, UserPatchDto newUserData) {
-        userRepository.update(userId, newUserData);
+        userRepository.update(userId, newUserData.toEntity());
     }
 
     public void deleteOne(Long userId) {
-        userRepository.delete(userId);
+        userRepository.deleteById(userId);
+    }
+
+    public void deleteAll() {
+        userRepository.clearStore();
     }
 }

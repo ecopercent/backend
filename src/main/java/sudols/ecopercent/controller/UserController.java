@@ -50,4 +50,12 @@ public class UserController {
     public void DeleteUser(@PathVariable("userid") Long userId) {
         userService.deleteOne(userId);
     }
+
+    // 테스트용 API
+    @DeleteMapping("/users")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public void DeleteAllUser() {
+        userService.deleteAll();
+    }
 }
