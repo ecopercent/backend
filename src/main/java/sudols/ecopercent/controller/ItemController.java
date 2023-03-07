@@ -70,4 +70,11 @@ public class ItemController {
     public void DeleteOneItem(@PathVariable("itemid") Long itemId) {
         itemService.deleteOne(itemId);
     }
+
+    @DeleteMapping("/items")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public void DeleteAllItem() {
+        itemService.deleteAll();
+    }
 }

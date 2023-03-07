@@ -43,4 +43,8 @@ public class ItemService {
     public void deleteOne(Long itemId) {
         itemRepository.deleteById(itemId);
     }
+
+    public void deleteAll() {
+        itemRepository.clearStore();
+    }
 }

@@ -1,6 +1,7 @@
 package sudols.ecopercent.repository.jpa;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import sudols.ecopercent.domain.Item;
 import sudols.ecopercent.repository.ItemRepository;
 
@@ -66,6 +67,7 @@ public class JpaItemRepository implements ItemRepository {
 
     @Override
     public void clearStore() {
-
+        Query query = em.createQuery("delete from Item");
+        query.executeUpdate();
     }
 }
