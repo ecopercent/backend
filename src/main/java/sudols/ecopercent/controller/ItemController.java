@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import sudols.ecopercent.domain.Item;
+import sudols.ecopercent.dto.item.ItemPatchDetailDto;
 import sudols.ecopercent.dto.item.ItemPostDto;
 import sudols.ecopercent.service.ItemService;
 
@@ -49,10 +50,11 @@ public class ItemController {
     @PatchMapping("/items/{itemid}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public void UpdateTumblerDetail(@PathVariable("itemid") Long itemId,
-                                    @RequestBody() Object body) {
-        System.out.println(itemId);
-        System.out.println(body);
+    public void UpdateItemDetail(
+            @PathVariable("itemid") Long itemId,
+            @RequestBody() ItemPatchDetailDto newItemData
+    ) {
+        itemService.updateItemDetail(itemId, newItemData);
     }
 
     @DeleteMapping("/items/{itemid}")

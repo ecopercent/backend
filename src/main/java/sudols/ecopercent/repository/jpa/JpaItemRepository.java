@@ -36,9 +36,16 @@ public class JpaItemRepository implements ItemRepository {
         return Optional.ofNullable(item);
     }
 
+    // TODO: 더 나은 방법을 찾아보자
     @Override
-    public void update(Long id, Item newItem) {
-
+    public void update(Long itemId, Item newItemData) {
+        Item item = em.find(Item.class, itemId);
+        item.setImage(newItemData.getImage());
+        item.setNickname(newItemData.getNickname());
+        item.setType(newItemData.getType());
+        item.setBrand(newItemData.getBrand());
+        item.setPrice(newItemData.getPrice());
+        item.setPurchaseDate(newItemData.getPurchaseDate());
     }
 
     @Override

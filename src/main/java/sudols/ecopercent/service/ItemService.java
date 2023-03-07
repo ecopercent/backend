@@ -2,6 +2,7 @@ package sudols.ecopercent.service;
 
 import org.springframework.transaction.annotation.Transactional;
 import sudols.ecopercent.domain.Item;
+import sudols.ecopercent.dto.item.ItemPatchDetailDto;
 import sudols.ecopercent.dto.item.ItemPostDto;
 import sudols.ecopercent.repository.ItemRepository;
 
@@ -29,4 +30,11 @@ public class ItemService {
     public Optional<Item> findOne(Long itemId) {
         return itemRepository.findById(itemId);
     }
+
+    public void updateItemDetail(Long itemId, ItemPatchDetailDto newItemData) {
+        Item itemEntity = newItemData.toEntity();
+        itemRepository.update(itemId, itemEntity);
+    }
+
+
 }
