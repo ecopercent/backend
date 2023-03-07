@@ -57,6 +57,13 @@ public class ItemController {
         itemService.updateItemDetail(itemId, newItemData);
     }
 
+    @PatchMapping("/items/{itemid}/up")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public Long IncreaseItemUsageCount(@PathVariable("itemid") Long itemId) {
+        return itemService.increaseItemUsageCount(itemId);
+    }
+
     @DeleteMapping("/items/{itemid}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)

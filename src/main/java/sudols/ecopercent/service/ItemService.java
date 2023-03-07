@@ -36,5 +36,8 @@ public class ItemService {
         itemRepository.update(itemId, itemEntity);
     }
 
+    public Long increaseItemUsageCount(Long itemId) {
+        return itemRepository.increaseUsageCount(itemId);
+    }
 
 }

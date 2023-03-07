@@ -12,7 +12,10 @@ public interface ItemRepository {
 
     Optional<Item> findById(Long itemId);
 
+    // TODO: refactor. id -> itemId
     void update(Long id, Item newItem);
+
+    Long increaseUsageCount(Long itemId);
 
     void deleteById(Long id);
 

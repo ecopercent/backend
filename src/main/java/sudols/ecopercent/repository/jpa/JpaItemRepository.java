@@ -17,6 +17,7 @@ public class JpaItemRepository implements ItemRepository {
 
     @Override
     public Item save(Item item) {
+        item.setUsageCount(0L);
         em.persist(item);
         return item;
     }
@@ -46,6 +47,15 @@ public class JpaItemRepository implements ItemRepository {
         item.setBrand(newItemData.getBrand());
         item.setPrice(newItemData.getPrice());
         item.setPurchaseDate(newItemData.getPurchaseDate());
+    }
+
+    // TODO: 생각. naming 괜찮은 걸까?
+    @Override
+    public Long increaseUsageCount(Long itemId) {
+        Item item = em.find(Item.class, itemId);
+        Long usageCount = item.getUsageCount() + 1;
+        item.setUsageCount(usageCount);
+        return usageCount;
     }
 
     @Override
