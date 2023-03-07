@@ -67,7 +67,7 @@ public class ItemController {
     @DeleteMapping("/items/{itemid}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public void DeleteEcobag(@PathVariable("itemid") Long itemId) {
-        System.out.println(itemId);
+    public void DeleteOneItem(@PathVariable("itemid") Long itemId) {
+        itemService.deleteOne(itemId);
     }
 }

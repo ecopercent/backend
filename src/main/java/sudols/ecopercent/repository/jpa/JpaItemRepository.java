@@ -59,8 +59,9 @@ public class JpaItemRepository implements ItemRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
-
+    public void deleteById(Long itemId) {
+        Item item = findById(itemId).get();
+        em.remove(item);
     }
 
     @Override

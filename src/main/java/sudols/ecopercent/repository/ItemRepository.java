@@ -17,7 +17,7 @@ public interface ItemRepository {
 
     Long increaseUsageCount(Long itemId);
 
-    void deleteById(Long id);
+    void deleteById(Long itemId);
 
     void clearStore();
 }

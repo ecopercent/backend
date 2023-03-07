@@ -40,4 +40,7 @@ public class ItemService {
         return itemRepository.increaseUsageCount(itemId);
     }
 
+    public void deleteOne(Long itemId) {
+        itemRepository.deleteById(itemId);
+    }
 }
