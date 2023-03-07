@@ -1,11 +1,9 @@
 package sudols.ecopercent.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sudols.ecopercent.domain.User;
-import sudols.ecopercent.dto.UserPatchDto;
-import sudols.ecopercent.dto.UserPostDto;
+import sudols.ecopercent.dto.user.UserPatchDto;
+import sudols.ecopercent.dto.user.UserPostDto;
 import sudols.ecopercent.repository.UserRepository;
 
 import java.util.List;

@@ -1,147 +1,89 @@
 package sudols.ecopercent.controller;
 
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import sudols.ecopercent.domain.Item;
+import sudols.ecopercent.dto.item.ItemPatchDetailDto;
+import sudols.ecopercent.dto.item.ItemPostDto;
+import sudols.ecopercent.service.ItemService;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class ItemController {
 
-    @GetMapping("/items/tumblers")
-    @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public List<Item> GetTumblerListByUserId(@RequestParam("userid") Long userId) {
-        ArrayList<Item> list = new ArrayList<Item>();
-        Date currentDate = new Date();
+    private final ItemService itemService;
 
-        Item tumbler1 = Item.builder()
-                .id(0L)
-                .image("임시 이미지?")
-                .nickname("tumbler1")
-                .brand("brand1")
-                .price(42)
-                .usageCount(0L)
-                .purchaseDate(null)
-                .registrationDate(currentDate)
-                .lastestDate(null)
-                .build();
-
-        Item tumbler2 = Item.builder()
-                .id(0L)
-                .image("임시 이미지?")
-                .nickname("tumbler2")
-                .brand("brand2")
-                .price(42)
-                .usageCount(0L)
-                .purchaseDate(null)
-                .registrationDate(currentDate)
-                .lastestDate(null)
-                .build();
-
-        list.add(tumbler1);
-        list.add(tumbler2);
-        return list;
+    @Autowired
+    public ItemController(ItemService itemService) {
+        this.itemService = itemService;
     }
 
-    @GetMapping("/items/ecobags")
-    @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public List<Item> GetEcobagListByUserId(@RequestParam("userid") Long userId) {
-        ArrayList<Item> list = new ArrayList<Item>();
-        Date currentDate = new Date();
-
-        Item ecobag1 = Item.builder()
-                .id(0L)
-                .image("임시 이미지?")
-                .nickname("tumbler1")
-                .brand("brand1")
-                .price(42)
-                .usageCount(0L)
-                .purchaseDate(null)
-                .registrationDate(currentDate)
-                .lastestDate(null)
-                .build();
-
-        Item ecobag2 = Item.builder()
-                .id(0L)
-                .image("임시 이미지?")
-                .nickname("tumbler2")
-                .brand("brand2")
-                .price(42)
-                .usageCount(0L)
-                .purchaseDate(null)
-                .registrationDate(currentDate)
-                .lastestDate(null)
-                .build();
-        list.add(ecobag1);
-        list.add(ecobag2);
-        return list;
-    }
-
-    @PostMapping("/items/tumblers")
+    @PostMapping("/items")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void AddTumbler(@RequestBody() Object body) {
-        System.out.println(body);
+    public Long AddItem(@Valid @RequestBody() ItemPostDto itemData) {
+        return itemService.add(itemData);
     }
 
-    @PostMapping("/items/ecobags")
-    @ResponseBody
-    @ResponseStatus(code = HttpStatus.CREATED)
-    public void AddEcobags(@RequestBody() Object body) {
-        System.out.println(body);
-    }
-
-    @GetMapping("/items/tumblers/{tumblerid}")
+    @GetMapping("/items")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Item GetTumblerDetail(@PathVariable("tumblerid") Long tumblerId) {
-        System.out.println(tumblerId);
-        return null;
+    public List<Item> GetItemList(
+            @RequestParam("userid") Long userId,
+            @RequestParam(value = "category", required = false) String category
+    ) {
+        return itemService.findItemList(userId, category);
     }
 
-    @GetMapping("/items/ecobags/{ecobagid}")
+    @GetMapping("/items/{itemid}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Item GetEcobagDetail(@PathVariable("ecobagid") Long ecobagId) {
-        System.out.println(ecobagId);
-        return null;
+    public Optional<Item> GetItemDetail(@PathVariable("itemid") Long itemId) {
+        return itemService.findOne(itemId);
     }
 
-    @PutMapping("/items/tumblers/{tumblerid}")
+    @PatchMapping("/items/{itemid}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public void UpdateTumblerDetail(@PathVariable("tumblerid") Long tumblerId,
-                                    @RequestBody() Object body) {
-        System.out.println(tumblerId);
-        System.out.println(body);
+    public void UpdateItemDetail(
+            @PathVariable("itemid") Long itemId,
+            @RequestBody() ItemPatchDetailDto newItemData
+    ) {
+        itemService.updateItemDetail(itemId, newItemData);
     }
 
-    @PutMapping("/items/ecobags/{ecobagid}")
+    @PatchMapping("/items/{itemid}/up")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public void UpdateEcobagDetail(@PathVariable("ecobagid") Long ecobagId,
-                                   @RequestBody() Object body) {
-        System.out.println(ecobagId);
-        System.out.println(body);
+    public Long IncreaseItemUsageCount(@PathVariable("itemid") Long itemId) {
+        return itemService.increaseItemUsageCount(itemId);
     }
 
-    @DeleteMapping("/items/tumblers/{tumblerid}")
+    @DeleteMapping("/items/{itemid}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public void DeleteTumbler(@PathVariable("tumblerid") Long tumblerId) {
-        System.out.println(tumblerId);
+    public void DeleteOneItem(@PathVariable("itemid") Long itemId) {
+        itemService.deleteOne(itemId);
     }
 
-    @DeleteMapping("/items/ecobags/{ecobagid}")
+    // TEST API
+    @GetMapping("/items/all")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public void DeleteEcobag(@PathVariable("ecobagid") Long ecobagId) {
-        System.out.println(ecobagId);
+    public List<Item> GetAllItemList() {
+        return itemService.findAll();
+    }
+
+    // TEST API
+    @DeleteMapping("/items")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public void DeleteAllItem() {
+        itemService.deleteAll();
     }
 }

@@ -1,4 +1,4 @@
-package sudols.ecopercent.dto;
+package sudols.ecopercent.dto.user;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

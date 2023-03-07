@@ -1,13 +1,14 @@
-package sudols.ecopercent.repository;
+package sudols.ecopercent.repository.jpa;
 
 import jakarta.persistence.EntityManager;
 import sudols.ecopercent.domain.User;
+import sudols.ecopercent.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 //@Repository
-public class JpaUserRepository implements UserRepository{
+public class JpaUserRepository implements UserRepository {
 
     private final EntityManager em;
 

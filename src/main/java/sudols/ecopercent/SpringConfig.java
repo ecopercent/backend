@@ -4,8 +4,11 @@ import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import sudols.ecopercent.repository.JpaUserRepository;
+import sudols.ecopercent.repository.ItemRepository;
+import sudols.ecopercent.repository.jpa.JpaItemRepository;
+import sudols.ecopercent.repository.jpa.JpaUserRepository;
 import sudols.ecopercent.repository.UserRepository;
+import sudols.ecopercent.service.ItemService;
 import sudols.ecopercent.service.UserService;
 
 
@@ -27,5 +30,15 @@ public class SpringConfig {
     @Bean
     public UserRepository userRepository() {
         return new JpaUserRepository(em);
+    }
+
+    @Bean
+    public ItemService itemService() {
+        return new ItemService(itemRepository());
+    }
+
+    @Bean
+    public ItemRepository itemRepository() {
+        return new JpaItemRepository(em);
     }
 }

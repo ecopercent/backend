@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import sudols.ecopercent.domain.User;
-import sudols.ecopercent.dto.UserPatchDto;
-import sudols.ecopercent.dto.UserPostDto;
+import sudols.ecopercent.dto.user.UserPatchDto;
+import sudols.ecopercent.dto.user.UserPostDto;
 import sudols.ecopercent.service.UserService;
 
 import java.util.List;
