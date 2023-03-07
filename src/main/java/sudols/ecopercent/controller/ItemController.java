@@ -1,9 +1,13 @@
 package sudols.ecopercent.controller;
 
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import sudols.ecopercent.domain.Item;
+import sudols.ecopercent.dto.item.ItemPostDto;
+import sudols.ecopercent.service.ItemService;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,46 +16,27 @@ import java.util.List;
 @Controller
 public class ItemController {
 
-    @GetMapping("/items/tumblers")
-    @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public List<Item> GetTumblerListByUserId(@RequestParam("userid") Long userId) {
-        ArrayList<Item> list = new ArrayList<Item>();
-        Date currentDate = new Date();
+    private final ItemService itemService;
 
-        Item tumbler1 = Item.builder()
-                .id(0L)
-                .image("임시 이미지?")
-                .nickname("tumbler1")
-                .brand("brand1")
-                .price(42)
-                .usageCount(0L)
-                .purchaseDate(null)
-                .registrationDate(currentDate)
-                .lastestDate(null)
-                .build();
-
-        Item tumbler2 = Item.builder()
-                .id(0L)
-                .image("임시 이미지?")
-                .nickname("tumbler2")
-                .brand("brand2")
-                .price(42)
-                .usageCount(0L)
-                .purchaseDate(null)
-                .registrationDate(currentDate)
-                .lastestDate(null)
-                .build();
-
-        list.add(tumbler1);
-        list.add(tumbler2);
-        return list;
+    @Autowired
+    public ItemController(ItemService itemService) {
+        this.itemService = itemService;
     }
 
-    @GetMapping("/items/ecobags")
+    @PostMapping("/items")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public Long AddItem(@Valid @RequestBody() ItemPostDto itemData) {
+        return itemService.add(itemData);
+    }
+
+    @GetMapping("/items")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public List<Item> GetEcobagListByUserId(@RequestParam("userid") Long userId) {
+    public List<Item> GetEcobagListByUserId(
+            @RequestParam("userid") Long userId,
+            @RequestParam("category") String category
+    ) {
         ArrayList<Item> list = new ArrayList<Item>();
         Date currentDate = new Date();
 
@@ -64,7 +49,7 @@ public class ItemController {
                 .usageCount(0L)
                 .purchaseDate(null)
                 .registrationDate(currentDate)
-                .lastestDate(null)
+                .latestDate(null)
                 .build();
 
         Item ecobag2 = Item.builder()
@@ -76,25 +61,11 @@ public class ItemController {
                 .usageCount(0L)
                 .purchaseDate(null)
                 .registrationDate(currentDate)
-                .lastestDate(null)
+                .latestDate(null)
                 .build();
         list.add(ecobag1);
         list.add(ecobag2);
         return list;
-    }
-
-    @PostMapping("/items/tumblers")
-    @ResponseBody
-    @ResponseStatus(code = HttpStatus.CREATED)
-    public void AddTumbler(@RequestBody() Object body) {
-        System.out.println(body);
-    }
-
-    @PostMapping("/items/ecobags")
-    @ResponseBody
-    @ResponseStatus(code = HttpStatus.CREATED)
-    public void AddEcobags(@RequestBody() Object body) {
-        System.out.println(body);
     }
 
     @GetMapping("/items/tumblers/{tumblerid}")
