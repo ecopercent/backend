@@ -66,6 +66,13 @@ public class JpaItemRepository implements ItemRepository {
     }
 
     @Override
+    public List<Item> findAll() {
+        List<Item> itemList = em.createQuery("select i from Item i")
+                .getResultList();
+        return itemList;
+    }
+
+    @Override
     public void clearStore() {
         Query query = em.createQuery("delete from Item");
         query.executeUpdate();

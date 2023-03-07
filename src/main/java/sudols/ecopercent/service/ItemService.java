@@ -40,6 +40,10 @@ public class ItemService {
         return itemRepository.increaseUsageCount(itemId);
     }
 
+    public List<Item> findAll() {
+        return itemRepository.findAll();
+    }
+
     public void deleteOne(Long itemId) {
         itemRepository.deleteById(itemId);
     }

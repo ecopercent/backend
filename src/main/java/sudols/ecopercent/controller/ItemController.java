@@ -71,6 +71,15 @@ public class ItemController {
         itemService.deleteOne(itemId);
     }
 
+    // TEST API
+    @GetMapping("/items/all")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public List<Item> GetAllItemList() {
+        return itemService.findAll();
+    }
+
+    // TEST API
     @DeleteMapping("/items")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)

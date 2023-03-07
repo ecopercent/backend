@@ -19,5 +19,7 @@ public interface ItemRepository {
 
     void deleteById(Long itemId);
 
+    List<Item> findAll();
+
     void clearStore();
 }
