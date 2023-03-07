@@ -31,6 +31,12 @@ public class JpaItemRepository implements ItemRepository {
     }
 
     @Override
+    public Optional<Item> findById(Long itemId) {
+        Item item = em.find(Item.class, itemId);
+        return Optional.ofNullable(item);
+    }
+
+    @Override
     public void update(Long id, Item newItem) {
 
     }

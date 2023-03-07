@@ -10,6 +10,7 @@ import sudols.ecopercent.dto.item.ItemPostDto;
 import sudols.ecopercent.service.ItemService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class ItemController {
@@ -41,9 +42,8 @@ public class ItemController {
     @GetMapping("/items/{itemid}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Item GetItemDetail(@PathVariable("itemid") Long itemId) {
-        System.out.println(itemId);
-        return null;
+    public Optional<Item> GetItemDetail(@PathVariable("itemid") Long itemId) {
+        return itemService.findOne(itemId);
     }
 
     @PatchMapping("/items/{itemid}")

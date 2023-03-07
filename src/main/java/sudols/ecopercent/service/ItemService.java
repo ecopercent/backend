@@ -6,6 +6,7 @@ import sudols.ecopercent.dto.item.ItemPostDto;
 import sudols.ecopercent.repository.ItemRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Transactional
 public class ItemService {
@@ -23,5 +24,9 @@ public class ItemService {
 
     public List<Item> findItemList(Long userId, String category) {
         return itemRepository.findItemListByIdAndCategory(userId, category);
+    }
+
+    public Optional<Item> findOne(Long itemId) {
+        return itemRepository.findById(itemId);
     }
 }
