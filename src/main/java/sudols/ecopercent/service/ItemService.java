@@ -5,6 +5,8 @@ import sudols.ecopercent.domain.Item;
 import sudols.ecopercent.dto.item.ItemPostDto;
 import sudols.ecopercent.repository.ItemRepository;
 
+import java.util.List;
+
 @Transactional
 public class ItemService {
 
@@ -17,5 +19,9 @@ public class ItemService {
     public Long add(ItemPostDto item) {
         Item itemEntity = item.toEntity();
         return itemRepository.save(itemEntity).getId();
+    }
+
+    public List<Item> findItemList(Long userId, String category) {
+        return itemRepository.findItemListByIdAndCategory(userId, category);
     }
 }

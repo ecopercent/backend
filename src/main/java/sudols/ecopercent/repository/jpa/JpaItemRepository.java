@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import sudols.ecopercent.domain.Item;
 import sudols.ecopercent.repository.ItemRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public class JpaItemRepository implements ItemRepository {
@@ -21,8 +22,12 @@ public class JpaItemRepository implements ItemRepository {
     }
 
     @Override
-    public Optional<Item> findById(Long id) {
-        return Optional.empty();
+    public List<Item> findItemListByIdAndCategory(Long userId, String category) {
+        List<Item> result = em.createQuery("select i from Item i where i.userId = :userId and i.category = :category")
+                .setParameter("userId", userId)
+                .setParameter("category", category)
+                .getResultList();
+        return result ;
     }
 
     @Override
