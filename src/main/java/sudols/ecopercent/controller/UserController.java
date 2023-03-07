@@ -10,6 +10,7 @@ import sudols.ecopercent.dto.user.UserPatchDto;
 import sudols.ecopercent.dto.user.UserPostDto;
 import sudols.ecopercent.service.UserService;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -27,6 +28,13 @@ public class UserController {
     @ResponseStatus(code = HttpStatus.CREATED)
     public Long CreateUser(@Valid @RequestBody UserPostDto userData) {
         return userService.join(userData);
+    }
+
+    @GetMapping("/users")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public List<User> GetAllUserData() {
+        return userService.findAll();
     }
 
     @GetMapping("/users/{userid}")

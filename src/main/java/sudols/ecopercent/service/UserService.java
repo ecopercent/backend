@@ -6,6 +6,7 @@ import sudols.ecopercent.dto.user.UserPatchDto;
 import sudols.ecopercent.dto.user.UserPostDto;
 import sudols.ecopercent.repository.UserRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Transactional
@@ -27,6 +28,10 @@ public class UserService {
                 .ifPresent(m -> {
                     throw new IllegalStateException("이미 존재하는 유저입니다.");
                 });
+    }
+
+    public List<User> findAll() {
+        return userRepository.findAll();
     }
 
     public Optional<User> findOne(Long userId) {
