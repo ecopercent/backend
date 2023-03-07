@@ -22,6 +22,14 @@ public class JpaUserRepository implements UserRepository{
     }
 
     @Override
+    public List<User> findAll() {
+        List<User> result = em.createQuery("select u from User u")
+                .getResultList();
+        System.out.println(result);
+        return result;
+    }
+
+    @Override
     public Optional<User> findById(Long id) {
         User user = em.find(User.class, id);
         return Optional.ofNullable(user);
@@ -32,7 +40,6 @@ public class JpaUserRepository implements UserRepository{
         List<User> result = em.createQuery("select u from User u where u.email = :email", User.class)
                 .setParameter("email", email)
                 .getResultList();
-        System.out.println(result);
         return result.stream().findAny();
     }
 
