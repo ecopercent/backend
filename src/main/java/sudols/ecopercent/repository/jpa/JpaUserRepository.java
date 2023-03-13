@@ -23,14 +23,6 @@ public class JpaUserRepository implements UserRepository {
     }
 
     @Override
-    public List<User> findAll() {
-        List<User> result = em.createQuery("select u from User u")
-                .getResultList();
-        System.out.println(result);
-        return result;
-    }
-
-    @Override
     public Optional<User> findById(Long id) {
         User user = em.find(User.class, id);
         return Optional.ofNullable(user);
@@ -44,8 +36,9 @@ public class JpaUserRepository implements UserRepository {
         return result.stream().findAny();
     }
 
+
     @Override
-    public void update(Long userId, User newUserData) {
+    public void updateProfile(Long userId, User newUserData) {
         User user = em.find(User.class, userId);
         user.setNickname(newUserData.getNickname());
         user.setProfileImage(newUserData.getProfileImage());
@@ -53,9 +46,31 @@ public class JpaUserRepository implements UserRepository {
     }
 
     @Override
+    public void updateTitleTumbler(Long userId, User newTitleData) {
+        User user = em.find(User.class, userId);
+        // TODO: 구현. 해당 item 이 존재하는지 여부 확인
+        user.setTitleTumblerId(newTitleData.getTitleTumblerId());
+    }
+
+    @Override
+    public void updateTitleEcobag(Long userId, User newTitleData) {
+        User user = em.find(User.class, userId);
+        // TODO: 구현. 해당 item 이 존재하는지 여부 확인
+        user.setTitleEcobagId(newTitleData.getTitleEcobagId());
+    }
+
+    @Override
     public void deleteById(Long userId) {
         User user = findById(userId).get();
         em.remove(user);
+    }
+
+    @Override
+    public List<User> findAll() {
+        List<User> result = em.createQuery("select u from User u")
+                .getResultList();
+        System.out.println(result);
+        return result;
     }
 
     @Override

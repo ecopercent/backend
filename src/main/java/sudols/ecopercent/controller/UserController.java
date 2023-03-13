@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.user.UserProfilePatchDto;
 import sudols.ecopercent.dto.user.UserProfilePostDto;
+import sudols.ecopercent.dto.user.UserTitleItemPatchDto;
 import sudols.ecopercent.service.UserService;
 
 import java.util.List;
@@ -30,13 +31,7 @@ public class UserController {
         return userService.join(userData);
     }
 
-    @GetMapping("/users")
-    @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public List<User> GetAllUserData() {
-        return userService.findAll();
-    }
-
+    // TODO: 고민. 반환 값에 User 대신 UserResponseDto 를 해야하나?
     @GetMapping("/users/{userid}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
@@ -59,7 +54,34 @@ public class UserController {
         userService.deleteOne(userId);
     }
 
-    // 테스트용 API
+    // TODO: 고민. UpdateTitleEcobag 과 합칠 수 있는 방법이 없을까?
+    @PatchMapping("/users/{userid}/title-tumbler")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public void UpdateTitleTumbler(
+            @PathVariable("userid") Long userId,
+            @RequestBody UserTitleItemPatchDto newTitleItemData) {
+        userService.updateTitleTumbler(userId, newTitleItemData);
+    }
+
+    @PatchMapping("/users/{userid}/title-ecobag")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public void UpdateTitleEcobag(
+            @PathVariable("userid") Long userId,
+            @RequestBody UserTitleItemPatchDto newTitleItemData) {
+        userService.updateTitleEcobag(userId, newTitleItemData);
+    }
+
+    // Test
+    @GetMapping("/users")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public List<User> GetAllUserData() {
+        return userService.findAll();
+    }
+
+    // Test
     @DeleteMapping("/users")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)

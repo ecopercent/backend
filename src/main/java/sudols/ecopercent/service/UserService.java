@@ -4,6 +4,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.user.UserProfilePatchDto;
 import sudols.ecopercent.dto.user.UserProfilePostDto;
+import sudols.ecopercent.dto.user.UserTitleItemPatchDto;
 import sudols.ecopercent.repository.UserRepository;
 
 import java.util.List;
@@ -30,22 +31,32 @@ public class UserService {
                 });
     }
 
-    public List<User> findAll() {
-        return userRepository.findAll();
-    }
-
     public Optional<User> findOne(Long userId) {
         return userRepository.findById(userId);
     }
 
     public void updateProfile(Long userId, UserProfilePatchDto newUserData) {
-        userRepository.update(userId, newUserData.toEntity());
+        userRepository.updateProfile(userId, newUserData.toEntity());
+    }
+
+    public void updateTitleTumbler(Long userId, UserTitleItemPatchDto newTitleItemData) {
+        userRepository.updateTitleTumbler(userId, newTitleItemData.toEntity());
+    }
+
+    public void updateTitleEcobag(Long userId, UserTitleItemPatchDto newTitleItemData) {
+        userRepository.updateTitleEcobag(userId, newTitleItemData.toEntity());
     }
 
     public void deleteOne(Long userId) {
         userRepository.deleteById(userId);
     }
 
+    // Test
+    public List<User> findAll() {
+        return userRepository.findAll();
+    }
+
+    // Test
     public void deleteAll() {
         userRepository.clearStore();
     }
