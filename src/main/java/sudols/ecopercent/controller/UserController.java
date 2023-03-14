@@ -5,12 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import sudols.ecopercent.domain.Item;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.user.UserProfilePatchDto;
 import sudols.ecopercent.dto.user.UserProfilePostDto;
 import sudols.ecopercent.dto.user.UserTitleItemPatchDto;
+import sudols.ecopercent.service.ItemService;
 import sudols.ecopercent.service.UserService;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,10 +21,13 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
+    private final ItemService itemService;
 
+    // TODO: 고민. itemService 주입 받아 사용하는게 옳바른 구조인가?
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, ItemService itemService) {
         this.userService = userService;
+        this.itemService = itemService;
     }
 
     @PostMapping("/users")
@@ -71,6 +77,31 @@ public class UserController {
             @PathVariable("userid") Long userId,
             @RequestBody UserTitleItemPatchDto newTitleItemData) {
         userService.updateTitleEcobag(userId, newTitleItemData);
+    }
+
+
+    @GetMapping("/users/{userid}/title-tumbler")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public Optional<Item> GetTitleTumbler(@PathVariable("userid") Long userId) {
+        User user = userService.findOne(userId).get();
+        Long titleTumblerId = user.getTitleTumblerId();
+        System.out.println(titleTumblerId);
+        return itemService.findOne(titleTumblerId);
+    }
+
+    /*
+    TODO: 유효성.
+     - 해당 유저가 존재하는지?
+     - 해당 아이템이 존재하는지?
+    */
+    @GetMapping("/users/{userid}/title-ecobag")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public Optional<Item> GetTitleEcobag(@PathVariable("userid") Long userId) {
+        User user = userService.findOne(userId).get();
+        Long titleEcobagId = user.getTitleEcobagId();
+        return itemService.findOne(titleEcobagId);
     }
 
     // Test
