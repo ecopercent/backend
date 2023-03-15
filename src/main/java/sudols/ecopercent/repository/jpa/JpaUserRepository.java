@@ -1,15 +1,18 @@
 package sudols.ecopercent.repository.jpa;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.springframework.stereotype.Repository;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-//@Repository
+@Repository
 public class JpaUserRepository implements UserRepository {
 
+    @PersistenceContext
     private final EntityManager em;
 
     public JpaUserRepository(EntityManager em) {
@@ -48,14 +51,12 @@ public class JpaUserRepository implements UserRepository {
     @Override
     public void updateTitleTumbler(Long userId, User newTitleData) {
         User user = em.find(User.class, userId);
-        // TODO: 구현. 해당 item 이 존재하는지 여부 확인
         user.setTitleTumblerId(newTitleData.getTitleTumblerId());
     }
 
     @Override
     public void updateTitleEcobag(Long userId, User newTitleData) {
         User user = em.find(User.class, userId);
-        // TODO: 구현. 해당 item 이 존재하는지 여부 확인
         user.setTitleEcobagId(newTitleData.getTitleEcobagId());
     }
 

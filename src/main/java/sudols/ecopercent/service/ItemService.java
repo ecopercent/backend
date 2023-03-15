@@ -1,5 +1,7 @@
 package sudols.ecopercent.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sudols.ecopercent.domain.Item;
 import sudols.ecopercent.dto.item.ItemPatchDetailDto;
@@ -10,10 +12,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Transactional
+@Service
 public class ItemService {
 
     private final ItemRepository itemRepository;
 
+    @Autowired
     public ItemService(ItemRepository itemRepository) {
         this.itemRepository = itemRepository;
     }
