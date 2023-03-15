@@ -1,15 +1,19 @@
 package sudols.ecopercent.repository.jpa;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
+import org.springframework.stereotype.Repository;
 import sudols.ecopercent.domain.Item;
 import sudols.ecopercent.repository.ItemRepository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class JpaItemRepository implements ItemRepository {
 
+    @PersistenceContext
     private final EntityManager em;
 
     public JpaItemRepository(EntityManager em) {
