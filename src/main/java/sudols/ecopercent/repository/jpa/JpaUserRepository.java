@@ -51,14 +51,12 @@ public class JpaUserRepository implements UserRepository {
     @Override
     public void updateTitleTumbler(Long userId, User newTitleData) {
         User user = em.find(User.class, userId);
-        // TODO: 구현. 해당 item 이 존재하는지 여부 확인
         user.setTitleTumblerId(newTitleData.getTitleTumblerId());
     }
 
     @Override
     public void updateTitleEcobag(Long userId, User newTitleData) {
         User user = em.find(User.class, userId);
-        // TODO: 구현. 해당 item 이 존재하는지 여부 확인
         user.setTitleEcobagId(newTitleData.getTitleEcobagId());
     }
 
