@@ -2,6 +2,7 @@ package sudols.ecopercent.repository.jpa;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import org.springframework.stereotype.Repository;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.repository.UserRepository;
@@ -76,6 +77,7 @@ public class JpaUserRepository implements UserRepository {
 
     @Override
     public void clearStore() {
-        em.clear();
+        Query query = em.createQuery("delete from User");
+        query.executeUpdate();
     }
 }

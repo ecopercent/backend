@@ -37,7 +37,7 @@ public class ItemController {
             @RequestParam("userid") Long userId,
             @RequestParam(value = "category", required = false) String category
     ) {
-        return itemService.findItemList(userId, category);
+        return itemService.findListByCategory(userId, category);
     }
 
     @GetMapping("/items/{itemid}")
@@ -54,14 +54,14 @@ public class ItemController {
             @PathVariable("itemid") Long itemId,
             @RequestBody() ItemPatchDetailDto newItemData
     ) {
-        itemService.updateItemDetail(itemId, newItemData);
+        itemService.updateDetail(itemId, newItemData);
     }
 
     @PatchMapping("/items/{itemid}/up")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     public Long IncreaseItemUsageCount(@PathVariable("itemid") Long itemId) {
-        return itemService.increaseItemUsageCount(itemId);
+        return itemService.increaseUsageCount(itemId);
     }
 
     @DeleteMapping("/items/{itemid}")
