@@ -33,7 +33,7 @@ public class JpaItemRepository implements ItemRepository {
                 .setParameter("userId", userId)
                 .setParameter("category", category)
                 .getResultList();
-        return result ;
+        return result;
     }
 
     @Override
@@ -67,6 +67,37 @@ public class JpaItemRepository implements ItemRepository {
     public void deleteById(Long itemId) {
         Item item = findById(itemId).get();
         em.remove(item);
+    }
+
+    @Override
+    public void updateTitleItem(Long userId, Long itemId, String category) {
+        // 기존 대표 아이템의 is_title 을 false 로 변경
+        Optional<Item> titleItem = em.createQuery(
+                        "select i from Item i where i.userId = :userId and i.category = :category and i.isTitle = :isTitle", Item.class)
+                .setParameter("userId", userId)
+                .setParameter("category", category)
+                .setParameter("isTitle", true)
+                .getResultList().stream().findAny();
+        if (titleItem.isEmpty() == false)
+            titleItem.get().setIsTitle(false);
+
+        // itemId 의 is_title 을 true 로 변경
+        Optional<Item> item = em.createQuery(
+                        "select i from Item i where i.userId = :userId and i.category = :category and i.id = :id", Item.class)
+                .setParameter("userId", userId)
+                .setParameter("category", category)
+                .setParameter("id", itemId)
+                .getResultList().stream().findAny();
+        item.get().setIsTitle(true);
+    }
+
+    @Override
+    public Optional<Item> getTitleItem(Long userId, String category) {
+        return em.createQuery("select i from Item i where i.userId = :userId and i.category = :category and i.isTitle = :isTitle", Item.class)
+                .setParameter("userId", userId)
+                .setParameter("category", category)
+                .setParameter("isTitle", true)
+                .getResultList().stream().findAny();
     }
 
     @Override

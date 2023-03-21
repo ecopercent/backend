@@ -20,9 +20,6 @@ public class Item {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "user_id")
-    private Long userId;
-
     @Column(name = "image")
     private String image;
 
@@ -42,7 +39,7 @@ public class Item {
     private Integer price;
 
     @Column(name = "usage_count")
-    private Long usageCount;
+    private Long usageCount = 0L;
 
     @Column(name = "purchase_data")
     private Date purchaseDate;
@@ -53,4 +50,7 @@ public class Item {
 
     @Column(name = "latest_data")
     private Date latestDate;
+
+    @Column(name = "is_title")
+    private Boolean isTitle = false;
 }

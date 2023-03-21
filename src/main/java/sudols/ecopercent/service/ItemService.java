@@ -26,16 +26,13 @@ public class ItemService {
         this.userRepository = userRepository;
     }
 
-    public Long add(ItemPostDto item) {
+    public Long addItem(ItemPostDto item) {
         Item itemEntity = item.toEntity();
         return itemRepository.save(itemEntity).getId();
     }
 
     public List<Item> findListByCategory(Long userId, String category) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent() == false) {
-            throw new IllegalStateException("존재하지 않는 유저입니다.");
-        }
+        validateExistUserByUserId(userId);
         // TODO: 확장성이 안좋으므로 나중에 수정
         if (category.equals("ecobag") == false && category.equals("tumbler") == false) {
             throw new IllegalStateException("존재하지 않는 카테고리입니다.");
@@ -48,18 +45,34 @@ public class ItemService {
     }
 
     public void updateDetail(Long itemId, ItemPatchDetailDto newItemData) {
-        validateExistItemById(itemId);
+        validateExistItemByItemId(itemId);
         itemRepository.update(itemId, newItemData.toEntity());
     }
 
     public Long increaseUsageCount(Long itemId) {
-        validateExistItemById(itemId);
+        validateExistItemByItemId(itemId);
         return itemRepository.increaseUsageCount(itemId);
     }
 
     public void deleteOne(Long itemId) {
-        validateExistItemById(itemId);
+        validateExistItemByItemId(itemId);
         itemRepository.deleteById(itemId);
+    }
+
+    public void updateTitleTumbler(Long userId, Long itemId) {
+        itemRepository.updateTitleItem(userId, itemId, "tumbler");
+    }
+
+    public void updateTitleEcobag(Long userId, Long itemId) {
+        itemRepository.updateTitleItem(userId, itemId, "ecobag");
+    }
+
+    public Optional<Item> getTitleTumbler(Long userId) {
+        return itemRepository.getTitleItem(userId, "tumbler");
+    }
+
+    public Optional<Item> getTitleEcobag(Long userId) {
+        return itemRepository.getTitleItem(userId, "ecobag");
     }
 
     public List<Item> findAll() {
@@ -76,8 +89,19 @@ public class ItemService {
         }
     }
 
-    private void validateExistItemById(Long itemId) {
+    private void validateExistItemByItemId(Long itemId) {
         Optional<Item> optionalItem = itemRepository.findById(itemId);
         validateExistItemByOptional(optionalItem);
+    }
+
+    private void validateExistUserByOptionalUser(Optional<User> optionalUser) {
+        if (optionalUser.isPresent() == false) {
+            throw new IllegalStateException("존재하지 않는 유저입니다.");
+        }
+    }
+
+    private void validateExistUserByUserId(Long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        validateExistUserByOptionalUser(optionalUser);
     }
 }

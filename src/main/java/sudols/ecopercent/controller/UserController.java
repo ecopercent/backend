@@ -5,11 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import sudols.ecopercent.domain.Item;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.user.UserProfilePatchDto;
 import sudols.ecopercent.dto.user.UserProfilePostDto;
-import sudols.ecopercent.dto.user.UserTitleItemPatchDto;
 import sudols.ecopercent.service.ItemService;
 import sudols.ecopercent.service.UserService;
 
@@ -34,59 +32,26 @@ public class UserController {
     }
 
     // TODO: 고민. 반환 값에 User 대신 UserResponseDto 를 해야하나?
-    @GetMapping("/users/{userid}")
+    @GetMapping("/users/{userId}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Optional<User> GetUserData(@PathVariable("userid") Long userId) {
+    public Optional<User> GetUserData(@PathVariable("userId") Long userId) {
         return userService.findOne(userId);
     }
 
-    @PatchMapping("/users/{userid}")
+    @PatchMapping("/users/{userId}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public void UpdateUserProfile(@PathVariable("userid") Long userId,
+    public void UpdateUserProfile(@PathVariable("userId") Long userId,
                                   @Valid @RequestBody UserProfilePatchDto newUserData) {
         userService.updateProfile(userId, newUserData);
     }
 
-    @DeleteMapping("/users/{userid}")
+    @DeleteMapping("/users/{userId}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public void DeleteUser(@PathVariable("userid") Long userId) {
+    public void DeleteUser(@PathVariable("userId") Long userId) {
         userService.deleteOne(userId);
-    }
-
-    @PatchMapping("/users/{userid}/title-tumbler")
-    @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public void UpdateTitleTumbler(
-            @PathVariable("userid") Long userId,
-            @RequestBody UserTitleItemPatchDto newTitleItemData) {
-        userService.updateTitleTumbler(userId, newTitleItemData);
-    }
-
-    @PatchMapping("/users/{userid}/title-ecobag")
-    @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public void UpdateTitleEcobag(
-            @PathVariable("userid") Long userId,
-            @RequestBody UserTitleItemPatchDto newTitleItemData) {
-        userService.updateTitleEcobag(userId, newTitleItemData);
-    }
-
-
-    @GetMapping("/users/{userid}/title-tumbler")
-    @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public Optional<Item> GetTitleTumbler(@PathVariable("userid") Long userId) {
-        return userService.getTitleTumbler(userId);
-    }
-
-    @GetMapping("/users/{userid}/title-ecobag")
-    @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public Optional<Item> GetTitleEcobag(@PathVariable("userid") Long userId) {
-        return userService.getTitleEcobag(userId);
     }
 
     // Test

@@ -1,6 +1,7 @@
 package sudols.ecopercent.repository;
 
 import sudols.ecopercent.domain.Item;
+import sudols.ecopercent.domain.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,10 @@ public interface ItemRepository {
     Long increaseUsageCount(Long itemId);
 
     void deleteById(Long itemId);
+
+    void updateTitleItem(Long userId, Long itemId, String category);
+
+    Optional<Item> getTitleItem(Long userId, String category);
 
     List<Item> findAll();
 

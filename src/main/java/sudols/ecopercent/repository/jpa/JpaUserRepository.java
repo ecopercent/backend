@@ -50,18 +50,6 @@ public class JpaUserRepository implements UserRepository {
     }
 
     @Override
-    public void updateTitleTumbler(Long userId, User newTitleData) {
-        User user = em.find(User.class, userId);
-        user.setTitleTumblerId(newTitleData.getTitleTumblerId());
-    }
-
-    @Override
-    public void updateTitleEcobag(Long userId, User newTitleData) {
-        User user = em.find(User.class, userId);
-        user.setTitleEcobagId(newTitleData.getTitleEcobagId());
-    }
-
-    @Override
     public void deleteById(Long userId) {
         User user = findById(userId).get();
         em.remove(user);
