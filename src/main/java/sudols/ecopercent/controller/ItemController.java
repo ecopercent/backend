@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import sudols.ecopercent.domain.Item;
-import sudols.ecopercent.dto.item.ItemPatchDetailDto;
-import sudols.ecopercent.dto.item.ItemPostDto;
+import sudols.ecopercent.dto.item.RequestPatchItemDetailDto;
+import sudols.ecopercent.dto.item.RequestPostItemDto;
 import sudols.ecopercent.service.ItemService;
 
 import java.util.List;
@@ -26,7 +26,7 @@ public class ItemController {
     @PostMapping("/items")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Long AddItem(@Valid @RequestBody() ItemPostDto itemData) {
+    public Long AddItem(@Valid @RequestBody() RequestPostItemDto itemData) {
         return itemService.addItem(itemData);
     }
 
@@ -52,7 +52,7 @@ public class ItemController {
     @ResponseStatus(code = HttpStatus.OK)
     public void UpdateItemDetail(
             @PathVariable("itemId") Long itemId,
-            @RequestBody() ItemPatchDetailDto newItemData
+            @RequestBody() RequestPatchItemDetailDto newItemData
     ) {
         itemService.updateDetail(itemId, newItemData);
     }

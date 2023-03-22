@@ -2,10 +2,11 @@ package sudols.ecopercent.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DialectOverride;
 
 import java.util.Date;
 
-// TODO: 테이블명을 단수로 할지 복수로 할지. User 도 마찬가지
 @Builder
 @Getter
 @Setter
@@ -13,12 +14,16 @@ import java.util.Date;
 @NoArgsConstructor
 @ToString
 @Entity
-@Table(name = "Items")
+@Table(name = "items")
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private Long itemId;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name = "image")
     private String image;
@@ -39,7 +44,7 @@ public class Item {
     private Integer price;
 
     @Column(name = "usage_count")
-    private Long usageCount = 0L;
+    private Long usageCount;
 
     @Column(name = "purchase_data")
     private Date purchaseDate;
@@ -51,6 +56,5 @@ public class Item {
     @Column(name = "latest_data")
     private Date latestDate;
 
-    @Column(name = "is_title")
-    private Boolean isTitle = false;
+    private Boolean isTitle;
 }

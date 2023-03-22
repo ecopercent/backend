@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import sudols.ecopercent.domain.User;
-import sudols.ecopercent.dto.user.UserProfilePatchDto;
-import sudols.ecopercent.dto.user.UserProfilePostDto;
+import sudols.ecopercent.dto.user.RequestPatchUserProfileDto;
+import sudols.ecopercent.dto.user.RequestPostUserProfileDto;
 import sudols.ecopercent.service.ItemService;
 import sudols.ecopercent.service.UserService;
 
@@ -27,7 +27,7 @@ public class UserController {
     @PostMapping("/users")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Long CreateUser(@Valid @RequestBody UserProfilePostDto userData) {
+    public Long CreateUser(@Valid @RequestBody RequestPostUserProfileDto userData) {
         return userService.join(userData);
     }
 
@@ -43,7 +43,7 @@ public class UserController {
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     public void UpdateUserProfile(@PathVariable("userId") Long userId,
-                                  @Valid @RequestBody UserProfilePatchDto newUserData) {
+                                  @Valid @RequestBody RequestPatchUserProfileDto newUserData) {
         userService.updateProfile(userId, newUserData);
     }
 

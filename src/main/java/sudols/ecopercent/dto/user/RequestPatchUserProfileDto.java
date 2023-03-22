@@ -10,7 +10,7 @@ import sudols.ecopercent.domain.User;
 @ToString
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class UserProfilePatchDto {
+public class RequestPatchUserProfileDto {
 
     private Long userId;
 

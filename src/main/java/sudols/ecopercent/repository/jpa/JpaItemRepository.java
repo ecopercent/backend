@@ -5,7 +5,9 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import org.springframework.stereotype.Repository;
 import sudols.ecopercent.domain.Item;
+import sudols.ecopercent.domain.User;
 import sudols.ecopercent.repository.ItemRepository;
+import sudols.ecopercent.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,8 +23,14 @@ public class JpaItemRepository implements ItemRepository {
     }
 
     @Override
-    public Item save(Item item) {
+    public Item save(Long userId, Item item) {
+        User user = em.createQuery("select u from User u where u.userId = :userId", User.class)
+                .setParameter("userId", userId)
+                .getResultList()
+                .stream().findAny().get();
         item.setUsageCount(0L);
+        item.setIsTitle(false);
+        item.setUser(user);
         em.persist(item);
         return item;
     }
