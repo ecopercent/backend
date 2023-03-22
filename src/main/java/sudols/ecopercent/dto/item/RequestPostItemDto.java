@@ -31,7 +31,6 @@ public class ItemPostDto {
 
     public Item toEntity() {
         return Item.builder()
-                .userId(userId)
                 .image(image)
                 .nickname(nickname)
                 .category(category)
