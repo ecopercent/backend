@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import sudols.ecopercent.domain.Item;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.repository.ItemRepository;
-import sudols.ecopercent.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,10 +23,7 @@ public class JpaItemRepository implements ItemRepository {
 
     @Override
     public Item save(Long userId, Item item) {
-        User user = em.createQuery("select u from User u where u.userId = :userId", User.class)
-                .setParameter("userId", userId)
-                .getResultList()
-                .stream().findAny().get();
+        User user = findUserByUserId(userId);
         item.setUsageCount(0L);
         item.setIsTitle(false);
         item.setUser(user);
@@ -37,11 +33,11 @@ public class JpaItemRepository implements ItemRepository {
 
     @Override
     public List<Item> findListByIdAndCategory(Long userId, String category) {
-        List<Item> result = em.createQuery("select i from Item i where i.userId = :userId and i.category = :category")
-                .setParameter("userId", userId)
+        User user = findUserByUserId(userId);
+        return em.createQuery("select i from Item i where i.user = :user and i.category = :category")
+                .setParameter("user", user)
                 .setParameter("category", category)
                 .getResultList();
-        return result;
     }
 
     @Override
@@ -73,36 +69,46 @@ public class JpaItemRepository implements ItemRepository {
 
     @Override
     public void deleteById(Long itemId) {
-        Item item = findById(itemId).get();
-        em.remove(item);
+        Optional<Item> optionalItem = findById(itemId);
+        if (optionalItem.isEmpty()) {
+            throw new IllegalStateException("존재하지 않는 유저입니다.");
+        }
+
+        em.remove(optionalItem.get());
     }
 
     @Override
     public void updateTitleItem(Long userId, Long itemId, String category) {
+        User user = findUserByUserId(userId);
+
         // 기존 대표 아이템의 is_title 을 false 로 변경
         Optional<Item> titleItem = em.createQuery(
-                        "select i from Item i where i.userId = :userId and i.category = :category and i.isTitle = :isTitle", Item.class)
-                .setParameter("userId", userId)
+                        "select i from Item i where i.user = :user and i.category = :category and i.isTitle = :isTitle", Item.class)
+                .setParameter("user", user)
                 .setParameter("category", category)
                 .setParameter("isTitle", true)
                 .getResultList().stream().findAny();
-        if (titleItem.isEmpty() == false)
+        if (titleItem.isPresent()) {
             titleItem.get().setIsTitle(false);
+        }
 
         // itemId 의 is_title 을 true 로 변경
         Optional<Item> item = em.createQuery(
-                        "select i from Item i where i.userId = :userId and i.category = :category and i.id = :id", Item.class)
-                .setParameter("userId", userId)
+                        "select i from Item i where i.user = :user and i.category = :category and i.id = :id", Item.class)
+                .setParameter("user", user)
                 .setParameter("category", category)
                 .setParameter("id", itemId)
                 .getResultList().stream().findAny();
-        item.get().setIsTitle(true);
+        if (item.isPresent()) {
+            item.get().setIsTitle(true);
+        }
     }
 
     @Override
     public Optional<Item> getTitleItem(Long userId, String category) {
-        return em.createQuery("select i from Item i where i.userId = :userId and i.category = :category and i.isTitle = :isTitle", Item.class)
-                .setParameter("userId", userId)
+        User user = findUserByUserId(userId);
+        return em.createQuery("select i from Item i where i.user = :user and i.category = :category and i.isTitle = :isTitle", Item.class)
+                .setParameter("user", user)
                 .setParameter("category", category)
                 .setParameter("isTitle", true)
                 .getResultList().stream().findAny();
@@ -110,14 +116,24 @@ public class JpaItemRepository implements ItemRepository {
 
     @Override
     public List<Item> findAll() {
-        List<Item> itemList = em.createQuery("select i from Item i")
+        return em.createQuery("select i from Item i")
                 .getResultList();
-        return itemList;
     }
 
     @Override
     public void clearStore() {
         Query query = em.createQuery("delete from Item");
         query.executeUpdate();
+    }
+
+    private User findUserByUserId(Long userId) {
+        Optional<User> optionalUser = em.createQuery("select u from User u where u.userId = :userId", User.class)
+                .setParameter("userId", userId)
+                .getResultList()
+                .stream().findAny();
+        if (optionalUser.isEmpty()) {
+            throw new IllegalStateException("존재하지 않는 유저입니다.");
+        }
+        return optionalUser.get();
     }
 }
