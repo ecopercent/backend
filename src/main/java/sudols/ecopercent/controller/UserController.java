@@ -27,8 +27,16 @@ public class UserController {
     @PostMapping("/users")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Long CreateUser(@Valid @RequestBody RequestPostUserProfileDto userData) {
+    public Long CreateUser(@RequestBody RequestPostUserProfileDto userData) {
         return userService.join(userData);
+    }
+
+    // Test
+    @GetMapping("/users")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public List<User> GetAllUserData() {
+        return userService.findAll();
     }
 
     // TODO: 고민. 반환 값에 User 대신 UserResponseDto 를 해야하나?
@@ -43,7 +51,7 @@ public class UserController {
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     public void UpdateUserProfile(@PathVariable("userId") Long userId,
-                                  @Valid @RequestBody RequestPatchUserProfileDto newUserData) {
+                                  @RequestBody RequestPatchUserProfileDto newUserData) {
         userService.updateProfile(userId, newUserData);
     }
 
@@ -52,14 +60,6 @@ public class UserController {
     @ResponseStatus(code = HttpStatus.OK)
     public void DeleteUser(@PathVariable("userId") Long userId) {
         userService.deleteOne(userId);
-    }
-
-    // Test
-    @GetMapping("/users")
-    @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public List<User> GetAllUserData() {
-        return userService.findAll();
     }
 
     // Test
