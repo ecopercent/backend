@@ -22,6 +22,8 @@ public class RequestPatchItemDetailDto {
 
     private Integer price;
 
+    private Long goalUsageCount;
+
     private Date purchaseDate;
 
     public Item toEntity() {
