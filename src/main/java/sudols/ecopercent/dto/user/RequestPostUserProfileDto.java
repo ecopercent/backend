@@ -5,12 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import sudols.ecopercent.domain.User;
 
-@Builder
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
-@AllArgsConstructor
+@Data
 public class RequestPostUserProfileDto {
 
     @NotBlank(message = "닉네임은 공백이 아니어야 합니다.")

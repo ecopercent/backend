@@ -5,12 +5,7 @@ import sudols.ecopercent.domain.Item;
 
 import java.util.Date;
 
-@Builder
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
-@AllArgsConstructor
+@Data
 public class RequestPatchItemDetailDto {
     private String image;
 
@@ -21,6 +16,8 @@ public class RequestPatchItemDetailDto {
     private String brand;
 
     private Integer price;
+
+    private Long goalUsageCount;
 
     private Date purchaseDate;
 

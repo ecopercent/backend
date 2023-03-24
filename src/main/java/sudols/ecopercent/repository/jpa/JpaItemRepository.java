@@ -24,7 +24,10 @@ public class JpaItemRepository implements ItemRepository {
     @Override
     public Item save(Long userId, Item item) {
         User user = findUserByUserId(userId);
-        item.setUsageCount(0L);
+        if (item.getGoalUsageCount() == null) {
+            item.setGoalUsageCount(100L);
+        }
+        item.setCurrentUsageCount(0L);
         item.setIsTitle(false);
         item.setUser(user);
         em.persist(item);
@@ -55,6 +58,11 @@ public class JpaItemRepository implements ItemRepository {
         item.setType(newItemData.getType());
         item.setBrand(newItemData.getBrand());
         item.setPrice(newItemData.getPrice());
+        if (newItemData.getGoalUsageCount() == null) {
+            item.setGoalUsageCount(100L);
+        } else {
+            item.setGoalUsageCount(newItemData.getGoalUsageCount());
+        }
         item.setPurchaseDate(newItemData.getPurchaseDate());
     }
 
@@ -62,8 +70,8 @@ public class JpaItemRepository implements ItemRepository {
     @Override
     public Long increaseUsageCount(Long itemId) {
         Item item = em.find(Item.class, itemId);
-        Long usageCount = item.getUsageCount() + 1;
-        item.setUsageCount(usageCount);
+        Long usageCount = item.getCurrentUsageCount() + 1;
+        item.setCurrentUsageCount(usageCount);
         return usageCount;
     }
 

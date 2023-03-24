@@ -5,12 +5,7 @@ import sudols.ecopercent.domain.Item;
 
 import java.util.Date;
 
-@Builder
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
-@AllArgsConstructor
+@Data
 public class RequestPostItemDto {
     private Long userId;
 
@@ -26,6 +21,8 @@ public class RequestPostItemDto {
     private String brand;
 
     private Integer price;
+
+    private Long goalUsageCount;
 
     private Date purchaseDate;
 

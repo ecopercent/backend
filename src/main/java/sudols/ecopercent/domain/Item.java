@@ -2,18 +2,14 @@ package sudols.ecopercent.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.DialectOverride;
 
 import java.util.Date;
 
-@Builder
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
+@Data
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "items")
 public class Item {
     @Id
@@ -43,8 +39,11 @@ public class Item {
     @Column(name = "price")
     private Integer price;
 
-    @Column(name = "usage_count")
-    private Long usageCount;
+    @Column(name = "goal_usage_count")
+    private Long goalUsageCount;
+
+    @Column(name = "current_usage_count")
+    private Long currentUsageCount;
 
     @Column(name = "purchase_data")
     private Date purchaseDate;

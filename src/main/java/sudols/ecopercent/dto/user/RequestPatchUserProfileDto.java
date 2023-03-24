@@ -5,11 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import sudols.ecopercent.domain.User;
 
-@Getter
-@Setter
-@ToString
-@AllArgsConstructor
-@RequiredArgsConstructor
+@Data
 public class RequestPatchUserProfileDto {
 
     private Long userId;
