@@ -11,7 +11,7 @@ import java.util.Date;
 @ToString
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class ItemPatchDetailDto {
+public class RequestPatchItemDetailDto {
     private String image;
 
     private String nickname;

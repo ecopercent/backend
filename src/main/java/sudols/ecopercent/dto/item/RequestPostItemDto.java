@@ -11,7 +11,7 @@ import java.util.Date;
 @ToString
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class ItemPostDto {
+public class RequestPostItemDto {
     private Long userId;
 
     // TODO: image 자료형 뭐로 해야하는지?
@@ -31,7 +31,6 @@ public class ItemPostDto {
 
     public Item toEntity() {
         return Item.builder()
-                .userId(userId)
                 .image(image)
                 .nickname(nickname)
                 .category(category)

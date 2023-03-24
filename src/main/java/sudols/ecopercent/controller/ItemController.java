@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import sudols.ecopercent.domain.Item;
-import sudols.ecopercent.dto.item.ItemPatchDetailDto;
-import sudols.ecopercent.dto.item.ItemPostDto;
+import sudols.ecopercent.dto.item.RequestPatchItemDetailDto;
+import sudols.ecopercent.dto.item.RequestPostItemDto;
 import sudols.ecopercent.service.ItemService;
 
 import java.util.List;
@@ -26,8 +26,8 @@ public class ItemController {
     @PostMapping("/items")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Long AddItem(@Valid @RequestBody() ItemPostDto itemData) {
-        return itemService.add(itemData);
+    public Long AddItem(@Valid @RequestBody() RequestPostItemDto itemData) {
+        return itemService.addItem(itemData);
     }
 
     @GetMapping("/items")
@@ -40,35 +40,65 @@ public class ItemController {
         return itemService.findListByCategory(userId, category);
     }
 
-    @GetMapping("/items/{itemid}")
+    @GetMapping("/items/{itemId}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Optional<Item> GetItemDetail(@PathVariable("itemid") Long itemId) {
+    public Optional<Item> GetItemDetail(@PathVariable("itemId") Long itemId) {
         return itemService.findOne(itemId);
     }
 
-    @PatchMapping("/items/{itemid}")
+    @PatchMapping("/items/{itemId}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     public void UpdateItemDetail(
-            @PathVariable("itemid") Long itemId,
-            @RequestBody() ItemPatchDetailDto newItemData
+            @PathVariable("itemId") Long itemId,
+            @RequestBody() RequestPatchItemDetailDto newItemData
     ) {
         itemService.updateDetail(itemId, newItemData);
     }
 
-    @PatchMapping("/items/{itemid}/up")
+    @PatchMapping("/items/{itemId}/up")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Long IncreaseItemUsageCount(@PathVariable("itemid") Long itemId) {
+    public Long IncreaseItemUsageCount(@PathVariable("itemId") Long itemId) {
         return itemService.increaseUsageCount(itemId);
     }
 
-    @DeleteMapping("/items/{itemid}")
+    @DeleteMapping("/items/{itemId}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public void DeleteOneItem(@PathVariable("itemid") Long itemId) {
+    public void DeleteOneItem(@PathVariable("itemId") Long itemId) {
         itemService.deleteOne(itemId);
+    }
+
+    @PatchMapping("/items/{itemId}/title-tumbler")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public void UpdateTitleTumbler(@PathVariable("itemId") Long itemId,
+                                   @RequestBody Long userId) {
+        itemService.updateTitleTumbler(userId, itemId);
+    }
+
+    @PatchMapping("/items/{itemId}/title-ecobag")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public void UpdateTitleEcobag(@PathVariable("itemId") Long itemId,
+                                  @RequestBody Long userId) {
+        itemService.updateTitleEcobag(userId, itemId);
+    }
+
+    @GetMapping("/users/{userId}/title-tumbler")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public Optional<Item> GetTitleTumbler(@PathVariable("userId") Long userId) {
+        return itemService.getTitleTumbler(userId);
+    }
+
+    @GetMapping("/users/{userId}/title-ecobag")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public Optional<Item> GetTitleEcobag(@PathVariable("userId") Long userId) {
+        return itemService.getTitleEcobag(userId);
     }
 
     // TEST API

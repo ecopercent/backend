@@ -4,18 +4,20 @@ package sudols.ecopercent.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Builder
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "Users")
+@Table(name = "users")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "id")
     private Long userId;
 
     @Column(name = "nickname")
@@ -29,10 +31,4 @@ public class User {
 
     @Column(name = "profile_message")
     private String profileMessage;
-
-    @Column(name = "title_tumbler_id")
-    private Long titleTumblerId;
-
-    @Column(name = "title_ecobag_id")
-    private Long titleEcobagId;
 }
