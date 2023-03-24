@@ -71,19 +71,19 @@ public class ItemController {
         itemService.deleteOne(itemId);
     }
 
-    @PatchMapping("/items/{itemId}/title-tumbler")
+    @PatchMapping("/users/{userId}/items/{itemId}/title-tumbler")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     public void UpdateTitleTumbler(@PathVariable("itemId") Long itemId,
-                                   @RequestBody Long userId) {
+                                   @PathVariable("userId") Long userId) {
         itemService.updateTitleTumbler(userId, itemId);
     }
 
-    @PatchMapping("/items/{itemId}/title-ecobag")
+    @PatchMapping("/users/{userId}/items/{itemId}/title-ecobag")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     public void UpdateTitleEcobag(@PathVariable("itemId") Long itemId,
-                                  @RequestBody Long userId) {
+                                  @PathVariable("userId") Long userId) {
         itemService.updateTitleEcobag(userId, itemId);
     }
 
