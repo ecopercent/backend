@@ -15,7 +15,7 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long itemId;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

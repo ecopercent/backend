@@ -135,7 +135,7 @@ public class JpaItemRepository implements ItemRepository {
     }
 
     private User findUserByUserId(Long userId) {
-        Optional<User> optionalUser = em.createQuery("select u from User u where u.userId = :userId", User.class)
+        Optional<User> optionalUser = em.createQuery("select u from User u where u.id = :userId", User.class)
                 .setParameter("userId", userId)
                 .getResultList()
                 .stream().findAny();

@@ -27,7 +27,7 @@ public class UserService {
     public Long join(RequestPostUserProfileDto user) {
         validateDuplicateUser(user);
         User userEntity = user.toEntity();
-        return userRepository.save(userEntity).getUserId();
+        return userRepository.save(userEntity).getId();
     }
 
     public Optional<User> findOne(Long userId) {

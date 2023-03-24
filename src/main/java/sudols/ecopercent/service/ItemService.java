@@ -28,7 +28,7 @@ public class ItemService {
 
     public Long addItem(RequestPostItemDto itemDto) {
         Item item = itemDto.toEntity();
-        return itemRepository.save(itemDto.getUserId(), item).getItemId();
+        return itemRepository.save(itemDto.getUserId(), item).getId();
     }
 
     public List<Item> findListByCategory(Long userId, String category) {
