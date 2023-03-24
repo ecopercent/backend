@@ -34,7 +34,7 @@ public class ItemController {
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     public List<Item> GetItemList(
-            @RequestParam("userid") Long userId,
+            @RequestParam("userId") Long userId,
             @RequestParam(value = "category", required = false) String category
     ) {
         return itemService.findListByCategory(userId, category);
