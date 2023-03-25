@@ -37,7 +37,7 @@ public class JpaItemRepository implements ItemRepository {
     @Override
     public List<Item> findListByIdAndCategory(Long userId, String category) {
         User user = findUserByUserId(userId);
-        return em.createQuery("select i from Item i where i.user = :user and i.category = :category")
+        return em.createQuery("select i from Item i where i.user = :user and i.category = :category ORDER BY i.id ASC")
                 .setParameter("user", user)
                 .setParameter("category", category)
                 .getResultList();
