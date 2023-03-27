@@ -26,7 +26,7 @@ public class ItemController {
     @PostMapping("/items")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Long AddItem(@Valid @RequestBody() RequestPostItemDto itemData) {
+    public Item AddItem(@Valid @RequestBody() RequestPostItemDto itemData) {
         return itemService.addItem(itemData);
     }
 
@@ -52,8 +52,7 @@ public class ItemController {
     @ResponseStatus(code = HttpStatus.OK)
     public void UpdateItemDetail(
             @PathVariable("itemId") Long itemId,
-            @RequestBody() RequestPatchItemDetailDto newItemData
-    ) {
+            @RequestBody() RequestPatchItemDetailDto newItemData) {
         itemService.updateDetail(itemId, newItemData);
     }
 

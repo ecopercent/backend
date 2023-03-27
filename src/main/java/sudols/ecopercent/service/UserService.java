@@ -24,10 +24,10 @@ public class UserService {
         this.itemRepository = itemRepository;
     }
 
-    public Long join(RequestPostUserProfileDto user) {
+    public User join(RequestPostUserProfileDto user) {
         validateDuplicateUser(user);
         User userEntity = user.toEntity();
-        return userRepository.save(userEntity).getId();
+        return userRepository.save(userEntity);
     }
 
     public Optional<User> findOne(Long userId) {

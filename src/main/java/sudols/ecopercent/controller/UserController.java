@@ -27,7 +27,7 @@ public class UserController {
     @PostMapping("/users")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Long CreateUser(@RequestBody RequestPostUserProfileDto userData) {
+    public User CreateUser(@RequestBody RequestPostUserProfileDto userData) {
         return userService.join(userData);
     }
 
