@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sudols.ecopercent.domain.User;
-import sudols.ecopercent.dto.user.RequestPatchUserProfileDto;
-import sudols.ecopercent.dto.user.RequestPostUserProfileDto;
+import sudols.ecopercent.dto.user.UpdateUserRequest;
+import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
 
@@ -25,15 +25,15 @@ public class UserServiceImpl implements UserService{
         this.itemRepository = itemRepository;
     }
 
-    public User join(RequestPostUserProfileDto postUserDto) {
+    public User createUser(CreateUserRequest postUserDto) {
         return userRepository.save(postUserDto.toEntity());
     }
 
-    public Optional<User> findUserById(Long userId) {
+    public Optional<User> getUser(Long userId) {
         return userRepository.findById(userId);
     }
 
-    public Optional<User> updateProfile(Long userId, RequestPatchUserProfileDto pathUserDto) {
+    public Optional<User> updateUser(Long userId, UpdateUserRequest pathUserDto) {
         return userRepository.findById(userId)
                 .map(user -> {
                     BeanUtils.copyProperties(pathUserDto, user, "id");
@@ -41,16 +41,16 @@ public class UserServiceImpl implements UserService{
                 });
     }
 
-    public void deleteOne(Long userId) {
+    public void deleteUser(Long userId) {
         itemRepository.deleteByUser_Id(userId);
         userRepository.deleteById(userId);
     }
 
-    public List<User> findAll() {
+    public List<User> getAllUser() {
         return userRepository.findAll();
     }
 
-    public void deleteAll() {
+    public void deleteAllUser() {
         itemRepository.deleteAll();
         userRepository.deleteAll();
     }

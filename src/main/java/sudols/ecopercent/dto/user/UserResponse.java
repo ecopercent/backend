@@ -1,14 +1,15 @@
 package sudols.ecopercent.dto.user;
 
-
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import sudols.ecopercent.domain.User;
 
 @Data
-public class RequestPatchUserProfileDto {
+public class UserResponse {
+
+    private Long userId;
 
     private String nickname;
+
+    private String email;
 
     private String profileImage;
 

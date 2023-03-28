@@ -1,15 +1,12 @@
 package sudols.ecopercent.dto.user;
 
+
 import lombok.*;
 
 @Data
-public class ResponseUserDto {
-
-    private Long userId;
+public class UpdateUserRequest {
 
     private String nickname;
-
-    private String email;
 
     private String profileImage;
 

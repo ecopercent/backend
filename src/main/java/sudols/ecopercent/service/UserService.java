@@ -1,25 +1,24 @@
 package sudols.ecopercent.service;
 
-import org.springframework.beans.BeanUtils;
 import sudols.ecopercent.domain.User;
-import sudols.ecopercent.dto.user.RequestPatchUserProfileDto;
-import sudols.ecopercent.dto.user.RequestPostUserProfileDto;
+import sudols.ecopercent.dto.user.UpdateUserRequest;
+import sudols.ecopercent.dto.user.CreateUserRequest;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-    User join(RequestPostUserProfileDto postUserDto);
+    User createUser(CreateUserRequest postUserDto);
 
-    Optional<User> findUserById(Long userId);
+    Optional<User> getUser(Long userId);
 
-    Optional<User> updateProfile(Long userId, RequestPatchUserProfileDto pathUserDto);
+    Optional<User> updateUser(Long userId, UpdateUserRequest pathUserDto);
 
-    void deleteOne(Long userId);
-
-    // Test
-    List<User> findAll();
+    void deleteUser(Long userId);
 
     // Test
-    void deleteAll();
+    List<User> getAllUser();
+
+    // Test
+    void deleteAllUser();
 }

@@ -5,8 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import sudols.ecopercent.domain.User;
-import sudols.ecopercent.dto.user.RequestPatchUserProfileDto;
-import sudols.ecopercent.dto.user.RequestPostUserProfileDto;
+import sudols.ecopercent.dto.user.UpdateUserRequest;
+import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.service.UserService;
 import sudols.ecopercent.service.UserServiceImpl;
 
@@ -26,38 +26,38 @@ public class UserController {
     @PostMapping("/users")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public User CreateUser(@RequestBody RequestPostUserProfileDto userData) {
-        return userService.join(userData);
+    public User CreateUser(@RequestBody CreateUserRequest userData) {
+        return userService.createUser(userData);
     }
 
     @GetMapping("/users/{userId}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Optional<User> GetUserData(@PathVariable("userId") Long userId) {
-        return userService.findUserById(userId);
+    public Optional<User> GetUser(@PathVariable("userId") Long userId) {
+        return userService.getUser(userId);
     }
 
     @PatchMapping("/users/{userId}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Optional<User> UpdateUserProfile(@PathVariable("userId") Long userId,
-                                            @RequestBody RequestPatchUserProfileDto newUserData) {
-        return userService.updateProfile(userId, newUserData);
+    public Optional<User> UpdateUser(@PathVariable("userId") Long userId,
+                                     @RequestBody UpdateUserRequest newUserData) {
+        return userService.updateUser(userId, newUserData);
     }
 
     @DeleteMapping("/users/{userId}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     public void DeleteUser(@PathVariable("userId") Long userId) {
-        userService.deleteOne(userId);
+        userService.deleteUser(userId);
     }
 
     // Test
     @GetMapping("/users")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public List<User> GetAllUserData() {
-        return userService.findAll();
+    public List<User> GetAllUser() {
+        return userService.getAllUser();
     }
 
     // Test
@@ -65,6 +65,6 @@ public class UserController {
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     public void DeleteAllUser() {
-        userService.deleteAll();
+        userService.deleteAllUser();
     }
 }
