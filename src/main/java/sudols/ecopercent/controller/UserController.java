@@ -40,7 +40,7 @@ public class UserController {
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     public Optional<User> UpdateUserProfile(@PathVariable("userId") Long userId,
-                                  @RequestBody RequestPatchUserProfileDto newUserData) {
+                                            @RequestBody RequestPatchUserProfileDto newUserData) {
         return userService.updateProfile(userId, newUserData);
     }
 

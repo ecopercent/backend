@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.user.RequestPatchUserProfileDto;
 import sudols.ecopercent.dto.user.RequestPostUserProfileDto;
+import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
 
 import java.util.List;
@@ -16,10 +17,12 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, ItemRepository itemRepository) {
         this.userRepository = userRepository;
+        this.itemRepository = itemRepository;
     }
 
     public User join(RequestPostUserProfileDto postUserDto) {
@@ -39,6 +42,7 @@ public class UserService {
     }
 
     public void deleteOne(Long userId) {
+        itemRepository.deleteByUser_Id(userId);
         userRepository.deleteById(userId);
     }
 
@@ -49,6 +53,7 @@ public class UserService {
 
     // Test
     public void deleteAll() {
+        itemRepository.deleteAll();
         userRepository.deleteAll();
     }
 }

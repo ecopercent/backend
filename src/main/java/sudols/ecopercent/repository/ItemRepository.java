@@ -13,4 +13,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     Optional<Item> findByCategoryAndIsTitleAndUser_Id(String category, boolean isTitle, Long userId);
 
     Optional<Item> findByIdAndCategoryAndUser_Id(Long itemId, String category, Long userId);
+
+    List<Item> deleteByUser_Id(Long userId);
 }
