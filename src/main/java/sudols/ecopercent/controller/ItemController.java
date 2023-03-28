@@ -33,10 +33,8 @@ public class ItemController {
     @GetMapping("/items")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public List<Item> GetItemList(
-            @RequestParam("userId") Long userId,
-            @RequestParam(value = "category", required = false) String category
-    ) {
+    public List<Item> GetItemList(@RequestParam("userId") Long userId,
+                                  @RequestParam(value = "category", required = false) String category) {
         return itemService.findListByCategory(userId, category);
     }
 
@@ -44,46 +42,39 @@ public class ItemController {
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     public Optional<Item> GetItemDetail(@PathVariable("itemId") Long itemId) {
-        return itemService.findOne(itemId);
+        return itemService.findItemById(itemId);
     }
 
     @PatchMapping("/items/{itemId}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public void UpdateItemDetail(
-            @PathVariable("itemId") Long itemId,
-            @RequestBody() RequestPatchItemDetailDto newItemData) {
-        itemService.updateDetail(itemId, newItemData);
+    public Optional<Item> UpdateItemDetail(@PathVariable("itemId") Long itemId,
+                                           @RequestBody() RequestPatchItemDetailDto newItemData) {
+        return itemService.updateDetail(itemId, newItemData);
     }
 
+    // TODO: up 이라는 건 RestAPI 스럽지 않은 이름인듯?
     @PatchMapping("/items/{itemId}/up")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Long IncreaseItemUsageCount(@PathVariable("itemId") Long itemId) {
+    public Optional<Item> IncreaseItemUsageCount(@PathVariable("itemId") Long itemId) {
         return itemService.increaseUsageCount(itemId);
-    }
-
-    @DeleteMapping("/items/{itemId}")
-    @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public void DeleteOneItem(@PathVariable("itemId") Long itemId) {
-        itemService.deleteOne(itemId);
     }
 
     @PatchMapping("/users/{userId}/items/{itemId}/title-tumbler")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public void UpdateTitleTumbler(@PathVariable("itemId") Long itemId,
-                                   @PathVariable("userId") Long userId) {
-        itemService.updateTitleTumbler(userId, itemId);
+    public Optional<Item> UpdateTitleTumbler(@PathVariable("itemId") Long itemId,
+                                             @PathVariable("userId") Long userId) {
+        return itemService.updateTitleTumbler(itemId, userId);
     }
 
     @PatchMapping("/users/{userId}/items/{itemId}/title-ecobag")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public void UpdateTitleEcobag(@PathVariable("itemId") Long itemId,
-                                  @PathVariable("userId") Long userId) {
-        itemService.updateTitleEcobag(userId, itemId);
+    public Optional<Item> UpdateTitleEcobag(@PathVariable("itemId") Long itemId,
+                                            @PathVariable("userId") Long userId) {
+        return itemService.updateTitleEcobag(itemId, userId);
     }
 
     @GetMapping("/users/{userId}/title-tumbler")
@@ -98,6 +89,13 @@ public class ItemController {
     @ResponseStatus(code = HttpStatus.OK)
     public Optional<Item> GetTitleEcobag(@PathVariable("userId") Long userId) {
         return itemService.getTitleEcobag(userId);
+    }
+
+    @DeleteMapping("/items/{itemId}")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public void DeleteItemById(@PathVariable("itemId") Long itemId) {
+        itemService.deleteItemById(itemId);
     }
 
     // TEST API

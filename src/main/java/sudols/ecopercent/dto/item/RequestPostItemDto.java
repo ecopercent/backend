@@ -1,7 +1,8 @@
 package sudols.ecopercent.dto.item;
 
-import lombok.*;
+import lombok.Data;
 import sudols.ecopercent.domain.Item;
+import sudols.ecopercent.domain.User;
 
 import java.util.Date;
 
@@ -26,14 +27,18 @@ public class RequestPostItemDto {
 
     private Date purchaseDate;
 
-    public Item toEntity() {
+    public Item toEntity(User user) {
         return Item.builder()
+                .user(user)
                 .image(image)
                 .nickname(nickname)
                 .category(category)
                 .type(type)
                 .brand(brand)
                 .price(price)
+                .goalUsageCount(1000L) // TODO: 구현. 주어진 type 에 맞게 설정
+                .currentUsageCount(0L)
+                .isTitle(false)
                 .purchaseDate(purchaseDate)
                 .build();
     }

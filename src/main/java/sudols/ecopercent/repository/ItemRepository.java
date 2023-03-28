@@ -1,30 +1,16 @@
 package sudols.ecopercent.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import sudols.ecopercent.domain.Item;
-import sudols.ecopercent.domain.User;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface ItemRepository {
-    Item save(Long userId, Item item);
+public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    List<Item> findListByIdAndCategory(Long userId, String category);
+    List<Item> findByCategoryAndUser_IdOrderById(String category, Long userId);
 
-    Optional<Item> findById(Long itemId);
+    Optional<Item> findByCategoryAndIsTitleAndUser_Id(String category, boolean isTitle, Long userId);
 
-    // TODO: refactor. id -> itemId
-    void update(Long id, Item newItem);
-
-    Long increaseUsageCount(Long itemId);
-
-    void deleteById(Long itemId);
-
-    void updateTitleItem(Long userId, Long itemId, String category);
-
-    Optional<Item> getTitleItem(Long userId, String category);
-
-    List<Item> findAll();
-
-    void clearStore();
+    Optional<Item> findByIdAndCategoryAndUser_Id(Long itemId, String category, Long userId);
 }

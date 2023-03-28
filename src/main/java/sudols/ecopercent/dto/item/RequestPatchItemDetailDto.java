@@ -17,18 +17,5 @@ public class RequestPatchItemDetailDto {
 
     private Integer price;
 
-    private Long goalUsageCount;
-
     private Date purchaseDate;
-
-    public Item toEntity() {
-        return Item.builder()
-                .image(image)
-                .nickname(nickname)
-                .type(type)
-                .brand(brand)
-                .price(price)
-                .purchaseDate(purchaseDate)
-                .build();
-    }
 }

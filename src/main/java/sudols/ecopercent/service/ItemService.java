@@ -1,10 +1,10 @@
 package sudols.ecopercent.service;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sudols.ecopercent.domain.Item;
-import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.item.RequestPatchItemDetailDto;
 import sudols.ecopercent.dto.item.RequestPostItemDto;
 import sudols.ecopercent.repository.ItemRepository;
@@ -26,53 +26,77 @@ public class ItemService {
         this.userRepository = userRepository;
     }
 
-    public Item addItem(RequestPostItemDto itemDto) {
-        Item item = itemDto.toEntity();
-        return itemRepository.save(itemDto.getUserId(), item);
+    // TODO: 구현. type 에 따라 goalUsageCount 설정
+    public Item addItem(RequestPostItemDto postItemDto) {
+        return userRepository.findById(postItemDto.getUserId())
+                .map(user -> {
+                    Item item = postItemDto.toEntity(user);
+                    return itemRepository.save(item);
+                }).get();
     }
 
     public List<Item> findListByCategory(Long userId, String category) {
-        validateExistUserByUserId(userId);
-        // TODO: 확장성이 안좋으므로 나중에 수정
-        if (category.equals("ecobag") == false && category.equals("tumbler") == false) {
+        // TODO: 변경. 좀 더 나은 방법을 찾아볼까?
+        if (!category.equals("ecobag") && !category.equals("tumbler")) {
             throw new IllegalStateException("존재하지 않는 카테고리입니다.");
         }
-        return itemRepository.findListByIdAndCategory(userId, category);
+        return itemRepository.findByCategoryAndUser_IdOrderById(category, userId);
     }
 
-    public Optional<Item> findOne(Long itemId) {
+    public Optional<Item> findItemById(Long itemId) {
         return itemRepository.findById(itemId);
     }
 
-    public void updateDetail(Long itemId, RequestPatchItemDetailDto newItemData) {
-        validateExistItemByItemId(itemId);
-        itemRepository.update(itemId, newItemData.toEntity());
+    // TODO: 구현. type 에 따라 goalUsageCount 설정
+    public Optional<Item> updateDetail(Long itemId, RequestPatchItemDetailDto pathItemDto) {
+        return itemRepository.findById(itemId)
+                .map(item -> {
+                    BeanUtils.copyProperties(pathItemDto, item, "id");
+                    return itemRepository.save(item);
+                });
     }
 
-    public Long increaseUsageCount(Long itemId) {
-        validateExistItemByItemId(itemId);
-        return itemRepository.increaseUsageCount(itemId);
+    // TODO: 구현. 마지막 사용횟수 증가
+    public Optional<Item> increaseUsageCount(Long itemId) {
+        return itemRepository.findById(itemId)
+                .map(item -> {
+                    item.setCurrentUsageCount(item.getCurrentUsageCount() + 1);
+                    return itemRepository.save(item);
+                });
     }
 
-    public void deleteOne(Long itemId) {
-        validateExistItemByItemId(itemId);
-        itemRepository.deleteById(itemId);
+    public Optional<Item> updateTitleTumbler(Long itemId, Long userId) {
+        return updateTitleItem(itemId, "tumbler", userId);
     }
 
-    public void updateTitleTumbler(Long userId, Long itemId) {
-        itemRepository.updateTitleItem(userId, itemId, "tumbler");
+
+    public Optional<Item> updateTitleEcobag(Long itemId, Long userId) {
+        return updateTitleItem(itemId, "ecobag", userId);
     }
 
-    public void updateTitleEcobag(Long userId, Long itemId) {
-        itemRepository.updateTitleItem(userId, itemId, "ecobag");
+    private Optional<Item> updateTitleItem(Long itemId, String category, Long userId) {
+        return itemRepository.findByIdAndCategoryAndUser_Id(itemId, category, userId)
+                .map(item -> {
+                    itemRepository.findByCategoryAndIsTitleAndUser_Id(category, true, userId)
+                            .ifPresent(titleItem -> {
+                                titleItem.setIsTitle(false);
+                                itemRepository.save(titleItem);
+                            });
+                    item.setIsTitle(true);
+                    return itemRepository.save(item);
+                });
     }
 
     public Optional<Item> getTitleTumbler(Long userId) {
-        return itemRepository.getTitleItem(userId, "tumbler");
+        return itemRepository.findByCategoryAndIsTitleAndUser_Id("tumbler", true, userId);
     }
 
     public Optional<Item> getTitleEcobag(Long userId) {
-        return itemRepository.getTitleItem(userId, "ecobag");
+        return itemRepository.findByCategoryAndIsTitleAndUser_Id("ecobag", true, userId);
+    }
+
+    public void deleteItemById(Long itemId) {
+        itemRepository.deleteById(itemId);
     }
 
     public List<Item> findAll() {
@@ -80,28 +104,6 @@ public class ItemService {
     }
 
     public void deleteAll() {
-        itemRepository.clearStore();
-    }
-
-    private void validateExistItemByOptional(Optional<Item> optionalItem) {
-        if (optionalItem.isPresent() == false) {
-            throw new IllegalStateException("존재하지 않는 아이템입니다.");
-        }
-    }
-
-    private void validateExistItemByItemId(Long itemId) {
-        Optional<Item> optionalItem = itemRepository.findById(itemId);
-        validateExistItemByOptional(optionalItem);
-    }
-
-    private void validateExistUserByOptionalUser(Optional<User> optionalUser) {
-        if (optionalUser.isPresent() == false) {
-            throw new IllegalStateException("존재하지 않는 유저입니다.");
-        }
-    }
-
-    private void validateExistUserByUserId(Long userId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        validateExistUserByOptionalUser(optionalUser);
+        itemRepository.deleteAll();
     }
 }
