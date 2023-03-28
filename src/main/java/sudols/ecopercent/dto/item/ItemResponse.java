@@ -1,16 +1,18 @@
 package sudols.ecopercent.dto.item;
 
+import lombok.Builder;
 import lombok.Data;
-import sudols.ecopercent.domain.Item;
-import sudols.ecopercent.domain.User;
 
 import java.util.Date;
 
 @Data
-public class CreateItemRequest {
+@Builder
+public class ItemResponse {
+
+    private Long id;
+
     private Long userId;
 
-    // TODO: image 자료형 뭐로 해야하는지?
     private String image;
 
     private String nickname;
@@ -23,5 +25,15 @@ public class CreateItemRequest {
 
     private Integer price;
 
+    private Long goalUsageCount;
+
+    private Long currentUsageCount;
+
     private Date purchaseDate;
+
+    private Date registrationDate;
+
+    private Date latestDate;
+
+    private Boolean isTitle;
 }

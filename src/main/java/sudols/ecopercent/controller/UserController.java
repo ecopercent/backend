@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.user.UpdateUserRequest;
 import sudols.ecopercent.dto.user.CreateUserRequest;
+import sudols.ecopercent.dto.user.UserResponse;
 import sudols.ecopercent.service.UserService;
 import sudols.ecopercent.service.UserServiceImpl;
 
@@ -26,23 +27,23 @@ public class UserController {
     @PostMapping("/users")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public User CreateUser(@RequestBody CreateUserRequest userData) {
-        return userService.createUser(userData);
+    public UserResponse CreateUser(@RequestBody CreateUserRequest createUserRequest) {
+        return userService.createUser(createUserRequest);
     }
 
     @GetMapping("/users/{userId}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Optional<User> GetUser(@PathVariable("userId") Long userId) {
+    public Optional<UserResponse> GetUser(@PathVariable("userId") Long userId) {
         return userService.getUser(userId);
     }
 
     @PatchMapping("/users/{userId}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Optional<User> UpdateUser(@PathVariable("userId") Long userId,
-                                     @RequestBody UpdateUserRequest newUserData) {
-        return userService.updateUser(userId, newUserData);
+    public Optional<UserResponse> UpdateUser(@PathVariable("userId") Long userId,
+                                     @RequestBody UpdateUserRequest updateUserRequest) {
+        return userService.updateUser(userId, updateUserRequest);
     }
 
     @DeleteMapping("/users/{userId}")
@@ -56,7 +57,7 @@ public class UserController {
     @GetMapping("/users")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public List<User> GetAllUser() {
+    public List<UserResponse> GetAllUser() {
         return userService.getAllUser();
     }
 

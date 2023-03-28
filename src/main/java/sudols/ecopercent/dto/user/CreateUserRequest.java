@@ -16,12 +16,4 @@ public class CreateUserRequest {
     private String email;
 
     private String profileImage;
-
-    public User toEntity() {
-        return User.builder()
-                .nickname(nickname)
-                .email(email)
-                .profileImage(profileImage)
-                .build();
-    }
 }

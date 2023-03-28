@@ -1,44 +1,52 @@
 package sudols.ecopercent.service;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import sudols.ecopercent.domain.User;
-import sudols.ecopercent.dto.user.UpdateUserRequest;
 import sudols.ecopercent.dto.user.CreateUserRequest;
+import sudols.ecopercent.dto.user.UpdateUserRequest;
+import sudols.ecopercent.dto.user.UserResponse;
+import sudols.ecopercent.mapper.UserMapper;
 import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-@Transactional
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+    private final UserMapper userMapper;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, ItemRepository itemRepository) {
+    public UserServiceImpl(UserRepository userRepository, ItemRepository itemRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.itemRepository = itemRepository;
+        this.userMapper = userMapper;
     }
 
-    public User createUser(CreateUserRequest postUserDto) {
-        return userRepository.save(postUserDto.toEntity());
+    public UserResponse createUser(CreateUserRequest createUserRequest) {
+        User user = userRepository.save(userMapper.createUserRequestToUser(createUserRequest));
+        return userMapper.userToUserResponse(user);
     }
 
-    public Optional<User> getUser(Long userId) {
-        return userRepository.findById(userId);
+    public Optional<UserResponse> getUser(Long userId) {
+        return userRepository.findById(userId)
+                .map(userMapper::userToUserResponse);
     }
 
-    public Optional<User> updateUser(Long userId, UpdateUserRequest pathUserDto) {
+    public Optional<UserResponse> updateUser(Long userId, UpdateUserRequest updateUserRequest) {
         return userRepository.findById(userId)
                 .map(user -> {
-                    BeanUtils.copyProperties(pathUserDto, user, "id");
+                    BeanUtils.copyProperties(updateUserRequest, user, "id");
                     return userRepository.save(user);
-                });
+                })
+                .map(userMapper::userToUserResponse);
     }
 
     public void deleteUser(Long userId) {
@@ -46,8 +54,11 @@ public class UserServiceImpl implements UserService{
         userRepository.deleteById(userId);
     }
 
-    public List<User> getAllUser() {
-        return userRepository.findAll();
+    public List<UserResponse> getAllUser() {
+        return userRepository.findAll()
+                .stream()
+                .map(userMapper::userToUserResponse)
+                .collect(Collectors.toList());
     }
 
     public void deleteAllUser() {

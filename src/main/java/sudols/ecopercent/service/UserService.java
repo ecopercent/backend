@@ -3,21 +3,23 @@ package sudols.ecopercent.service;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.user.UpdateUserRequest;
 import sudols.ecopercent.dto.user.CreateUserRequest;
+import sudols.ecopercent.dto.user.UserResponse;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-    User createUser(CreateUserRequest postUserDto);
 
-    Optional<User> getUser(Long userId);
+    UserResponse createUser(CreateUserRequest createUserRequest);
 
-    Optional<User> updateUser(Long userId, UpdateUserRequest pathUserDto);
+    Optional<UserResponse> getUser(Long userId);
+
+    Optional<UserResponse> updateUser(Long userId, UpdateUserRequest updateUserRequest);
 
     void deleteUser(Long userId);
 
     // Test
-    List<User> getAllUser();
+    List<UserResponse> getAllUser();
 
     // Test
     void deleteAllUser();
