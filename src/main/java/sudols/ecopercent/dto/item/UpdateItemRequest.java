@@ -1,12 +1,11 @@
 package sudols.ecopercent.dto.item;
 
 import lombok.*;
-import sudols.ecopercent.domain.Item;
 
 import java.util.Date;
 
 @Data
-public class RequestPatchItemDetailDto {
+public class UpdateItemRequest {
     private String image;
 
     private String nickname;

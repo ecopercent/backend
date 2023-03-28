@@ -8,6 +8,7 @@ import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.user.RequestPatchUserProfileDto;
 import sudols.ecopercent.dto.user.RequestPostUserProfileDto;
 import sudols.ecopercent.service.UserService;
+import sudols.ecopercent.service.UserServiceImpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +19,7 @@ public class UserController {
     private final UserService userService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserServiceImpl userService) {
         this.userService = userService;
     }
 

@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import sudols.ecopercent.domain.Item;
-import sudols.ecopercent.dto.item.RequestPatchItemDetailDto;
-import sudols.ecopercent.dto.item.RequestPostItemDto;
+import sudols.ecopercent.dto.item.UpdateItemRequest;
+import sudols.ecopercent.dto.item.CreateItemRequest;
 import sudols.ecopercent.service.ItemService;
 
 import java.util.List;
@@ -26,8 +26,8 @@ public class ItemController {
     @PostMapping("/items")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Item AddItem(@Valid @RequestBody() RequestPostItemDto itemData) {
-        return itemService.addItem(itemData);
+    public Item CreateItem(@Valid @RequestBody() CreateItemRequest itemData) {
+        return itemService.createItem(itemData);
     }
 
     @GetMapping("/items")
@@ -35,29 +35,29 @@ public class ItemController {
     @ResponseStatus(code = HttpStatus.OK)
     public List<Item> GetItemList(@RequestParam("userId") Long userId,
                                   @RequestParam(value = "category", required = false) String category) {
-        return itemService.findListByCategory(userId, category);
+        return itemService.getItemList(userId, category);
     }
 
     @GetMapping("/items/{itemId}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Optional<Item> GetItemDetail(@PathVariable("itemId") Long itemId) {
-        return itemService.findItemById(itemId);
+    public Optional<Item> GetItem(@PathVariable("itemId") Long itemId) {
+        return itemService.getItem(itemId);
     }
 
     @PatchMapping("/items/{itemId}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Optional<Item> UpdateItemDetail(@PathVariable("itemId") Long itemId,
-                                           @RequestBody() RequestPatchItemDetailDto newItemData) {
-        return itemService.updateDetail(itemId, newItemData);
+    public Optional<Item> UpdateItem(@PathVariable("itemId") Long itemId,
+                                     @RequestBody() UpdateItemRequest newItemData) {
+        return itemService.updateItem(itemId, newItemData);
     }
 
     // TODO: up 이라는 건 RestAPI 스럽지 않은 이름인듯?
     @PatchMapping("/items/{itemId}/up")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Optional<Item> IncreaseItemUsageCount(@PathVariable("itemId") Long itemId) {
+    public Optional<Item> IncreaseUsageCount(@PathVariable("itemId") Long itemId) {
         return itemService.increaseUsageCount(itemId);
     }
 
@@ -94,8 +94,8 @@ public class ItemController {
     @DeleteMapping("/items/{itemId}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public void DeleteItemById(@PathVariable("itemId") Long itemId) {
-        itemService.deleteItemById(itemId);
+    public void DeleteItem(@PathVariable("itemId") Long itemId) {
+        itemService.deleteItem(itemId);
     }
 
     // TEST API
@@ -103,7 +103,7 @@ public class ItemController {
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     public List<Item> GetAllItemList() {
-        return itemService.findAll();
+        return itemService.getAllItemList();
     }
 
     // TEST API
@@ -111,6 +111,6 @@ public class ItemController {
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     public void DeleteAllItem() {
-        itemService.deleteAll();
+        itemService.deleteAllItem();
     }
 }
