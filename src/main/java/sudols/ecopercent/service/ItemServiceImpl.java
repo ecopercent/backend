@@ -1,6 +1,5 @@
 package sudols.ecopercent.service;
 
-import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -126,6 +125,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private LocalDateTime getKSTDateTime() {
-        return ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime();
+        return ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime().withNano(0);
     }
 }

@@ -2,6 +2,7 @@ package sudols.ecopercent.dto.item;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -21,5 +22,5 @@ public class CreateItemRequest {
 
     private Integer price;
 
-    private Date purchaseDate;
+    private LocalDateTime purchaseDate;
 }

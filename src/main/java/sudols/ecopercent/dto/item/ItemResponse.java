@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
 @Builder
@@ -30,7 +29,7 @@ public class ItemResponse {
 
     private Long currentUsageCount;
 
-    private Date purchaseDate;
+    private LocalDateTime purchaseDate;
 
     private LocalDateTime registrationDate;
 
