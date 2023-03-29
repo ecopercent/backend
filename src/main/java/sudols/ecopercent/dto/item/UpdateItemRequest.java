@@ -2,8 +2,7 @@ package sudols.ecopercent.dto.item;
 
 import lombok.*;
 
-import java.util.Date;
-
+import java.time.LocalDate;
 @Data
 public class UpdateItemRequest {
     private String image;
@@ -16,5 +15,5 @@ public class UpdateItemRequest {
 
     private Integer price;
 
-    private Date purchaseDate;
+    private LocalDate purchaseDate;
 }

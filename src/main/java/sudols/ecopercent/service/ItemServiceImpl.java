@@ -1,6 +1,5 @@
 package sudols.ecopercent.service;
 
-import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +11,9 @@ import sudols.ecopercent.mapper.ItemMapper;
 import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,6 +36,7 @@ public class ItemServiceImpl implements ItemService {
         return userRepository.findById(createItemRequest.getUserId())
                 .map(user -> {
                     Item item = itemMapper.createItemRequestToItem(createItemRequest, user);
+                    item.setRegistrationDate(getKSTDateTime());
                     return itemRepository.save(item);
                 })
                 .map(itemMapper::itemToItemResponse).get();
@@ -67,6 +70,7 @@ public class ItemServiceImpl implements ItemService {
         return itemRepository.findById(itemId)
                 .map(item -> {
                     item.setCurrentUsageCount(item.getCurrentUsageCount() + 1);
+                    item.setLatestDate(getKSTDateTime());
                     return itemRepository.save(item);
                 })
                 .map(itemMapper::itemToItemResponse);
@@ -118,5 +122,9 @@ public class ItemServiceImpl implements ItemService {
 
     public void deleteAllItem() {
         itemRepository.deleteAll();
+    }
+
+    private LocalDateTime getKSTDateTime() {
+        return ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime().withNano(0);
     }
 }
