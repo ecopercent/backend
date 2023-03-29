@@ -6,7 +6,7 @@ import lombok.*;
 import sudols.ecopercent.domain.User;
 
 @Data
-public class RequestPostUserProfileDto {
+public class CreateUserRequest {
 
     @NotBlank(message = "닉네임은 공백이 아니어야 합니다.")
     private String nickname;
@@ -16,12 +16,4 @@ public class RequestPostUserProfileDto {
     private String email;
 
     private String profileImage;
-
-    public User toEntity() {
-        return User.builder()
-                .nickname(nickname)
-                .email(email)
-                .profileImage(profileImage)
-                .build();
-    }
 }

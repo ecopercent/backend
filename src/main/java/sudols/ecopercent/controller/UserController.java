@@ -1,15 +1,15 @@
 package sudols.ecopercent.controller;
 
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import sudols.ecopercent.domain.User;
-import sudols.ecopercent.dto.user.RequestPatchUserProfileDto;
-import sudols.ecopercent.dto.user.RequestPostUserProfileDto;
-import sudols.ecopercent.service.ItemService;
+import sudols.ecopercent.dto.user.UpdateUserRequest;
+import sudols.ecopercent.dto.user.CreateUserRequest;
+import sudols.ecopercent.dto.user.UserResponse;
 import sudols.ecopercent.service.UserService;
+import sudols.ecopercent.service.UserServiceImpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,46 +20,45 @@ public class UserController {
     private final UserService userService;
 
     @Autowired
-    public UserController(UserService userService, ItemService itemService) {
+    public UserController(UserServiceImpl userService) {
         this.userService = userService;
     }
 
     @PostMapping("/users")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Long CreateUser(@RequestBody RequestPostUserProfileDto userData) {
-        return userService.join(userData);
+    public UserResponse CreateUser(@RequestBody CreateUserRequest createUserRequest) {
+        return userService.createUser(createUserRequest);
     }
 
-    // Test
-    @GetMapping("/users")
-    @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public List<User> GetAllUserData() {
-        return userService.findAll();
-    }
-
-    // TODO: 고민. 반환 값에 User 대신 UserResponseDto 를 해야하나?
     @GetMapping("/users/{userId}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Optional<User> GetUserData(@PathVariable("userId") Long userId) {
-        return userService.findOne(userId);
+    public Optional<UserResponse> GetUser(@PathVariable("userId") Long userId) {
+        return userService.getUser(userId);
     }
 
     @PatchMapping("/users/{userId}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public void UpdateUserProfile(@PathVariable("userId") Long userId,
-                                  @RequestBody RequestPatchUserProfileDto newUserData) {
-        userService.updateProfile(userId, newUserData);
+    public Optional<UserResponse> UpdateUser(@PathVariable("userId") Long userId,
+                                     @RequestBody UpdateUserRequest updateUserRequest) {
+        return userService.updateUser(userId, updateUserRequest);
     }
 
     @DeleteMapping("/users/{userId}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     public void DeleteUser(@PathVariable("userId") Long userId) {
-        userService.deleteOne(userId);
+        userService.deleteUser(userId);
+    }
+
+    // Test
+    @GetMapping("/users")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public List<UserResponse> GetAllUser() {
+        return userService.getAllUser();
     }
 
     // Test
@@ -67,6 +66,6 @@ public class UserController {
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     public void DeleteAllUser() {
-        userService.deleteAll();
+        userService.deleteAllUser();
     }
 }

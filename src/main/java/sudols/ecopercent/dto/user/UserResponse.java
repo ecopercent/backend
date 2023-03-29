@@ -3,9 +3,10 @@ package sudols.ecopercent.dto.user;
 import lombok.*;
 
 @Data
-public class ResponseUserDto {
+@Builder
+public class UserResponse {
 
-    private Long userId;
+    private Long id;
 
     private String nickname;
 
