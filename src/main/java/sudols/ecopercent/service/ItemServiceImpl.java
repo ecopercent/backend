@@ -126,6 +126,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private LocalDateTime getKSTDateTime() {
-        return ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime();
+        return ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime().withNano(0);
     }
 }

@@ -3,7 +3,6 @@ package sudols.ecopercent.dto.item;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Data
 public class UpdateItemRequest {

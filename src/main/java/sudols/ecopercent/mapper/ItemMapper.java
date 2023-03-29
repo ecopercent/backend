@@ -9,6 +9,9 @@ public class ItemMapper {
 
     // TODO: 구현. 주어진 type 에 맞게 설정
     public Item createItemRequestToItem(CreateItemRequest request, User user) {
+        System.out.println(request.getPurchaseDate());
+        System.out.println(request.getPurchaseDate().getClass().getSimpleName());
+
         return Item.builder()
                 .user(user)
                 .image(request.getImage())

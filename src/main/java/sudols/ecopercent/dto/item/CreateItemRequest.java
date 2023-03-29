@@ -22,4 +22,5 @@ public class CreateItemRequest {
     private Integer price;
 
     private LocalDate purchaseDate;
+
 }
