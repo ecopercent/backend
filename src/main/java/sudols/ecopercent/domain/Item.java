@@ -3,6 +3,7 @@ package sudols.ecopercent.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -50,10 +51,10 @@ public class Item {
 
     // TODO: date 형식 정하는게 있는지 찾아보기. 어노테이션
     @Column(name = "registration_date")
-    private Date registrationDate;
+    private LocalDateTime registrationDate;
 
     @Column(name = "latest_data")
-    private Date latestDate;
+    private LocalDateTime latestDate;
 
     private Boolean isTitle;
 }

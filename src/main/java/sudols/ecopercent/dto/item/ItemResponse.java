@@ -3,6 +3,7 @@ package sudols.ecopercent.dto.item;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -31,9 +32,9 @@ public class ItemResponse {
 
     private Date purchaseDate;
 
-    private Date registrationDate;
+    private LocalDateTime registrationDate;
 
-    private Date latestDate;
+    private LocalDateTime latestDate;
 
     private Boolean isTitle;
 }
