@@ -3,6 +3,7 @@ package sudols.ecopercent.dto.item;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -30,7 +31,7 @@ public class ItemResponse {
 
     private Long currentUsageCount;
 
-    private Date purchaseDate;
+    private LocalDate purchaseDate;
 
     private LocalDateTime registrationDate;
 
