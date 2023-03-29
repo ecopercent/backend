@@ -24,6 +24,7 @@ public class ItemMapper {
                 .currentUsageCount(0L)
                 .isTitle(false)
                 .purchaseDate(request.getPurchaseDate())
+                .latestDate(null)
                 .build();
     }
 

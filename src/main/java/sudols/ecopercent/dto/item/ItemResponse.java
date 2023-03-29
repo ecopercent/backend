@@ -32,7 +32,6 @@ public class ItemResponse {
 
     private LocalDate purchaseDate;
 
-
     private LocalDateTime registrationDate;
 
     private LocalDateTime latestDate;
