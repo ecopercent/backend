@@ -17,7 +17,7 @@ public class ItemMapper {
                 .type(request.getType())
                 .brand(request.getBrand())
                 .price(request.getPrice())
-                .goalUsageCount(1000L)
+                .goalUsageCount(100L)
                 .currentUsageCount(0L)
                 .isTitle(false)
                 .purchaseDate(request.getPurchaseDate())

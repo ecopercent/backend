@@ -1,6 +1,5 @@
 package sudols.ecopercent.service;
 
-import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +29,7 @@ public class UserServiceImpl implements UserService {
         this.userMapper = userMapper;
     }
 
+    // TODO: 구현. 유저 생성 시 등록된 아이템을 대표 아이템으로 등록
     public UserResponse createUser(CreateUserRequest createUserRequest) {
         User user = userRepository.save(userMapper.createUserRequestToUser(createUserRequest));
         return userMapper.userToUserResponse(user);
