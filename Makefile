@@ -2,29 +2,44 @@ JAR_FILE = ecopercent-api-0.0.1-SNAPSHOT.jar
 
 .PHONY: start
 start:
+	@make rebuild
 	@make start_db
 	@make start_api
 
 .PHONY: stop
 stop:
 	@make stop_api
+	@make prebuild
 	@make stop_db
 
 .PHONY: restart
 restart:
 	@make stop_api
 	@make restart_db
+	@make rebuild
 	@make start_api
+
+
+.PHONY: build
+build:
+	./gradlew build
+
+.PHONY: prebuild
+prebuild:
+	rm -rf ./build
+
+.PHONY: rebuild
+rebuild:
+	@make prebuild
+	@make build
 
 .PHONY: start_api
 start_api:
-	./gradlew build
-	java -jar ./build/libs/$(JAR_FILE) &
+	java -jar ./build/libs/$(JAR_FILE)
 
 .PHONY: stop_api
 stop_api:
 	kill -9 `pgrep -f ${JAR_FILE}` 2> /dev/null
-	rm -rf ./build
 
 .PHONY: restart_api
 restart_server:
@@ -40,7 +55,6 @@ stop_db:
 	brew services stop postgresql@14
 
 .PHONY: restart_db
+restart_db:
 	brew services restart postgresql@14
-
-
 
