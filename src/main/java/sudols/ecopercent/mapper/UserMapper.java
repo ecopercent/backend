@@ -1,9 +1,11 @@
 package sudols.ecopercent.mapper;
 
+import org.springframework.stereotype.Component;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.dto.user.UserResponse;
 
+@Component
 public class UserMapper {
 
     public User createUserRequestToUser(CreateUserRequest request) {
