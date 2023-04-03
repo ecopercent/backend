@@ -1,34 +1,40 @@
 package sudols.ecopercent.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.user.UpdateUserRequest;
 import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.dto.user.UserResponse;
+import sudols.ecopercent.security.JwtTokenProvider;
 import sudols.ecopercent.service.UserService;
-import sudols.ecopercent.service.UserServiceImpl;
 
 import java.util.List;
 import java.util.Optional;
 
 @Controller
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-
-    @Autowired
-    public UserController(UserServiceImpl userService) {
-        this.userService = userService;
-    }
+    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/users")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
     public UserResponse CreateUser(@RequestBody CreateUserRequest createUserRequest) {
-        return userService.createUser(createUserRequest);
+        UserResponse userResponse = userService.createUser(createUserRequest);
+        String accessToken = jwtTokenProvider.generateToken(userResponse.getEmail());
+        System.out.println(accessToken);
+        return userResponse;
+    }
+
+    @GetMapping("/jwt/{token}")
+    @ResponseBody
+    public void ValidateToken(@PathVariable("token") String token) {
+        boolean status = jwtTokenProvider.validateToken(token);
+        System.out.println(status);
     }
 
     @GetMapping("/users/{userId}")
