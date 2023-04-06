@@ -1,5 +1,8 @@
 package sudols.ecopercent.service;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,28 +13,26 @@ import sudols.ecopercent.dto.user.UserResponse;
 import sudols.ecopercent.mapper.UserMapper;
 import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
+import sudols.ecopercent.security.JwtTokenProvider;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final UserMapper userMapper;
-
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository, ItemRepository itemRepository, UserMapper userMapper) {
-        this.userRepository = userRepository;
-        this.itemRepository = itemRepository;
-        this.userMapper = userMapper;
-    }
+    private final JwtTokenProvider jwtTokenProvider;
 
     // TODO: 구현. 유저 생성 시 등록된 아이템을 대표 아이템으로 등록
-    public UserResponse createUser(CreateUserRequest createUserRequest) {
+    public UserResponse createUser(HttpServletResponse response, CreateUserRequest createUserRequest) {
         User user = userRepository.save(userMapper.createUserRequestToUser(createUserRequest));
+        jwtTokenProvider.generateTokenAndRedirectHomeWithCookie(response, user.getEmail());
         return userMapper.userToUserResponse(user);
     }
 

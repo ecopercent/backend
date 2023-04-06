@@ -76,26 +76,10 @@ public class KakaoOAuth2Service implements OAuth2Service {
         String email = kakaoUserDetail.getEmail();
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isPresent()) {
-            String accessToken = jwtTokenProvider.generateAccessToken(email);
-            Cookie accessTokenCookie = new Cookie("access", accessToken);
-//            accessTokenCookie.setSecure(true);
-            accessTokenCookie.setPath("/home");
-            String refreshToken = jwtTokenProvider.generateRefreshToken(email);
-            Cookie refreshTokenCookie = new Cookie("refresh", refreshToken);
-            refreshTokenCookie.setHttpOnly(true);
-//            refreshTokenCookie.setSecure(true);
-            refreshTokenCookie.setPath("/home");
-            try {
-                response.addCookie(accessTokenCookie);
-                response.addCookie(refreshTokenCookie);
-                response.sendRedirect("http://localhost:3000/home");
-            } catch (IOException e) {
-                System.out.println("Failed redirection: " + e); // TODO: 구현. 예외처리
-            }
+            jwtTokenProvider.generateTokenAndRedirectHomeWithCookie(response, email);
         } else {
             Cookie emailCookie = new Cookie("email", email);
             emailCookie.setPath("/signup");
-//            emailCookie.setSecure(true);
             response.addCookie(emailCookie);
             try {
                 response.sendRedirect("http://localhost:3000/signup");

@@ -6,12 +6,15 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.IOException;
 import java.util.Date;
 
 @Component
@@ -33,6 +36,25 @@ public class JwtTokenProvider {
     public void init() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
+    }
+
+    public void generateTokenAndRedirectHomeWithCookie(HttpServletResponse response, String email) {
+        String accessToken = generateAccessToken(email);
+        System.out.println("access: " + accessToken);
+        Cookie accessTokenCookie = new Cookie("access", accessToken);
+        accessTokenCookie.setPath("/home");
+        response.addCookie(accessTokenCookie);
+        String refreshToken = generateRefreshToken(email);
+        System.out.println("refresh: " + refreshToken);
+        Cookie refreshTokenCookie = new Cookie("refresh", refreshToken);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setPath("/home");
+        response.addCookie(refreshTokenCookie);
+        try {
+            response.sendRedirect("http://localhost:3000/home");
+        } catch (IOException e) {
+            System.out.println("Failed redirection: " + e); // TODO: 구현. 예외처리
+        }
     }
 
     public String generateAccessToken(String email) {

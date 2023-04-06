@@ -1,5 +1,6 @@
 package sudols.ecopercent.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -18,23 +19,13 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
-    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/users")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public UserResponse CreateUser(@RequestBody CreateUserRequest createUserRequest) {
-        UserResponse userResponse = userService.createUser(createUserRequest);
-        String accessToken = jwtTokenProvider.generateAccessToken(userResponse.getEmail());
-        System.out.println(accessToken);
+    public UserResponse CreateUser(HttpServletResponse response, @RequestBody CreateUserRequest createUserRequest) {
+        UserResponse userResponse = userService.createUser(response, createUserRequest);
         return userResponse;
-    }
-
-    @GetMapping("/jwt/{token}")
-    @ResponseBody
-    public void ValidateToken(@PathVariable("token") String token) {
-        boolean status = jwtTokenProvider.validateToken(token);
-        System.out.println(status);
     }
 
     @GetMapping("/users/{userId}")
