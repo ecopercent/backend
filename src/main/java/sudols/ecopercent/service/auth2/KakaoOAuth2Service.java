@@ -1,30 +1,43 @@
 package sudols.ecopercent.service.auth2;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import sudols.ecopercent.dto.security.AccessTokenFromKakaoResponse;
-import sudols.ecopercent.dto.security.UserInfoFromKakaoResponse;
+import sudols.ecopercent.domain.User;
+import sudols.ecopercent.dto.security.KakaoAccountResponse;
+import sudols.ecopercent.dto.security.KakaoUserDetail;
+import sudols.ecopercent.dto.security.OAuth2AccessTokenResponse;
+import sudols.ecopercent.repository.UserRepository;
+import sudols.ecopercent.security.JwtTokenProvider;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class KakaoOAuth2Service implements OAuth2Service {
+
+    private final UserRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Value("${kakao.client-id}")
     private String clientId;
+
+    @Value("${kakao.authorization-grant-type}")
+    private String grantType;
 
     @Value("${kakao.redirect-uri}")
     private String redirectUri;
 
     @Value("${kakao.kauth-uri}")
     private String kauthUri;
-
-    @Value("${kakao.authorization-grant-type}")
-    private String grantType;
 
     @Value("${kakao.token-uri}")
     private String tokenUri;
@@ -36,7 +49,7 @@ public class KakaoOAuth2Service implements OAuth2Service {
     private String userInfoAPI;
 
     @Override
-    public void kakaoLogin(HttpServletResponse response) {
+    public void login(HttpServletResponse response) {
         String responseType = "code";
         String authUrl = String.format("https://kauth.kakao.com/oauth/authorize?client_id=%s&redirect_uri=%s&response_type=%s", clientId, redirectUri, responseType);
         try {
@@ -47,7 +60,49 @@ public class KakaoOAuth2Service implements OAuth2Service {
     }
 
     @Override
-    public Mono<ResponseEntity<AccessTokenFromKakaoResponse>> requestToken(String code) {
+    public void handleOAuth2Callback(HttpServletRequest request, HttpServletResponse response, String code) {
+        String kakaoAccessToken = requestTokenByCode(code)
+                .blockOptional()
+                .map(ResponseEntity::getBody)
+                .map(OAuth2AccessTokenResponse::getAccessToken)
+                .orElseThrow(() -> new RuntimeException("Failed to retrieve access token"));
+
+        KakaoUserDetail kakaoUserDetail = requestEmailByAccessToken(kakaoAccessToken)
+                .blockOptional()
+                .map(ResponseEntity::getBody)
+                .map(KakaoAccountResponse::getKakaoUserDetail)
+                .orElseThrow(() -> new RuntimeException("Failed to retrieve user detail"));
+
+        String email = kakaoUserDetail.getEmail();
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isPresent()) {
+            String accessToken = jwtTokenProvider.generateAccessToken(email);
+            System.out.println("access token: " + accessToken);
+            String refreshToken = jwtTokenProvider.generateRefreshToken(email);
+            System.out.println("refresh token: " + refreshToken);
+            Cookie refreshTokenCookie = new Cookie("refresh", refreshToken);
+            refreshTokenCookie.setHttpOnly(true);
+            refreshTokenCookie.setPath("/");
+            try {
+                response.getWriter().write(accessToken);
+                response.addCookie(refreshTokenCookie);
+                response.sendRedirect("http://localhost:3000/home");
+            } catch (IOException e) {
+                System.out.println("Failed redirection: " + e); // TODO: 구현. 예외처리
+            }
+        } else {
+            HttpSession httpSession = request.getSession();
+            httpSession.setAttribute("mail", email);
+            httpSession.setMaxInactiveInterval(30 * 6);
+            try {
+                response.sendRedirect("http://localhost:3000/signup");
+            } catch (IOException e) {
+                System.out.println("Failed redirection: " + e); // TODO: 구현. 예외처리
+            }
+        }
+    }
+
+    private Mono<ResponseEntity<OAuth2AccessTokenResponse>> requestTokenByCode(String code) {
         return WebClient.create(kauthUri)
                 .post()
                 .uri(uriBuilder -> uriBuilder.path(tokenUri)
@@ -57,11 +112,10 @@ public class KakaoOAuth2Service implements OAuth2Service {
                         .queryParam("code", code)
                         .build())
                 .retrieve()
-                .toEntity(AccessTokenFromKakaoResponse.class);
+                .toEntity(OAuth2AccessTokenResponse.class);
     }
 
-    @Override
-    public Mono<ResponseEntity<UserInfoFromKakaoResponse>> getEmailFromKakaoApi(String accessToken) {
+    private Mono<ResponseEntity<KakaoAccountResponse>> requestEmailByAccessToken(String accessToken) {
         WebClient client = WebClient.builder()
                 .baseUrl(kapiUri)
                 .defaultHeader("Authorization", "Bearer " + accessToken)
@@ -71,6 +125,6 @@ public class KakaoOAuth2Service implements OAuth2Service {
                 .uri(uriBuilder -> uriBuilder.path(userInfoAPI)
                         .build())
                 .retrieve()
-                .toEntity(UserInfoFromKakaoResponse.class);
+                .toEntity(KakaoAccountResponse.class);
     }
 }

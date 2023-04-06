@@ -1,13 +1,13 @@
 package sudols.ecopercent.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import sudols.ecopercent.dto.security.AccessTokenFromKakaoResponse;
-import sudols.ecopercent.dto.security.KakaoAccountResponse;
-import sudols.ecopercent.dto.security.UserInfoFromKakaoResponse;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import sudols.ecopercent.service.auth2.KakaoOAuth2Service;
 
 @Controller
@@ -17,19 +17,16 @@ public class OAuth2Controller {
 
     private final KakaoOAuth2Service kakaoOAuth2Service;
 
-    // TODO: 삭제. TEST
     @GetMapping("/kakao")
     @ResponseBody
     public void KakaoLogin(HttpServletResponse response) {
-        kakaoOAuth2Service.kakaoLogin(response);
+        kakaoOAuth2Service.login(response);
     }
 
     @GetMapping("/code/kakao")
     @ResponseBody
-    public KakaoAccountResponse KakaoCallback(@RequestParam String code) {
-        ResponseEntity<AccessTokenFromKakaoResponse> token = kakaoOAuth2Service.requestToken(code).block();
-        String accessToken = token.getBody().getAccessToken();
-        ResponseEntity<UserInfoFromKakaoResponse> userInfo = kakaoOAuth2Service.getEmailFromKakaoApi(accessToken).block();
-        return userInfo.getBody().getKakaoAccountResponse();
+    public void KakaoCallback(HttpServletRequest request, HttpServletResponse response, @RequestParam String code) {
+        System.out.println("Host: " + request.getHeader("Host"));
+        kakaoOAuth2Service.handleOAuth2Callback(request, response, code);
     }
 }

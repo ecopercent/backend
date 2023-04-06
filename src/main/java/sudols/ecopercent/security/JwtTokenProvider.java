@@ -5,11 +5,9 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -20,11 +18,14 @@ import java.util.Date;
 @NoArgsConstructor
 public class JwtTokenProvider {
 
-    @Value("${jwt.secret_key}")
+    @Value("${jwt.secret-key}")
     private String secretKey;
 
-    @Value("${jwt.expiry_date}")
-    private Long expiryDate;
+    @Value("${jwt.aceess-token-expiry-date}")
+    private Long accessTokenExpiryDate;
+
+    @Value("${jwt.refresh-token-expiry-date}")
+    private Long refreshTokenExpiryData;
 
     private SecretKey key;
 
@@ -34,14 +35,26 @@ public class JwtTokenProvider {
         this.key = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
     }
 
-    public String generateToken(String email) {
-        final long jwtExpirationInMillis = expiryDate;
+    public String generateAccessToken(String email) {
+        final long jwtExpirationInMillis = accessTokenExpiryDate;
         Date currentDate = new Date();
         Date expiryDate = new Date(currentDate.getTime() + jwtExpirationInMillis);
         return Jwts.builder()
-                .setSubject(email)
                 .setIssuedAt(currentDate)
                 .setExpiration(expiryDate)
+                .setSubject(email)
+                .signWith(key)
+                .compact();
+    }
+
+    public String generateRefreshToken(String email) {
+        final long jwtExpirationInMillis = refreshTokenExpiryData;
+        Date currentDate = new Date();
+        Date expiryDate = new Date(currentDate.getTime() + jwtExpirationInMillis);
+        return Jwts.builder()
+                .setIssuedAt(currentDate)
+                .setExpiration(expiryDate)
+                .setSubject(email)
                 .signWith(key)
                 .compact();
     }
@@ -67,7 +80,7 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token);
             return true;
         } catch (JwtException e) {
-            System.out.println("Exception by: " + e); // TODO: 로그
+            System.out.println(e); // TODO: 로그
             return false;
         }
     }

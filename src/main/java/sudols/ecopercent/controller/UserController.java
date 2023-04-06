@@ -25,7 +25,7 @@ public class UserController {
     @ResponseStatus(code = HttpStatus.CREATED)
     public UserResponse CreateUser(@RequestBody CreateUserRequest createUserRequest) {
         UserResponse userResponse = userService.createUser(createUserRequest);
-        String accessToken = jwtTokenProvider.generateToken(userResponse.getEmail());
+        String accessToken = jwtTokenProvider.generateAccessToken(userResponse.getEmail());
         System.out.println(accessToken);
         return userResponse;
     }
