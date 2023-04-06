@@ -17,16 +17,9 @@ public class OAuth2Controller {
 
     private final KakaoOAuth2Service kakaoOAuth2Service;
 
-    @GetMapping("/kakao")
-    @ResponseBody
-    public void KakaoLogin(HttpServletResponse response) {
-        kakaoOAuth2Service.login(response);
-    }
-
     @GetMapping("/code/kakao")
     @ResponseBody
     public void KakaoCallback(HttpServletRequest request, HttpServletResponse response, @RequestParam String code) {
-        System.out.println("Host: " + request.getHeader("Host"));
         kakaoOAuth2Service.handleOAuth2Callback(request, response, code);
     }
 }

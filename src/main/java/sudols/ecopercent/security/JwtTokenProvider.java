@@ -7,6 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,20 +39,19 @@ public class JwtTokenProvider {
         this.key = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
     }
 
-    public void generateTokenAndRedirectHomeWithCookie(HttpServletResponse response, String email) {
+    public void generateTokenAndRedirectHomeWithCookie(HttpServletRequest request, HttpServletResponse response, String email) {
+        String referer = request.getHeader("Referer");
         String accessToken = generateAccessToken(email);
-        System.out.println("access: " + accessToken);
         Cookie accessTokenCookie = new Cookie("access", accessToken);
         accessTokenCookie.setPath("/home");
         response.addCookie(accessTokenCookie);
         String refreshToken = generateRefreshToken(email);
-        System.out.println("refresh: " + refreshToken);
         Cookie refreshTokenCookie = new Cookie("refresh", refreshToken);
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setPath("/home");
         response.addCookie(refreshTokenCookie);
         try {
-            response.sendRedirect("http://localhost:3000/home");
+            response.sendRedirect(referer + "home");
         } catch (IOException e) {
             System.out.println("Failed redirection: " + e); // TODO: 구현. 예외처리
         }

@@ -1,5 +1,6 @@
 package sudols.ecopercent.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,8 +24,8 @@ public class UserController {
     @PostMapping("/users")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public UserResponse CreateUser(HttpServletResponse response, @RequestBody CreateUserRequest createUserRequest) {
-        UserResponse userResponse = userService.createUser(response, createUserRequest);
+    public UserResponse CreateUser(HttpServletRequest request, HttpServletResponse response, @RequestBody CreateUserRequest createUserRequest) {
+        UserResponse userResponse = userService.createUser(request, response, createUserRequest);
         return userResponse;
     }
 
