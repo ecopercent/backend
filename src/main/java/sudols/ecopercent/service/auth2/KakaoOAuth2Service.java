@@ -3,7 +3,6 @@ package sudols.ecopercent.service.auth2;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -49,32 +48,22 @@ public class KakaoOAuth2Service implements OAuth2Service {
     private String userInfoAPI;
 
     @Override
-    public void login(HttpServletResponse response) {
-        String responseType = "code";
-        String authUrl = String.format("https://kauth.kakao.com/oauth/authorize?client_id=%s&redirect_uri=%s&response_type=%s", clientId, redirectUri, responseType);
-        try {
-            response.sendRedirect(authUrl);
-        } catch (IOException e) {
-            throw new RuntimeException("Error redirecting to Kakao authorization screen", e);
-        }
-    }
-
-    @Override
     public void handleOAuth2Callback(HttpServletRequest request, HttpServletResponse response, String code) {
-        String referer = request.getHeader("Referer");
-
+//        String referer = request.getHeader("Referer");
+        String referer = "http://localhost:3000/";
+        System.out.println("referer: " + referer);
         String kakaoAccessToken = requestTokenByCode(code)
                 .blockOptional()
                 .map(ResponseEntity::getBody)
                 .map(OAuth2AccessTokenResponse::getAccessToken)
                 .orElseThrow(() -> new RuntimeException("Failed to retrieve access token"));
-
-        KakaoUserDetail kakaoUserDetail = requestEmailByAccessToken(kakaoAccessToken)
+        System.out.println("kakaoAccessToken: " + kakaoAccessToken);
+        KakaoUserDetail kakaoUserDetail = requestUserDetailByAccessToken(kakaoAccessToken)
                 .blockOptional()
                 .map(ResponseEntity::getBody)
                 .map(KakaoAccountResponse::getKakaoUserDetail)
                 .orElseThrow(() -> new RuntimeException("Failed to retrieve user detail"));
-
+        System.out.println("kakaoUserDetail: " + kakaoUserDetail);
         String email = kakaoUserDetail.getEmail();
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isPresent()) {
@@ -104,7 +93,7 @@ public class KakaoOAuth2Service implements OAuth2Service {
                 .toEntity(OAuth2AccessTokenResponse.class);
     }
 
-    private Mono<ResponseEntity<KakaoAccountResponse>> requestEmailByAccessToken(String accessToken) {
+    private Mono<ResponseEntity<KakaoAccountResponse>> requestUserDetailByAccessToken(String accessToken) {
         WebClient client = WebClient.builder()
                 .baseUrl(kapiUri)
                 .defaultHeader("Authorization", "Bearer " + accessToken)

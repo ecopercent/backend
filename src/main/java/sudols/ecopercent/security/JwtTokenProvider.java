@@ -40,7 +40,8 @@ public class JwtTokenProvider {
     }
 
     public void generateTokenAndRedirectHomeWithCookie(HttpServletRequest request, HttpServletResponse response, String email) {
-        String referer = request.getHeader("Referer");
+//        String referer = request.getHeader("Referer");
+        String referer = "http://localhost:3000/";
         String accessToken = generateAccessToken(email);
         Cookie accessTokenCookie = new Cookie("access", accessToken);
         accessTokenCookie.setPath("/home");

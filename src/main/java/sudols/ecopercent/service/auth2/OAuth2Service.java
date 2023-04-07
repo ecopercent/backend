@@ -5,7 +5,5 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public interface OAuth2Service {
 
-    void login(HttpServletResponse response);
-
     void handleOAuth2Callback(HttpServletRequest request, HttpServletResponse response, String code);
 }
