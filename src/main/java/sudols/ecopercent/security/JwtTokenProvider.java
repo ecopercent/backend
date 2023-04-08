@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import sudols.ecopercent.domain.User;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -39,18 +40,26 @@ public class JwtTokenProvider {
         this.key = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
     }
 
-    public void generateTokenAndRedirectHomeWithCookie(HttpServletRequest request, HttpServletResponse response, String email) {
+    public void generateTokenAndRedirectHomeWithCookie(HttpServletRequest request, HttpServletResponse response, User user) {
 //        String referer = request.getHeader("Referer");
         String referer = "http://localhost:3000/";
-        String accessToken = generateAccessToken(email);
+
+        String accessToken = generateAccessToken(user.getEmail());
+        String refreshToken = generateRefreshToken(user.getEmail());
+
         Cookie accessTokenCookie = new Cookie("access", accessToken);
-        accessTokenCookie.setPath("/home");
-        response.addCookie(accessTokenCookie);
-        String refreshToken = generateRefreshToken(email);
         Cookie refreshTokenCookie = new Cookie("refresh", refreshToken);
+        Cookie useridCookie = new Cookie("userid", user.getId().toString());
+
+        accessTokenCookie.setPath("/home");
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setPath("/home");
+        useridCookie.setPath("/home");
+
+        response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
+        response.addCookie(useridCookie);
+
         try {
             response.sendRedirect(referer + "home");
         } catch (IOException e) {

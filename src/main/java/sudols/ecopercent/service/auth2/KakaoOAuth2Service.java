@@ -67,7 +67,7 @@ public class KakaoOAuth2Service implements OAuth2Service {
         String email = kakaoUserDetail.getEmail();
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isPresent()) {
-            jwtTokenProvider.generateTokenAndRedirectHomeWithCookie(request, response, email);
+            jwtTokenProvider.generateTokenAndRedirectHomeWithCookie(request, response, optionalUser.get());
         } else {
             Cookie emailCookie = new Cookie("email", email);
             emailCookie.setPath("/signup");
