@@ -51,10 +51,10 @@ public class JwtTokenProvider {
         Cookie refreshTokenCookie = new Cookie("refresh", refreshToken);
         Cookie useridCookie = new Cookie("userid", user.getId().toString());
 
-        accessTokenCookie.setPath("/home");
+        accessTokenCookie.setPath("/");
         refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setPath("/home");
-        useridCookie.setPath("/home");
+        refreshTokenCookie.setPath("/");
+        useridCookie.setPath("/");
 
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
