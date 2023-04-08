@@ -1,10 +1,12 @@
 package sudols.ecopercent.mapper;
 
+import org.springframework.stereotype.Component;
 import sudols.ecopercent.domain.Item;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.item.CreateItemRequest;
 import sudols.ecopercent.dto.item.ItemResponse;
 
+@Component
 public class ItemMapper {
 
     // TODO: 구현. 주어진 type 에 맞게 설정

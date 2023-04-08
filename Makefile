@@ -2,20 +2,17 @@ JAR_FILE = ecopercent-api-0.0.1-SNAPSHOT.jar
 
 .PHONY: start
 start:
-	@make rebuild
 	@make start_db
+	@make rebuild
 	@make start_api
 
 .PHONY: stop
 stop:
-	@make stop_api
 	@make prebuild
 	@make stop_db
 
 .PHONY: restart
 restart:
-	@make stop_api
-	@make restart_db
 	@make rebuild
 	@make start_api
 
