@@ -4,6 +4,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.user.CreateUserRequest;
@@ -36,6 +39,16 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.save(userMapper.createUserRequestToUser(createUserRequest));
         jwtTokenProvider.generateTokenAndReturnResponseWithCookie(response, user);
         return userMapper.userToUserResponse(user);
+    }
+
+    @Override
+    public ResponseEntity<?> isNicknameDuplicate(String nickname) {
+        boolean isDuplicate = userRepository.existsByNickname(nickname);
+        if (isDuplicate) {
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     public Optional<UserResponse> getUser(Long userId) {

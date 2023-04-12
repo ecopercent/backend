@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import sudols.ecopercent.dto.user.UpdateUserRequest;
@@ -25,8 +26,14 @@ public class UserController {
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
     public UserResponse CreateUser(HttpServletRequest request, HttpServletResponse response, @RequestBody CreateUserRequest createUserRequest) {
-        UserResponse userResponse = userService.createUser(request, response, createUserRequest);
-        return userResponse;
+        return userService.createUser(request, response, createUserRequest);
+    }
+
+    @GetMapping("/nicknames/{nickname}")
+    @ResponseBody
+    public ResponseEntity<?> checkNicknameExists(@PathVariable("nickname") String nickname) {
+        System.out.println("nickname: " + nickname);
+        return userService.isNicknameDuplicate(nickname);
     }
 
     @GetMapping("/users/{userId}")
