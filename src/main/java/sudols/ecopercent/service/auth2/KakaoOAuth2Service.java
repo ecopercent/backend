@@ -1,14 +1,13 @@
 package sudols.ecopercent.service.auth2;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.security.KakaoAccountResponse;
 import sudols.ecopercent.dto.security.KakaoUserDetail;
@@ -16,7 +15,6 @@ import sudols.ecopercent.dto.security.OAuth2AccessTokenResponse;
 import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.JwtTokenProvider;
 
-import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -48,39 +46,21 @@ public class KakaoOAuth2Service implements OAuth2Service {
     private String userInfoAPI;
 
     @Override
-    public void handleOAuth2Callback(HttpServletRequest request, HttpServletResponse response, String code) {
-//        String referer = request.getHeader("Referer");
-        String referer = "http://localhost:3000/";
-        System.out.println("referer: " + referer);
-        String kakaoAccessToken = requestTokenByCode(code)
-                .blockOptional()
-                .map(ResponseEntity::getBody)
-                .map(OAuth2AccessTokenResponse::getAccessToken)
-                .orElseThrow(() -> new RuntimeException("Failed to retrieve access token"));
-        System.out.println("kakaoAccessToken: " + kakaoAccessToken);
-        KakaoUserDetail kakaoUserDetail = requestUserDetailByAccessToken(kakaoAccessToken)
-                .blockOptional()
-                .map(ResponseEntity::getBody)
-                .map(KakaoAccountResponse::getKakaoUserDetail)
-                .orElseThrow(() -> new RuntimeException("Failed to retrieve user detail"));
-        System.out.println("kakaoUserDetail: " + kakaoUserDetail);
+    public ResponseEntity<?> kakaoOAuthLogin(HttpServletResponse response, String code) {
+        String kakaoAccessToken = requestTokenByCode(code);
+        KakaoUserDetail kakaoUserDetail = requestUserDetailByAccessToken(kakaoAccessToken);
         String email = kakaoUserDetail.getEmail();
         Optional<User> optionalUser = userRepository.findByEmail(email);
-        if (optionalUser.isPresent()) {
-            jwtTokenProvider.generateTokenAndRedirectHomeWithCookie(request, response, optionalUser.get());
-        } else {
+        if (optionalUser.isEmpty()) {
             Cookie emailCookie = new Cookie("email", email);
             emailCookie.setPath("/signup");
             response.addCookie(emailCookie);
-            try {
-                response.sendRedirect(referer + "signup");
-            } catch (IOException e) {
-                System.out.println("Failed redirection: " + e); // TODO: 구현. 예외처리
-            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+        return jwtTokenProvider.generateTokenAndReturnResponseWithCookie(response, optionalUser.get());
     }
 
-    private Mono<ResponseEntity<OAuth2AccessTokenResponse>> requestTokenByCode(String code) {
+    private String requestTokenByCode(String code) {
         return WebClient.create(kauthUri)
                 .post()
                 .uri(uriBuilder -> uriBuilder.path(tokenUri)
@@ -90,10 +70,14 @@ public class KakaoOAuth2Service implements OAuth2Service {
                         .queryParam("code", code)
                         .build())
                 .retrieve()
-                .toEntity(OAuth2AccessTokenResponse.class);
+                .toEntity(OAuth2AccessTokenResponse.class)
+                .blockOptional()
+                .map(ResponseEntity::getBody)
+                .map(OAuth2AccessTokenResponse::getAccessToken)
+                .orElseThrow(() -> new RuntimeException("Failed to retrieve access token"));
     }
 
-    private Mono<ResponseEntity<KakaoAccountResponse>> requestUserDetailByAccessToken(String accessToken) {
+    private KakaoUserDetail requestUserDetailByAccessToken(String accessToken) {
         WebClient client = WebClient.builder()
                 .baseUrl(kapiUri)
                 .defaultHeader("Authorization", "Bearer " + accessToken)
@@ -103,6 +87,10 @@ public class KakaoOAuth2Service implements OAuth2Service {
                 .uri(uriBuilder -> uriBuilder.path(userInfoAPI)
                         .build())
                 .retrieve()
-                .toEntity(KakaoAccountResponse.class);
+                .toEntity(KakaoAccountResponse.class)
+                .blockOptional()
+                .map(ResponseEntity::getBody)
+                .map(KakaoAccountResponse::getKakaoUserDetail)
+                .orElseThrow(() -> new RuntimeException("Failed to retrieve user detail"));
     }
 }

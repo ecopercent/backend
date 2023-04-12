@@ -7,16 +7,16 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import sudols.ecopercent.domain.User;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.IOException;
 import java.util.Date;
 
 @Component
@@ -40,10 +40,7 @@ public class JwtTokenProvider {
         this.key = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
     }
 
-    public void generateTokenAndRedirectHomeWithCookie(HttpServletRequest request, HttpServletResponse response, User user) {
-//        String referer = request.getHeader("Referer");
-        String referer = "http://localhost:3000/";
-
+    public ResponseEntity<?> generateTokenAndReturnResponseWithCookie(HttpServletResponse response, User user) {
         String accessToken = generateAccessToken(user.getEmail());
         String refreshToken = generateRefreshToken(user.getEmail());
 
@@ -59,12 +56,7 @@ public class JwtTokenProvider {
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
         response.addCookie(useridCookie);
-
-        try {
-            response.sendRedirect(referer + "home");
-        } catch (IOException e) {
-            System.out.println("Failed redirection: " + e); // TODO: 구현. 예외처리
-        }
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     public String generateAccessToken(String email) {
