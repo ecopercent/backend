@@ -1,5 +1,6 @@
 package sudols.ecopercent.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,15 @@ public class OAuth2Controller {
 
     @GetMapping("/code/kakao")
     @ResponseBody
-    public ResponseEntity<?> KakaoOAuthLogin(HttpServletResponse response, @RequestParam String code) {
+    public void KakaoOAuthCallback(@RequestParam String code) {
+        System.out.println("code: " + code);
+    }
+
+    @GetMapping("kakao")
+    @ResponseBody
+    public ResponseEntity<?> KakaoOAuthLogin(HttpServletRequest request, HttpServletResponse response) {
+        String code = request.getHeader("x-authorization-code");
+        System.out.println("code: " + code);
         return kakaoOAuth2Service.kakaoOAuthLogin(response, code);
     }
 }
