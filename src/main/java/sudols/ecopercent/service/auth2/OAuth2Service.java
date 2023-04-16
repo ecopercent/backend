@@ -6,5 +6,5 @@ import org.springframework.http.ResponseEntity;
 
 public interface OAuth2Service {
 
-    ResponseEntity<?> kakaoOAuthLogin(HttpServletResponse response, String code);
+    ResponseEntity<?> kakaoOAuthLogin(HttpServletRequest request, HttpServletResponse response);
 }

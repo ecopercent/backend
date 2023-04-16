@@ -18,17 +18,9 @@ public class OAuth2Controller {
 
     private final KakaoOAuth2Service kakaoOAuth2Service;
 
-    @GetMapping("/code/kakao")
-    @ResponseBody
-    public void KakaoOAuthCallback(@RequestParam String code) {
-        System.out.println("code: " + code);
-    }
-
     @GetMapping("kakao")
     @ResponseBody
     public ResponseEntity<?> KakaoOAuthLogin(HttpServletRequest request, HttpServletResponse response) {
-        String code = request.getHeader("x-authorization-code");
-        System.out.println("code: " + code);
-        return kakaoOAuth2Service.kakaoOAuthLogin(response, code);
+        return kakaoOAuth2Service.kakaoOAuthLogin(request, response);
     }
 }

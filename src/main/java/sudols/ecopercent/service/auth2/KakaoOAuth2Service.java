@@ -1,6 +1,7 @@
 package sudols.ecopercent.service.auth2;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,8 +47,8 @@ public class KakaoOAuth2Service implements OAuth2Service {
     private String userInfoAPI;
 
     @Override
-    public ResponseEntity<?> kakaoOAuthLogin(HttpServletResponse response, String code) {
-        String kakaoAccessToken = requestTokenByCode(code);
+    public ResponseEntity<?> kakaoOAuthLogin(HttpServletRequest request, HttpServletResponse response) {
+        String kakaoAccessToken = jwtTokenProvider.getTokenFromRequest(request);
         KakaoUserDetail kakaoUserDetail = requestUserDetailByAccessToken(kakaoAccessToken);
         String email = kakaoUserDetail.getEmail();
         Optional<User> optionalUser = userRepository.findByEmail(email);
@@ -58,23 +59,6 @@ public class KakaoOAuth2Service implements OAuth2Service {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return jwtTokenProvider.generateTokenAndReturnResponseWithCookie(response, optionalUser.get());
-    }
-
-    private String requestTokenByCode(String code) {
-        return WebClient.create(kauthUri)
-                .post()
-                .uri(uriBuilder -> uriBuilder.path(tokenUri)
-                        .queryParam("grant_type", grantType)
-                        .queryParam("client_id", clientId)
-                        .queryParam("redirect_uri", redirectUri)
-                        .queryParam("code", code)
-                        .build())
-                .retrieve()
-                .toEntity(OAuth2AccessTokenResponse.class)
-                .blockOptional()
-                .map(ResponseEntity::getBody)
-                .map(OAuth2AccessTokenResponse::getAccessToken)
-                .orElseThrow(() -> new RuntimeException("Failed to retrieve access token"));
     }
 
     private KakaoUserDetail requestUserDetailByAccessToken(String accessToken) {
