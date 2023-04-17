@@ -54,7 +54,7 @@ public class KakaoOAuth2Service implements OAuth2Service {
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
             Cookie emailCookie = new Cookie("email", email);
-            emailCookie.setPath("/signup");
+            emailCookie.setPath("/");
             response.addCookie(emailCookie);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
