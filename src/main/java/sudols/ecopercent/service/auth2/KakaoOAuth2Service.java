@@ -12,10 +12,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.security.KakaoAccountResponse;
 import sudols.ecopercent.dto.security.KakaoUserDetail;
-import sudols.ecopercent.dto.security.OAuth2AccessTokenResponse;
 import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.JwtTokenProvider;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -24,21 +25,6 @@ public class KakaoOAuth2Service implements OAuth2Service {
 
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
-
-    @Value("${kakao.client-id}")
-    private String clientId;
-
-    @Value("${kakao.authorization-grant-type}")
-    private String grantType;
-
-    @Value("${kakao.redirect-uri}")
-    private String redirectUri;
-
-    @Value("${kakao.kauth-uri}")
-    private String kauthUri;
-
-    @Value("${kakao.token-uri}")
-    private String tokenUri;
 
     @Value("${kakao.kapi-uri}")
     private String kapiUri;
@@ -49,14 +35,14 @@ public class KakaoOAuth2Service implements OAuth2Service {
     @Override
     public ResponseEntity<?> kakaoOAuthLogin(HttpServletRequest request, HttpServletResponse response) {
         String kakaoAccessToken = jwtTokenProvider.getTokenFromRequest(request);
+        System.out.println("kakaoAccessToken: " + kakaoAccessToken);
         KakaoUserDetail kakaoUserDetail = requestUserDetailByAccessToken(kakaoAccessToken);
         String email = kakaoUserDetail.getEmail();
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
-            Cookie emailCookie = new Cookie("email", email);
-            emailCookie.setPath("/");
-            response.addCookie(emailCookie);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            Map<String, String> responseBody = new HashMap<>();
+            responseBody.put("email", email);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
         }
         return jwtTokenProvider.generateTokenAndReturnResponseWithCookie(response, optionalUser.get());
     }
