@@ -1,22 +1,23 @@
 package sudols.ecopercent.service;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.dto.user.UpdateUserRequest;
 import sudols.ecopercent.dto.user.UserResponse;
+import sudols.ecopercent.exception.UserAlreadyExistsException;
 import sudols.ecopercent.mapper.UserMapper;
 import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.JwtTokenProvider;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,9 +33,22 @@ public class UserServiceImpl implements UserService {
 
     // TODO: 구현. 유저 생성 시 등록된 아이템을 대표 아이템으로 등록
     public UserResponse createUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest) {
+        if (userRepository.existsByEmail(createUserRequest.getEmail())) {
+            throw new UserAlreadyExistsException(createUserRequest.getEmail());
+        }
         User user = userRepository.save(userMapper.createUserRequestToUser(createUserRequest));
-        jwtTokenProvider.generateTokenAndRedirectHomeWithCookie(request, response, user);
+        jwtTokenProvider.generateTokenAndReturnResponseWithCookie(response, user);
         return userMapper.userToUserResponse(user);
+    }
+
+    @Override
+    public ResponseEntity<?> isNicknameDuplicate(String nickname) {
+        boolean isDuplicate = userRepository.existsByNickname(nickname);
+        if (isDuplicate) {
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     public Optional<UserResponse> getUser(Long userId) {

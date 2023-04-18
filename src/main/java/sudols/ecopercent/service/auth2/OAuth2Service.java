@@ -2,8 +2,9 @@ package sudols.ecopercent.service.auth2;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseEntity;
 
 public interface OAuth2Service {
 
-    void handleOAuth2Callback(HttpServletRequest request, HttpServletResponse response, String code);
+    ResponseEntity<?> kakaoOAuthLogin(HttpServletRequest request, HttpServletResponse response);
 }

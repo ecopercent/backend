@@ -16,4 +16,6 @@ public class CreateUserRequest {
     private String email;
 
     private String profileImage;
+
+    private String profileMessage;
 }

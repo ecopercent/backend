@@ -29,6 +29,10 @@ public class SecurityConfig {
         http
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.GET, "/users").permitAll() // TODO: 삭제. TEST
+                        .requestMatchers(HttpMethod.DELETE, "/users").permitAll() // TODO: 삭제. TEST
+                        .requestMatchers(HttpMethod.GET, "/items/all").permitAll() // TODO: 삭제. TEST
+                        .requestMatchers(HttpMethod.DELETE, "/items").permitAll() // TODO: 삭제. TEST
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
                         .requestMatchers("/login/oauth2/**").permitAll()
                         .anyRequest().authenticated()
