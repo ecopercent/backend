@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,7 @@ import sudols.ecopercent.exception.UserAlreadyExistsException;
 import sudols.ecopercent.mapper.UserMapper;
 import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
-import sudols.ecopercent.security.JwtTokenProvider;
+import sudols.ecopercent.security.OAuth2ResponseProvider;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,15 +28,16 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final UserMapper userMapper;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final OAuth2ResponseProvider oAuth2ResponseProvider;
 
     // TODO: 구현. 유저 생성 시 등록된 아이템을 대표 아이템으로 등록
+    @Override
     public UserResponse createUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest) {
         if (userRepository.existsByEmail(createUserRequest.getEmail())) {
             throw new UserAlreadyExistsException(createUserRequest.getEmail());
         }
         User user = userRepository.save(userMapper.createUserRequestToUser(createUserRequest));
-        jwtTokenProvider.generateTokenAndReturnResponseWithCookie(response, user);
+        oAuth2ResponseProvider.generateTokenAndReturnResponseWithCookie(response, user);
         return userMapper.userToUserResponse(user);
     }
 
@@ -51,11 +51,13 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
     public Optional<UserResponse> getUser(Long userId) {
         return userRepository.findById(userId)
                 .map(userMapper::userToUserResponse);
     }
 
+    @Override
     public Optional<UserResponse> updateUser(Long userId, UpdateUserRequest updateUserRequest) {
         return userRepository.findById(userId)
                 .map(user -> {
@@ -65,11 +67,13 @@ public class UserServiceImpl implements UserService {
                 .map(userMapper::userToUserResponse);
     }
 
+    @Override
     public void deleteUser(Long userId) {
         itemRepository.deleteByUser_Id(userId);
         userRepository.deleteById(userId);
     }
 
+    @Override
     public List<UserResponse> getAllUser() {
         return userRepository.findAll()
                 .stream()
@@ -77,6 +81,7 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public void deleteAllUser() {
         itemRepository.deleteAll();
         userRepository.deleteAll();

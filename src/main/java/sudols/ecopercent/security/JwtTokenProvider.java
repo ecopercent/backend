@@ -1,9 +1,6 @@
 package sudols.ecopercent.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
@@ -18,6 +15,7 @@ import sudols.ecopercent.domain.User;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.security.Key;
 import java.util.Date;
 
 @Component
@@ -25,7 +23,7 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     @Value("${jwt.secret-key}")
-    private String secretKey;
+    private String key;
 
     @Value("${jwt.aceess-token-expiry-date}")
     private Long accessTokenExpiryDate;
@@ -33,31 +31,12 @@ public class JwtTokenProvider {
     @Value("${jwt.refresh-token-expiry-date}")
     private Long refreshTokenExpiryData;
 
-    private SecretKey key;
+    private SecretKey secretKey;
 
     @PostConstruct
     public void init() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        this.key = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
-    }
-
-    public ResponseEntity<?> generateTokenAndReturnResponseWithCookie(HttpServletResponse response, User user) {
-        String accessToken = generateAccessToken(user.getEmail());
-        String refreshToken = generateRefreshToken(user.getEmail());
-
-        Cookie accessTokenCookie = new Cookie("access", accessToken);
-        Cookie refreshTokenCookie = new Cookie("refresh", refreshToken);
-        Cookie useridCookie = new Cookie("userid", user.getId().toString());
-
-        accessTokenCookie.setPath("/");
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setPath("/");
-        useridCookie.setPath("/");
-
-        response.addCookie(accessTokenCookie);
-        response.addCookie(refreshTokenCookie);
-        response.addCookie(useridCookie);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        byte[] keyBytes = Decoders.BASE64.decode(key);
+        this.secretKey = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
     }
 
     public String generateAccessToken(String email) {
@@ -68,7 +47,7 @@ public class JwtTokenProvider {
                 .setIssuedAt(currentDate)
                 .setExpiration(expiryDate)
                 .setSubject(email)
-                .signWith(key)
+                .signWith(secretKey)
                 .compact();
     }
 
@@ -80,32 +59,37 @@ public class JwtTokenProvider {
                 .setIssuedAt(currentDate)
                 .setExpiration(expiryDate)
                 .setSubject(email)
-                .signWith(key)
+                .signWith(secretKey)
                 .compact();
     }
 
-    private Claims getClaimsFromToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+    public Claims getClaimsFromTokenWithKey(String token, Key key) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (Exception e) {
+            System.out.println(e); // TODO: 로깅
+            return null; // TODO: 예외처리
+        }
     }
 
     public String getEmailFromToken(String token) {
-        return getClaimsFromToken(token)
+        return getClaimsFromTokenWithKey(token, secretKey)
                 .getSubject();
     }
 
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
-                    .setSigningKey(key)
+                    .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token);
             return true;
         } catch (JwtException e) {
-            System.out.println(e); // TODO: 로그
+            System.out.println(e); // TODO: 로깅
             return false;
         }
     }

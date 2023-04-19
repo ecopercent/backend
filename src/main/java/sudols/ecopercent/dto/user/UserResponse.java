@@ -15,4 +15,6 @@ public class UserResponse {
     private String profileImage;
 
     private String profileMessage;
+
+    private String oAuthProvider;
 }

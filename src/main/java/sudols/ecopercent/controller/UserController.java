@@ -7,10 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import sudols.ecopercent.dto.user.UpdateUserRequest;
 import sudols.ecopercent.dto.user.CreateUserRequest;
+import sudols.ecopercent.dto.user.UpdateUserRequest;
 import sudols.ecopercent.dto.user.UserResponse;
-import sudols.ecopercent.security.JwtTokenProvider;
 import sudols.ecopercent.service.UserService;
 
 import java.util.List;
@@ -47,7 +46,7 @@ public class UserController {
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     public Optional<UserResponse> UpdateUser(@PathVariable("userId") Long userId,
-                                     @RequestBody UpdateUserRequest updateUserRequest) {
+                                             @RequestBody UpdateUserRequest updateUserRequest) {
         return userService.updateUser(userId, updateUserRequest);
     }
 
@@ -63,6 +62,7 @@ public class UserController {
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     public List<UserResponse> GetAllUser() {
+        System.out.println("GetAllUser");
         return userService.getAllUser();
     }
 

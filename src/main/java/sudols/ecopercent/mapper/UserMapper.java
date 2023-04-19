@@ -13,6 +13,8 @@ public class UserMapper {
                 .nickname(request.getNickname())
                 .email(request.getEmail())
                 .profileImage(request.getProfileImage())
+                .profileMessage(request.getProfileMessage())
+                .oAuthProvider(request.getOAuthProvider())
                 .build();
     }
 
@@ -23,6 +25,7 @@ public class UserMapper {
                 .email(user.getEmail())
                 .profileImage(user.getProfileImage())
                 .profileMessage(user.getProfileMessage())
+                .oAuthProvider(user.getOAuthProvider())
                 .build();
     }
 }

@@ -31,6 +31,9 @@ public class User {
 
     @Column(name = "profile_message")
     private String profileMessage;
+
+    @Column(name = "oauth_provider")
+    private String oAuthProvider;
 }
 
 
