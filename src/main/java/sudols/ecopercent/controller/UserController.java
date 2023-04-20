@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import sudols.ecopercent.dto.user.UpdateUserRequest;
 import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.dto.user.UserResponse;
-import sudols.ecopercent.security.JwtTokenProvider;
 import sudols.ecopercent.service.UserService;
 
 import java.util.List;
@@ -32,34 +31,33 @@ public class UserController {
     @GetMapping("/nicknames/{nickname}")
     @ResponseBody
     public ResponseEntity<?> checkNicknameExists(@PathVariable("nickname") String nickname) {
-        System.out.println("nickname: " + nickname);
         return userService.isNicknameDuplicate(nickname);
     }
 
-    @GetMapping("/users/{userId}")
+    @GetMapping("/users/me")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Optional<UserResponse> GetUser(@PathVariable("userId") Long userId) {
-        return userService.getUser(userId);
+    public UserResponse GetCurrentUserInfo(HttpServletRequest request) {
+        return userService.getCurrentUserInfo(request);
     }
 
-    @PatchMapping("/users/{userId}")
+    @PatchMapping("/users")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Optional<UserResponse> UpdateUser(@PathVariable("userId") Long userId,
+    public UserResponse UpdateUser(HttpServletRequest request,
                                      @RequestBody UpdateUserRequest updateUserRequest) {
-        return userService.updateUser(userId, updateUserRequest);
+        return userService.updateUser(request, updateUserRequest);
     }
 
-    @DeleteMapping("/users/{userId}")
+    @DeleteMapping("/users")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public void DeleteUser(@PathVariable("userId") Long userId) {
-        userService.deleteUser(userId);
+    public void DeleteUser(HttpServletRequest request) {
+        userService.deleteUser(request);
     }
 
     // Test
-    @GetMapping("/users")
+    @GetMapping("/users/all")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     public List<UserResponse> GetAllUser() {
@@ -67,7 +65,7 @@ public class UserController {
     }
 
     // Test
-    @DeleteMapping("/users")
+    @DeleteMapping("/users/all")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     public void DeleteAllUser() {

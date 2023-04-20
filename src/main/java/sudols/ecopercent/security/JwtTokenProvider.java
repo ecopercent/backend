@@ -105,7 +105,7 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token);
             return true;
         } catch (JwtException e) {
-            System.out.println(e); // TODO: 로그
+            System.out.println("Invalid token: " + e); // TODO: 로그
             return false;
         }
     }
@@ -116,5 +116,10 @@ public class JwtTokenProvider {
             return bearerToken.substring(7);
         }
         return null;
+    }
+
+    public String getEmailFromRequest(HttpServletRequest request) {
+        String accessToken = getTokenFromRequest(request);
+        return getEmailFromToken(accessToken);
     }
 }

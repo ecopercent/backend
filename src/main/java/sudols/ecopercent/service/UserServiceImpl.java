@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -13,14 +12,14 @@ import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.dto.user.UpdateUserRequest;
 import sudols.ecopercent.dto.user.UserResponse;
-import sudols.ecopercent.exception.UserAlreadyExistsException;
+import sudols.ecopercent.exception.UserAlreadyExistException;
+import sudols.ecopercent.exception.UserNotExistException;
 import sudols.ecopercent.mapper.UserMapper;
 import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.JwtTokenProvider;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,7 +35,7 @@ public class UserServiceImpl implements UserService {
     // TODO: 구현. 유저 생성 시 등록된 아이템을 대표 아이템으로 등록
     public UserResponse createUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest) {
         if (userRepository.existsByEmail(createUserRequest.getEmail())) {
-            throw new UserAlreadyExistsException(createUserRequest.getEmail());
+            throw new UserAlreadyExistException(createUserRequest.getEmail());
         }
         User user = userRepository.save(userMapper.createUserRequestToUser(createUserRequest));
         jwtTokenProvider.generateTokenAndReturnResponseWithCookie(response, user);
@@ -53,23 +52,27 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public Optional<UserResponse> getUser(Long userId) {
-        return userRepository.findById(userId)
-                .map(userMapper::userToUserResponse);
+    public UserResponse getCurrentUserInfo(HttpServletRequest request) {
+        String email = jwtTokenProvider.getEmailFromRequest(request);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotExistException(email));
+        return userMapper.userToUserResponse(user);
+
     }
 
-    public Optional<UserResponse> updateUser(Long userId, UpdateUserRequest updateUserRequest) {
-        return userRepository.findById(userId)
-                .map(user -> {
-                    BeanUtils.copyProperties(updateUserRequest, user, "id");
-                    return userRepository.save(user);
-                })
-                .map(userMapper::userToUserResponse);
+    public UserResponse updateUser(HttpServletRequest request, UpdateUserRequest updateUserRequest) {
+        String email = jwtTokenProvider.getEmailFromRequest(request);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotExistException(email));
+        BeanUtils.copyProperties(updateUserRequest, user, "id");
+        userRepository.save(user);
+        return userMapper.userToUserResponse(user);
     }
 
-    public void deleteUser(Long userId) {
-        itemRepository.deleteByUser_Id(userId);
-        userRepository.deleteById(userId);
+    public void deleteUser(HttpServletRequest request) {
+        String email = jwtTokenProvider.getEmailFromRequest(request);
+        itemRepository.deleteByUser_Email(email);
+        userRepository.deleteByEmail(email);
     }
 
     public List<UserResponse> getAllUser() {

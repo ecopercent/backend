@@ -14,5 +14,5 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     Optional<Item> findByIdAndCategoryAndUser_Id(Long itemId, String category, Long userId);
 
-    void deleteByUser_Id(Long userId);
+    void deleteByUser_Email(String email);
 }
