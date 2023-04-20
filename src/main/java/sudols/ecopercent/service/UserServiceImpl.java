@@ -33,6 +33,7 @@ public class UserServiceImpl implements UserService {
     private final JwtTokenProvider jwtTokenProvider;
 
     // TODO: 구현. 유저 생성 시 등록된 아이템을 대표 아이템으로 등록
+    @Override
     public UserResponse createUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest) {
         if (userRepository.existsByEmail(createUserRequest.getEmail())) {
             throw new UserAlreadyExistException(createUserRequest.getEmail());
@@ -52,6 +53,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
     public UserResponse getCurrentUserInfo(HttpServletRequest request) {
         String email = jwtTokenProvider.getEmailFromRequest(request);
         User user = userRepository.findByEmail(email)
@@ -60,6 +62,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
     public UserResponse updateUser(HttpServletRequest request, UpdateUserRequest updateUserRequest) {
         String email = jwtTokenProvider.getEmailFromRequest(request);
         User user = userRepository.findByEmail(email)
@@ -69,12 +72,14 @@ public class UserServiceImpl implements UserService {
         return userMapper.userToUserResponse(user);
     }
 
+    @Override
     public void deleteUser(HttpServletRequest request) {
         String email = jwtTokenProvider.getEmailFromRequest(request);
         itemRepository.deleteByUser_Email(email);
         userRepository.deleteByEmail(email);
     }
 
+    @Override
     public List<UserResponse> getAllUser() {
         return userRepository.findAll()
                 .stream()
@@ -82,6 +87,7 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public void deleteAllUser() {
         itemRepository.deleteAll();
         userRepository.deleteAll();
