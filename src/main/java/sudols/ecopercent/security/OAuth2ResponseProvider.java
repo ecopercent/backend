@@ -7,23 +7,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import sudols.ecopercent.domain.User;
-
-import java.util.HashMap;
-import java.util.Map;
+import sudols.ecopercent.dto.oauth2.SendEmailForSignupResponse;
+import sudols.ecopercent.dto.oauth2.apple.AppleSignInResponse;
 
 @Component
 @RequiredArgsConstructor
-public class OAuth2Provider {
+public class OAuth2ResponseProvider {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    public ResponseEntity<?> returnResponseWithEmailForSignup(String email) {
-        Map<String, String> responseBody = new HashMap<>();
-        responseBody.put("email", email);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
+    public ResponseEntity<SendEmailForSignupResponse> returnResponseWithEmailForSignup(String email) {
+        SendEmailForSignupResponse sendEmailForSignupResponse = SendEmailForSignupResponse.builder()
+                .email(email)
+                .build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(sendEmailForSignupResponse);
     }
 
-    public ResponseEntity<?> generateTokenAndReturnResponseWithCookie(HttpServletResponse response, User user) {
+    public ResponseEntity<Void> generateTokenAndReturnResponseWithCookie(HttpServletResponse response, User user) {
         String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
 
@@ -42,13 +42,14 @@ public class OAuth2Provider {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    public ResponseEntity<?> generateTokenAndReturnResponseWithBody(User user) {
+    public ResponseEntity<AppleSignInResponse> generateTokenAndReturnResponseWithBody(User user) {
         String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
 
-        Map<String, String> responseBody = new HashMap<>();
-        responseBody.put("access", accessToken);
-        responseBody.put("refresh", refreshToken);
-        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+        AppleSignInResponse appleSignInResponse = AppleSignInResponse.builder()
+                .access(accessToken)
+                .refresh(refreshToken)
+                .build();
+        return ResponseEntity.status(HttpStatus.OK).body(appleSignInResponse);
     }
 }

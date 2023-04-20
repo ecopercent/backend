@@ -14,7 +14,7 @@ import sudols.ecopercent.dto.oauth2.apple.AppleIdentityToken;
 import sudols.ecopercent.dto.oauth2.apple.AppleJWKSetResponse;
 import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.JwtTokenProvider;
-import sudols.ecopercent.security.OAuth2Provider;
+import sudols.ecopercent.security.OAuth2ResponseProvider;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -31,15 +31,15 @@ public class AppleOAuth2Service implements OAuth2Service {
 
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final OAuth2Provider oAuth2Provider;
+    private final OAuth2ResponseProvider oAuth2ResponseProvider;
 
     @Override
     public ResponseEntity<?> login(HttpServletRequest request, HttpServletResponse response) {
-        String identityToken = jwtTokenProvider.getTokenFromRequest(request);
-        List<AppleJWKSetResponse.Key> jsonWebKeys = requestJsonWebKeysFromApple();
-        AppleJWKSetResponse.Key jsonWebKey = getJsonWebKeyForIdentityTokenFromJsonWebKeys(jsonWebKeys, identityToken)
-                .orElseThrow(() -> new NullPointerException("Failed get public key from apple's id server."));
         try {
+            String identityToken = jwtTokenProvider.getTokenFromRequest(request);
+            List<AppleJWKSetResponse.Key> jsonWebKeys = requestJsonWebKeysFromApple();
+            AppleJWKSetResponse.Key jsonWebKey = getJsonWebKeyForIdentityTokenFromJsonWebKeys(jsonWebKeys, identityToken)
+                    .orElseThrow(() -> new NullPointerException("Failed get public key from apple's id server."));
             byte[] nBytes = Base64.getUrlDecoder().decode(jsonWebKey.getN());
             byte[] eBytes = Base64.getUrlDecoder().decode(jsonWebKey.getE());
 
@@ -53,9 +53,9 @@ public class AppleOAuth2Service implements OAuth2Service {
             String email = claimsOfIdentityToken.get("email", String.class);
             Optional<User> optionalUser = userRepository.findByEmail(email);
             if (optionalUser.isEmpty()) {
-                return oAuth2Provider.returnResponseWithEmailForSignup(email);
+                return oAuth2ResponseProvider.returnResponseWithEmailForSignup(email);
             }
-            return oAuth2Provider.generateTokenAndReturnResponseWithBody(optionalUser.get());
+            return oAuth2ResponseProvider.generateTokenAndReturnResponseWithBody(optionalUser.get());
         } catch (Exception e) {
             System.out.println(e); // TODO: 로깅
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // TODO: 수정.
@@ -89,7 +89,7 @@ public class AppleOAuth2Service implements OAuth2Service {
             return objectMapper.readValue(new String(Base64.getDecoder().decode(headerOfIdentityToken), StandardCharsets.UTF_8), AppleIdentityToken.Header.class);
         } catch (Exception e) {
             System.out.println(e); // TODO: 로깅
-            return null;
+            return null; // TODO: 예외처리
         }
     }
 }

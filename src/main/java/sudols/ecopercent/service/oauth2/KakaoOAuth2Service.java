@@ -11,7 +11,7 @@ import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.oauth2.kakao.KakaoAccountResponse;
 import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.JwtTokenProvider;
-import sudols.ecopercent.security.OAuth2Provider;
+import sudols.ecopercent.security.OAuth2ResponseProvider;
 
 import java.util.Optional;
 
@@ -21,7 +21,7 @@ public class KakaoOAuth2Service implements OAuth2Service {
 
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final OAuth2Provider oAuth2Provider;
+    private final OAuth2ResponseProvider oAuth2ResponseProvider;
 
     @Value("${kakao.kapi-uri}")
     private String kapiUri;
@@ -36,9 +36,9 @@ public class KakaoOAuth2Service implements OAuth2Service {
         String email = kakaoUserDetail.getEmail();
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
-            return oAuth2Provider.returnResponseWithEmailForSignup(email);
+            return oAuth2ResponseProvider.returnResponseWithEmailForSignup(email);
         }
-        return oAuth2Provider.generateTokenAndReturnResponseWithCookie(response, optionalUser.get());
+        return oAuth2ResponseProvider.generateTokenAndReturnResponseWithCookie(response, optionalUser.get());
     }
 
     private KakaoAccountResponse.KakaoAccount requestUserDetailByAccessToken(String accessToken) {
