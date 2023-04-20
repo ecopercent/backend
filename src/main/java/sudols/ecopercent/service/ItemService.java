@@ -1,5 +1,6 @@
 package sudols.ecopercent.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import sudols.ecopercent.dto.item.CreateItemRequest;
 import sudols.ecopercent.dto.item.ItemResponse;
 import sudols.ecopercent.dto.item.UpdateItemRequest;
@@ -10,12 +11,12 @@ import java.util.Optional;
 public interface ItemService {
 
     // TODO: 구현. type 에 따라 goalUsageCount 설정
-    ItemResponse createItem(CreateItemRequest createItemRequest);
+    ItemResponse createItem(HttpServletRequest request, CreateItemRequest createItemRequest);
 
     // TODO: 변경. 좀 더 나은 방법을 찾아볼까?
-    List<ItemResponse> getItemList(Long userId, String category);
+    List<ItemResponse> getItemListByCategory(HttpServletRequest request, String category);
 
-    Optional<ItemResponse> getItem(Long itemId);
+    ItemResponse getItem(Long itemId);
 
     // TODO: 구현. type 에 따라 goalUsageCount 설정
     Optional<ItemResponse> updateItem(Long itemId, UpdateItemRequest updateItemRequest);

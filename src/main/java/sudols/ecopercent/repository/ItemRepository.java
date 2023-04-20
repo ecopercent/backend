@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    List<Item> findByCategoryAndUser_IdOrderById(String category, Long userId);
+    List<Item> findByCategoryAndUser_EmailOrderById(String category, String email);
 
     Optional<Item> findByCategoryAndIsTitleAndUser_Id(String category, boolean isTitle, Long userId);
 

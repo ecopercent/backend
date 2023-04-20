@@ -1,8 +1,7 @@
 package sudols.ecopercent.controller;
 
-import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -23,22 +22,22 @@ public class ItemController {
     @PostMapping("/items")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public ItemResponse CreateItem(@Valid @RequestBody() CreateItemRequest createItemRequest) {
-        return itemService.createItem(createItemRequest);
+    public ItemResponse CreateItem(HttpServletRequest request, @RequestBody() CreateItemRequest createItemRequest) {
+        return itemService.createItem(request, createItemRequest);
     }
 
     @GetMapping("/items")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public List<ItemResponse> GetItemList(@RequestParam("userId") Long userId,
+    public List<ItemResponse> GetItemList(HttpServletRequest request,
                                           @RequestParam(value = "category") String category) {
-        return itemService.getItemList(userId, category);
+        return itemService.getItemListByCategory(request, category);
     }
 
     @GetMapping("/items/{itemId}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Optional<ItemResponse> GetItem(@PathVariable("itemId") Long itemId) {
+    public ItemResponse GetItem(@PathVariable("itemId") Long itemId) {
         return itemService.getItem(itemId);
     }
 
