@@ -44,7 +44,7 @@ public class ItemController {
     @PatchMapping("/items/{itemId}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Optional<ItemResponse> UpdateItem(@PathVariable("itemId") Long itemId,
+    public ItemResponse UpdateItem(@PathVariable("itemId") Long itemId,
                                              @RequestBody() UpdateItemRequest updateItemRequest) {
         return itemService.updateItem(itemId, updateItemRequest);
     }

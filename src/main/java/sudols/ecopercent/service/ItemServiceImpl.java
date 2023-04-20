@@ -66,13 +66,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Optional<ItemResponse> updateItem(Long itemId, UpdateItemRequest updateItemRequest) {
+    public ItemResponse updateItem(Long itemId, UpdateItemRequest updateItemRequest) {
         return itemRepository.findById(itemId)
                 .map(item -> {
                     BeanUtils.copyProperties(updateItemRequest, item, "id");
-                    return itemRepository.save(item);
+                    Item updateditem = itemRepository.save(item);
+                    return itemMapper.itemToItemResponse(updateditem);
                 })
-                .map(itemMapper::itemToItemResponse);
+                .orElseThrow(() -> new ItemNotExistException(itemId));
     }
 
     @Override
