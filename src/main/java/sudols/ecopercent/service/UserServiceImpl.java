@@ -15,7 +15,7 @@ import sudols.ecopercent.exception.UserAlreadyExistsException;
 import sudols.ecopercent.mapper.UserMapper;
 import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
-import sudols.ecopercent.security.OAuth2ResponseProvider;
+import sudols.ecopercent.security.OAuth2Provider;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final UserMapper userMapper;
-    private final OAuth2ResponseProvider oAuth2ResponseProvider;
+    private final OAuth2Provider oAuth2Provider;
 
     // TODO: 구현. 유저 생성 시 등록된 아이템을 대표 아이템으로 등록
     @Override
@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
             throw new UserAlreadyExistsException(createUserRequest.getEmail());
         }
         User user = userRepository.save(userMapper.createUserRequestToUser(createUserRequest));
-        oAuth2ResponseProvider.generateTokenAndReturnResponseWithCookie(response, user);
+        oAuth2Provider.generateTokenAndReturnResponseWithCookie(response, user);
         return userMapper.userToUserResponse(user);
     }
 

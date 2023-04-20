@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class OAuth2ResponseProvider {
+public class OAuth2Provider {
 
     private final JwtTokenProvider jwtTokenProvider;
 
