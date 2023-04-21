@@ -40,4 +40,10 @@ public class ExceptionHandlers {
         log.debug("Handling exception: " + e);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
+
+    @ExceptionHandler(TitleItemNotFoundException.class)
+    public ResponseEntity<?> handleTitleItemNotFoundException(TitleItemNotFoundException e) {
+        log.debug("Handling exception: " + e);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
 }

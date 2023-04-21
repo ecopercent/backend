@@ -53,38 +53,39 @@ public class ItemController {
     @PatchMapping("/items/{itemId}/usage-count")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public ItemResponse IncreaseUsageCount(HttpServletRequest request, @PathVariable("itemId") Long itemId) {
-        return itemService.increaseusagecount(request, itemId);
+    public ItemResponse IncreaseUsageCount(HttpServletRequest request,
+                                           @PathVariable("itemId") Long itemId) {
+        return itemService.increaseUsageCount(request, itemId);
     }
 
-    @PatchMapping("/users/{userId}/items/{itemId}/title-tumbler")
+    @PatchMapping("/items/{itemId}/title-tumbler")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Optional<ItemResponse> UpdateTitleTumbler(@PathVariable("itemId") Long itemId,
-                                                     @PathVariable("userId") Long userId) {
-        return itemService.updateTitleTumbler(itemId, userId);
+    public ItemResponse ChangeTitleTumbler(HttpServletRequest request,
+                                           @PathVariable("itemId") Long itemId) {
+        return itemService.changeTitleTumbler(request, itemId);
     }
 
-    @PatchMapping("/users/{userId}/items/{itemId}/title-ecobag")
+    @PatchMapping("/items/{itemId}/title-ecobag")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Optional<ItemResponse> UpdateTitleEcobag(@PathVariable("itemId") Long itemId,
-                                                    @PathVariable("userId") Long userId) {
-        return itemService.updateTitleEcobag(itemId, userId);
+    public ItemResponse ChangeTitleEcobag(HttpServletRequest request,
+                                          @PathVariable("itemId") Long itemId) {
+        return itemService.changeTitleEcobag(request, itemId);
     }
 
-    @GetMapping("/users/{userId}/title-tumbler")
+    @GetMapping("/users/me/title-tumbler")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Optional<ItemResponse> GetTitleTumbler(@PathVariable("userId") Long userId) {
-        return itemService.getTitleTumbler(userId);
+    public ItemResponse GetTitleTumbler(HttpServletRequest request) {
+        return itemService.getTitleTumbler(request);
     }
 
-    @GetMapping("/users/{userId}/title-ecobag")
+    @GetMapping("/users/me/title-ecobag")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Optional<ItemResponse> GetTitleEcobag(@PathVariable("userId") Long userId) {
-        return itemService.getTitleEcobag(userId);
+    public ItemResponse GetTitleEcobag(HttpServletRequest request) {
+        return itemService.getTitleEcobag(request);
     }
 
     @DeleteMapping("/items/{itemId}")

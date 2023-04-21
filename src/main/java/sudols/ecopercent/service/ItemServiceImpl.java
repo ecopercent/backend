@@ -10,10 +10,7 @@ import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.item.CreateItemRequest;
 import sudols.ecopercent.dto.item.ItemResponse;
 import sudols.ecopercent.dto.item.UpdateItemRequest;
-import sudols.ecopercent.exception.ItemCategoryNotExistException;
-import sudols.ecopercent.exception.ItemNotExistException;
-import sudols.ecopercent.exception.UserNotExistException;
-import sudols.ecopercent.exception.UserNotItemOwnedException;
+import sudols.ecopercent.exception.*;
 import sudols.ecopercent.mapper.ItemMapper;
 import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
@@ -72,17 +69,17 @@ public class ItemServiceImpl implements ItemService {
                 .map(item -> {
                     BeanUtils.copyProperties(updateItemRequest, item, "id");
                     Item updateditem = itemRepository.save(item);
-                    isItemOwnedUser(request, item);
+                    isItemOwnedUserByEmail(request, item);
                     return itemMapper.itemToItemResponse(updateditem);
                 })
                 .orElseThrow(() -> new ItemNotExistException(itemId));
     }
 
     @Override
-    public ItemResponse increaseusagecount(HttpServletRequest request, Long itemId) {
+    public ItemResponse increaseUsageCount(HttpServletRequest request, Long itemId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotExistException(itemId));
-        isItemOwnedUser(request, item);
+        isItemOwnedUserByEmail(request, item);
         item.setCurrentUsageCount(item.getCurrentUsageCount() + 1);
         item.setLatestDate(getKSTDateTime());
         Item updatedItem = itemRepository.save(item);
@@ -90,26 +87,50 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Optional<ItemResponse> updateTitleTumbler(Long itemId, Long userId) {
-        return updateTitleItem(itemId, "tumbler", userId);
-    }
-
-
-    @Override
-    public Optional<ItemResponse> updateTitleEcobag(Long itemId, Long userId) {
-        return updateTitleItem(itemId, "ecobag", userId);
+    public ItemResponse changeTitleTumbler(HttpServletRequest request, Long itemId) {
+        return setTitleItem(request, itemId, "tumbler");
     }
 
     @Override
-    public Optional<ItemResponse> getTitleTumbler(Long userId) {
-        return itemRepository.findByCategoryAndIsTitleAndUser_Id("tumbler", true, userId)
-                .map(itemMapper::itemToItemResponse);
+    public ItemResponse changeTitleEcobag(HttpServletRequest request, Long itemId) {
+        return setTitleItem(request, itemId, "ecobag");
+    }
+
+    private ItemResponse setTitleItem(HttpServletRequest request, Long itemId, String category) {
+        String email = jwtTokenProvider.getEmailFromRequest(request);
+        itemRepository.findByCategoryAndIsTitleTrueAndUser_Email(category, email)
+                .ifPresent(titleItem -> {
+                    titleItem.setIsTitle(false);
+                });
+        return itemRepository.findByIdAndCategory(itemId, category)
+                .map(item -> {
+                    String itemOwnedUserEmail = item.getUser().getEmail();
+                    if (!itemOwnedUserEmail.equals(email)) {
+                        throw new UserNotItemOwnedException(itemId);
+                    }
+                    item.setIsTitle(true);
+                    itemRepository.save(item);
+                    return itemMapper.itemToItemResponse(item);
+                })
+                .orElseThrow(() -> new ItemNotExistException(itemId));
     }
 
     @Override
-    public Optional<ItemResponse> getTitleEcobag(Long userId) {
-        return itemRepository.findByCategoryAndIsTitleAndUser_Id("ecobag", true, userId)
-                .map(itemMapper::itemToItemResponse);
+    public ItemResponse getTitleTumbler(HttpServletRequest request) {
+        String email = jwtTokenProvider.getEmailFromRequest(request);
+        final String category = "tumbler";
+        return itemRepository.findByCategoryAndIsTitleTrueAndUser_Email(category, email)
+                .map(itemMapper::itemToItemResponse)
+                .orElseThrow(() -> new TitleItemNotFoundException(category));
+    }
+
+    @Override
+    public ItemResponse getTitleEcobag(HttpServletRequest request) {
+        String email = jwtTokenProvider.getEmailFromRequest(request);
+        final String category = "ecobag";
+        return itemRepository.findByCategoryAndIsTitleTrueAndUser_Email(category, email)
+                .map(itemMapper::itemToItemResponse)
+                .orElseThrow(() -> new TitleItemNotFoundException(category));
     }
 
     @Override
@@ -130,19 +151,6 @@ public class ItemServiceImpl implements ItemService {
         itemRepository.deleteAll();
     }
 
-    private Optional<ItemResponse> updateTitleItem(Long itemId, String category, Long userId) {
-        return itemRepository.findByIdAndCategoryAndUser_Id(itemId, category, userId)
-                .map(item -> {
-                    itemRepository.findByCategoryAndIsTitleAndUser_Id(category, true, userId)
-                            .ifPresent(titleItem -> {
-                                titleItem.setIsTitle(false);
-                                itemRepository.save(titleItem);
-                            });
-                    item.setIsTitle(true);
-                    return itemRepository.save(item);
-                })
-                .map(itemMapper::itemToItemResponse);
-    }
 
     private LocalDateTime getKSTDateTime() {
         return ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime().withNano(0);
@@ -157,13 +165,10 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new ItemNotExistException(itemId));
     }
 
-    private void isItemOwnedUser(HttpServletRequest request, Item item) {
+    private void isItemOwnedUserByEmail(HttpServletRequest request, Item item) {
         String email = jwtTokenProvider.getEmailFromRequest(request);
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotExistException(email));
-        Long itemOwnedUserId = item.getUser().getId();
-        Long userId = user.getId();
-        if (!itemOwnedUserId.equals(userId)) {
+        String itemOwnedUserEmail = item.getUser().getEmail();
+        if (!itemOwnedUserEmail.equals(email)) {
             throw new UserNotItemOwnedException(item.getId());
         }
     }

@@ -22,15 +22,15 @@ public interface ItemService {
     ItemResponse updateItem(HttpServletRequest request, Long itemId, UpdateItemRequest updateItemRequest);
 
     // TODO: 구현. 마지막 사용횟수 증가
-    ItemResponse increaseusagecount(HttpServletRequest request, Long itemId);
+    ItemResponse increaseUsageCount(HttpServletRequest request, Long itemId);
 
-    Optional<ItemResponse> updateTitleTumbler(Long itemId, Long userId);
+    ItemResponse changeTitleTumbler(HttpServletRequest request, Long itemId);
 
-    Optional<ItemResponse> updateTitleEcobag(Long itemId, Long userId);
+    ItemResponse changeTitleEcobag(HttpServletRequest request, Long itemId);
 
-    Optional<ItemResponse> getTitleTumbler(Long userId);
+    ItemResponse getTitleTumbler(HttpServletRequest request);
 
-    Optional<ItemResponse> getTitleEcobag(Long userId);
+    ItemResponse getTitleEcobag(HttpServletRequest request);
 
     void deleteItem(Long itemId);
 
