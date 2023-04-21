@@ -5,10 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import sudols.ecopercent.exception.ItemCategoryNotExistException;
-import sudols.ecopercent.exception.ItemNotExistException;
-import sudols.ecopercent.exception.UserAlreadyExistException;
-import sudols.ecopercent.exception.UserNotExistException;
+import sudols.ecopercent.exception.*;
 
 @Slf4j
 @ControllerAdvice
@@ -36,5 +33,11 @@ public class ExceptionHandlers {
     public ResponseEntity<?> handleItemNotExistException(ItemNotExistException e) {
         log.debug("Handling exception: " + e);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @ExceptionHandler(UserNotItemOwnedException.class)
+    public ResponseEntity<?> handleUserNotItemOwnedException(UserNotItemOwnedException e) {
+        log.debug("Handling exception: " + e);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 }

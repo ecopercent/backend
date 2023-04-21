@@ -44,9 +44,10 @@ public class ItemController {
     @PatchMapping("/items/{itemId}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public ItemResponse UpdateItem(@PathVariable("itemId") Long itemId,
-                                             @RequestBody() UpdateItemRequest updateItemRequest) {
-        return itemService.updateItem(itemId, updateItemRequest);
+    public ItemResponse UpdateItem(HttpServletRequest request,
+                                   @PathVariable("itemId") Long itemId,
+                                   @RequestBody() UpdateItemRequest updateItemRequest) {
+        return itemService.updateItem(request, itemId, updateItemRequest);
     }
 
     // TODO: up 이라는 건 RestAPI 스럽지 않은 이름인듯?

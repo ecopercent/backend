@@ -19,7 +19,7 @@ public interface ItemService {
     ItemResponse getItem(Long itemId);
 
     // TODO: 구현. type 에 따라 goalUsageCount 설정
-    ItemResponse updateItem(Long itemId, UpdateItemRequest updateItemRequest);
+    ItemResponse updateItem(HttpServletRequest request, Long itemId, UpdateItemRequest updateItemRequest);
 
     // TODO: 구현. 마지막 사용횟수 증가
     Optional<ItemResponse> increaseUsageCount(Long itemId);

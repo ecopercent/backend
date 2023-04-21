@@ -13,6 +13,7 @@ import sudols.ecopercent.dto.item.UpdateItemRequest;
 import sudols.ecopercent.exception.ItemCategoryNotExistException;
 import sudols.ecopercent.exception.ItemNotExistException;
 import sudols.ecopercent.exception.UserNotExistException;
+import sudols.ecopercent.exception.UserNotItemOwnedException;
 import sudols.ecopercent.mapper.ItemMapper;
 import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
@@ -66,11 +67,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemResponse updateItem(Long itemId, UpdateItemRequest updateItemRequest) {
+    public ItemResponse updateItem(HttpServletRequest request, Long itemId, UpdateItemRequest updateItemRequest) {
         return itemRepository.findById(itemId)
                 .map(item -> {
                     BeanUtils.copyProperties(updateItemRequest, item, "id");
                     Item updateditem = itemRepository.save(item);
+                    isItemOwnedUser(request, item);
                     return itemMapper.itemToItemResponse(updateditem);
                 })
                 .orElseThrow(() -> new ItemNotExistException(itemId));
@@ -150,7 +152,19 @@ public class ItemServiceImpl implements ItemService {
         return category.equals("ecobag") || category.equals("tumbler");
     }
 
-    private boolean isItemExist(Long itemId) {
-        return false;
+    private void isItemExist(Long itemId) {
+        itemRepository.findById(itemId)
+                .orElseThrow(() -> new ItemNotExistException(itemId));
+    }
+
+    private void isItemOwnedUser(HttpServletRequest request, Item item) {
+        String email = jwtTokenProvider.getEmailFromRequest(request);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotExistException(email));
+        Long itemOwnedUserId = item.getUser().getId();
+        Long userId = user.getId();
+        if (!itemOwnedUserId.equals(userId)) {
+            throw new UserNotItemOwnedException(item.getId());
+        }
     }
 }
