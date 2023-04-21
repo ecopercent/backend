@@ -79,14 +79,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Optional<ItemResponse> increaseUsageCount(Long itemId) {
-        return itemRepository.findById(itemId)
-                .map(item -> {
-                    item.setCurrentUsageCount(item.getCurrentUsageCount() + 1);
-                    item.setLatestDate(getKSTDateTime());
-                    return itemRepository.save(item);
-                })
-                .map(itemMapper::itemToItemResponse);
+    public ItemResponse increaseusagecount(HttpServletRequest request, Long itemId) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ItemNotExistException(itemId));
+        isItemOwnedUser(request, item);
+        item.setCurrentUsageCount(item.getCurrentUsageCount() + 1);
+        item.setLatestDate(getKSTDateTime());
+        Item updatedItem = itemRepository.save(item);
+        return itemMapper.itemToItemResponse(updatedItem);
     }
 
     @Override

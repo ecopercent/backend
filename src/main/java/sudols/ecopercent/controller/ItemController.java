@@ -50,12 +50,11 @@ public class ItemController {
         return itemService.updateItem(request, itemId, updateItemRequest);
     }
 
-    // TODO: up 이라는 건 RestAPI 스럽지 않은 이름인듯?
-    @PatchMapping("/items/{itemId}/up")
+    @PatchMapping("/items/{itemId}/usage-count")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public Optional<ItemResponse> IncreaseUsageCount(@PathVariable("itemId") Long itemId) {
-        return itemService.increaseUsageCount(itemId);
+    public ItemResponse IncreaseUsageCount(HttpServletRequest request, @PathVariable("itemId") Long itemId) {
+        return itemService.increaseusagecount(request, itemId);
     }
 
     @PatchMapping("/users/{userId}/items/{itemId}/title-tumbler")

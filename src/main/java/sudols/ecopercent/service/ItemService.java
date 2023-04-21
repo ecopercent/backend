@@ -22,7 +22,7 @@ public interface ItemService {
     ItemResponse updateItem(HttpServletRequest request, Long itemId, UpdateItemRequest updateItemRequest);
 
     // TODO: 구현. 마지막 사용횟수 증가
-    Optional<ItemResponse> increaseUsageCount(Long itemId);
+    ItemResponse increaseusagecount(HttpServletRequest request, Long itemId);
 
     Optional<ItemResponse> updateTitleTumbler(Long itemId, Long userId);
 
