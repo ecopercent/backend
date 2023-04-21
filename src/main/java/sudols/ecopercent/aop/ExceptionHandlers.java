@@ -11,26 +11,26 @@ import sudols.ecopercent.exception.*;
 @ControllerAdvice
 public class ExceptionHandlers {
 
-    @ExceptionHandler(UserAlreadyExistException.class)
-    public ResponseEntity<?> handleUserAlreadyExistException(UserAlreadyExistException e) {
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<?> handleUserAlreadyExistsException(UserAlreadyExistsException e) {
         log.debug("Handling exception: " + e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    @ExceptionHandler(UserNotExistException.class)
-    public ResponseEntity<?> handleUserNotExistException(UserNotExistException e) {
+    @ExceptionHandler(UserNotExistsException.class)
+    public ResponseEntity<?> handleUserNotExistsException(UserNotExistsException e) {
         log.debug("Handling exception: " + e);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    @ExceptionHandler(ItemCategoryNotExistException.class)
-    public ResponseEntity<?> handleItemCategoryNotExistException(ItemCategoryNotExistException e) {
+    @ExceptionHandler(ItemCategoryNotExistsException.class)
+    public ResponseEntity<?> handleItemCategoryNotExistsException(ItemCategoryNotExistsException e) {
         log.debug("Handling exception: " + e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    @ExceptionHandler(ItemNotExistException.class)
-    public ResponseEntity<?> handleItemNotExistException(ItemNotExistException e) {
+    @ExceptionHandler(ItemNotExistsException.class)
+    public ResponseEntity<?> handleItemNotExistsException(ItemNotExistsException e) {
         log.debug("Handling exception: " + e);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }

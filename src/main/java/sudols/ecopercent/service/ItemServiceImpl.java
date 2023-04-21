@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,7 +36,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemResponse createItem(HttpServletRequest request, CreateItemRequest createItemRequest) {
         String email = jwtTokenProvider.getEmailFromRequest(request);
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotExistException(email));
+                .orElseThrow(() -> new UserNotExistsException(email));
         Item item = itemMapper.createItemRequestToItem(createItemRequest, user);
         item.setRegistrationDate(getKSTDateTime());
         itemRepository.save(item);
@@ -48,7 +47,7 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemResponse> getItemListByCategory(HttpServletRequest request, String category) {
         String email = jwtTokenProvider.getEmailFromRequest(request);
         if (!isValidCategory(category)) {
-            throw new ItemCategoryNotExistException(category);
+            throw new ItemCategoryNotExistsException(category);
         }
         return itemRepository.findByCategoryAndUser_EmailOrderById(category, email)
                 .stream()
@@ -59,7 +58,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemResponse getItem(Long itemId) {
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new ItemNotExistException(itemId));
+                .orElseThrow(() -> new ItemNotExistsException(itemId));
         return itemMapper.itemToItemResponse(item);
     }
 
@@ -72,13 +71,13 @@ public class ItemServiceImpl implements ItemService {
                     isItemOwnedUserByEmail(request, item);
                     return itemMapper.itemToItemResponse(updateditem);
                 })
-                .orElseThrow(() -> new ItemNotExistException(itemId));
+                .orElseThrow(() -> new ItemNotExistsException(itemId));
     }
 
     @Override
     public ItemResponse increaseUsageCount(HttpServletRequest request, Long itemId) {
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new ItemNotExistException(itemId));
+                .orElseThrow(() -> new ItemNotExistsException(itemId));
         isItemOwnedUserByEmail(request, item);
         item.setCurrentUsageCount(item.getCurrentUsageCount() + 1);
         item.setLatestDate(getKSTDateTime());
@@ -112,7 +111,7 @@ public class ItemServiceImpl implements ItemService {
                     itemRepository.save(item);
                     return itemMapper.itemToItemResponse(item);
                 })
-                .orElseThrow(() -> new ItemNotExistException(itemId));
+                .orElseThrow(() -> new ItemNotExistsException(itemId));
     }
 
     @Override
@@ -135,6 +134,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public void deleteItem(Long itemId) {
+        if (!itemRepository.existsById(itemId)) {
+            throw new ItemNotExistsException(itemId);
+        }
         itemRepository.deleteById(itemId);
     }
 
@@ -162,7 +164,7 @@ public class ItemServiceImpl implements ItemService {
 
     private void isItemExist(Long itemId) {
         itemRepository.findById(itemId)
-                .orElseThrow(() -> new ItemNotExistException(itemId));
+                .orElseThrow(() -> new ItemNotExistsException(itemId));
     }
 
     private void isItemOwnedUserByEmail(HttpServletRequest request, Item item) {

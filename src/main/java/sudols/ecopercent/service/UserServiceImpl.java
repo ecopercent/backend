@@ -12,8 +12,8 @@ import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.dto.user.UpdateUserRequest;
 import sudols.ecopercent.dto.user.UserResponse;
-import sudols.ecopercent.exception.UserAlreadyExistException;
-import sudols.ecopercent.exception.UserNotExistException;
+import sudols.ecopercent.exception.UserAlreadyExistsException;
+import sudols.ecopercent.exception.UserNotExistsException;
 import sudols.ecopercent.mapper.UserMapper;
 import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse createUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest) {
         if (userRepository.existsByEmail(createUserRequest.getEmail())) {
-            throw new UserAlreadyExistException(createUserRequest.getEmail());
+            throw new UserAlreadyExistsException(createUserRequest.getEmail());
         }
         User user = userRepository.save(userMapper.createUserRequestToUser(createUserRequest));
         jwtTokenProvider.generateTokenAndReturnResponseWithCookie(response, user);
@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
     public UserResponse getCurrentUserInfo(HttpServletRequest request) {
         String email = jwtTokenProvider.getEmailFromRequest(request);
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotExistException(email));
+                .orElseThrow(() -> new UserNotExistsException(email));
         return userMapper.userToUserResponse(user);
 
     }
@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
     public UserResponse updateUser(HttpServletRequest request, UpdateUserRequest updateUserRequest) {
         String email = jwtTokenProvider.getEmailFromRequest(request);
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotExistException(email));
+                .orElseThrow(() -> new UserNotExistsException(email));
         BeanUtils.copyProperties(updateUserRequest, user, "id");
         userRepository.save(user);
         return userMapper.userToUserResponse(user);
