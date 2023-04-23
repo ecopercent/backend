@@ -37,9 +37,12 @@ public class AppleOAuth2Service implements OAuth2Service {
     public ResponseEntity<?> login(HttpServletRequest request, HttpServletResponse response) {
         try {
             String identityToken = jwtTokenProvider.getTokenFromRequest(request);
+            System.out.println("identityToken: " + identityToken);
             List<AppleJWKSetResponse.Key> jsonWebKeys = requestJsonWebKeysFromApple();
             AppleJWKSetResponse.Key jsonWebKey = getJsonWebKeyForIdentityTokenFromJsonWebKeys(jsonWebKeys, identityToken)
                     .orElseThrow(() -> new NullPointerException("Failed get public key from apple's id server."));
+            System.out.println("jsonWebKey: " + jsonWebKey);
+
             byte[] nBytes = Base64.getUrlDecoder().decode(jsonWebKey.getN());
             byte[] eBytes = Base64.getUrlDecoder().decode(jsonWebKey.getE());
 
@@ -57,7 +60,7 @@ public class AppleOAuth2Service implements OAuth2Service {
             }
             return oAuth2ResponseProvider.generateTokenAndReturnResponseWithBody(optionalUser.get());
         } catch (Exception e) {
-            System.out.println(e); // TODO: 로깅
+            System.out.println("Apple OAuth 로그인 중 문제 발생: " + e); // TODO: 로깅
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // TODO: 수정.
         }
     }
