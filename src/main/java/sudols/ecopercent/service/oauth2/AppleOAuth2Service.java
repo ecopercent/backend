@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AppleOAuth2Service implements OAuth2Service {
@@ -37,11 +39,9 @@ public class AppleOAuth2Service implements OAuth2Service {
     public ResponseEntity<?> login(HttpServletRequest request, HttpServletResponse response) {
         try {
             String identityToken = jwtTokenProvider.getTokenFromRequest(request);
-            System.out.println("identityToken: " + identityToken);
             List<AppleJWKSetResponse.Key> jsonWebKeys = requestJsonWebKeysFromApple();
             AppleJWKSetResponse.Key jsonWebKey = getJsonWebKeyForIdentityTokenFromJsonWebKeys(jsonWebKeys, identityToken)
                     .orElseThrow(() -> new NullPointerException("Failed get public key from apple's id server."));
-            System.out.println("jsonWebKey: " + jsonWebKey);
 
             byte[] nBytes = Base64.getUrlDecoder().decode(jsonWebKey.getN());
             byte[] eBytes = Base64.getUrlDecoder().decode(jsonWebKey.getE());
@@ -60,7 +60,7 @@ public class AppleOAuth2Service implements OAuth2Service {
             }
             return oAuth2ResponseProvider.generateTokenAndReturnResponseWithBody(optionalUser.get());
         } catch (Exception e) {
-            System.out.println("Apple OAuth 로그인 중 문제 발생: " + e); // TODO: 로깅
+            log.debug("Apple OAuth 로그인 중 문제 발생: " + e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // TODO: 수정.
         }
     }
@@ -91,7 +91,7 @@ public class AppleOAuth2Service implements OAuth2Service {
             String headerOfIdentityToken = identityToken.substring(0, identityToken.indexOf("."));
             return objectMapper.readValue(new String(Base64.getDecoder().decode(headerOfIdentityToken), StandardCharsets.UTF_8), AppleIdentityToken.Header.class);
         } catch (Exception e) {
-            System.out.println(e); // TODO: 로깅
+            log.debug("Exception from decodeIdentityTokenHeader: " + e);
             return null; // TODO: 예외처리
         }
     }

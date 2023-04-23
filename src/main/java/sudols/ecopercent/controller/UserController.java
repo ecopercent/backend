@@ -31,7 +31,6 @@ public class UserController {
     @GetMapping("/nicknames/{nickname}")
     @ResponseBody
     public ResponseEntity<?> checkNicknameExists(@PathVariable("nickname") String nickname) {
-        System.out.println("nickname: " + nickname);
         return userService.isNicknameDuplicate(nickname);
     }
 
@@ -62,7 +61,6 @@ public class UserController {
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     public List<UserResponse> GetAllUser() {
-        System.out.println("GetAllUser");
         return userService.getAllUser();
     }
 

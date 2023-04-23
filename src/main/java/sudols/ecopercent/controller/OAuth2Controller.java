@@ -28,7 +28,6 @@ public class OAuth2Controller {
     @PostMapping("/apple")
     @ResponseBody
     public ResponseEntity<?> AppleOAuth2Login(HttpServletRequest request, HttpServletResponse response) {
-        System.out.println("AppleOAuth2Login");
         return appleOAuth2Service.login(request, response);
     }
 }

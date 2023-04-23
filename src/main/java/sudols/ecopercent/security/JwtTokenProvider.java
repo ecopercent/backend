@@ -7,6 +7,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Date;
 
+@Slf4j
 @Component
 @NoArgsConstructor
 public class JwtTokenProvider {
@@ -71,7 +73,7 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (Exception e) {
-            System.out.println(e); // TODO: 로깅
+            log.debug("Exception From getClaimsFromTokenWithKey: " + e);
             return null; // TODO: 예외처리
         }
     }
@@ -89,7 +91,7 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token);
             return true;
         } catch (JwtException e) {
-            System.out.println(e); // TODO: 로깅
+            log.debug("Exception from validateToken: " + e);
             return false;
         }
     }
