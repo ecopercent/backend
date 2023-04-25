@@ -35,10 +35,8 @@ public class UserServiceImpl implements UserService {
     // TODO: 구현. 유저 생성 시 등록된 아이템을 대표 아이템으로 등록
     @Override
     public UserResponse createUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest) {
-        if (userRepository.existsByEmail(createUserRequest.getEmail())) {
-            throw new UserAlreadyExistsException(createUserRequest.getEmail());
-        }
-        User user = userRepository.save(userMapper.createUserRequestToUser(createUserRequest));
+        User user = userRepository.findByEmail(createUserRequest.getEmail())
+                .orElseGet(() -> userRepository.save(userMapper.createUserRequestToUser(createUserRequest)));
         jwtTokenProvider.generateTokenAndReturnResponseWithCookie(response, user);
         return userMapper.userToUserResponse(user);
     }
