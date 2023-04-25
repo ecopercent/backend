@@ -45,8 +45,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<?> isNicknameDuplicate(String nickname) {
-        boolean isDuplicate = userRepository.existsByNickname(nickname);
-        if (isDuplicate) {
+        if (userRepository.existsByNickname(nickname)) {
             return ResponseEntity.status(HttpStatus.OK).build();
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -75,8 +74,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(HttpServletRequest request) {
         String email = jwtTokenProvider.getEmailFromRequest(request);
-        itemRepository.deleteByUser_Email(email);
-        userRepository.deleteByEmail(email);
+        if (userRepository.existsByEmail(email)) {
+            itemRepository.deleteByUser_Email(email);
+            userRepository.deleteByEmail(email);
+        } else {
+            throw new UserNotExistsException(email);
+        }
     }
 
     @Override

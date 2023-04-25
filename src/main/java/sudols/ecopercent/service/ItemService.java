@@ -6,7 +6,6 @@ import sudols.ecopercent.dto.item.ItemResponse;
 import sudols.ecopercent.dto.item.UpdateItemRequest;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ItemService {
 
@@ -14,7 +13,7 @@ public interface ItemService {
     ItemResponse createItem(HttpServletRequest request, CreateItemRequest createItemRequest);
 
     // TODO: 변경. 좀 더 나은 방법을 찾아볼까?
-    List<ItemResponse> getItemListByCategory(HttpServletRequest request, String category);
+    List<ItemResponse> getMyItemListByCategory(HttpServletRequest request, String category);
 
     ItemResponse getItem(Long itemId);
 

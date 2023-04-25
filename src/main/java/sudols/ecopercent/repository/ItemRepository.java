@@ -16,6 +16,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     Optional<Item> findByIdAndCategory(Long itemId, String category);
 
+    Optional<Item> findByIdAndUser_Email(Long itemId, String email);
+
     @Query("select i from Item i where i.category = ?1 and i.isTitle = true and i.user.email = ?2")
     Optional<Item> findByCategoryAndIsTitleTrueAndUser_Email(String category, String email);
 

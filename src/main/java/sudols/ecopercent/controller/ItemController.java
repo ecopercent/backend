@@ -11,7 +11,6 @@ import sudols.ecopercent.dto.item.UpdateItemRequest;
 import sudols.ecopercent.service.ItemService;
 
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -22,29 +21,26 @@ public class ItemController {
     @PostMapping("/items")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public ItemResponse CreateItem(HttpServletRequest request, @RequestBody() CreateItemRequest createItemRequest) {
+    public ItemResponse createItem(HttpServletRequest request, @RequestBody() CreateItemRequest createItemRequest) {
         return itemService.createItem(request, createItemRequest);
     }
 
     @GetMapping("/items")
     @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public List<ItemResponse> GetItemList(HttpServletRequest request,
-                                          @RequestParam(value = "category") String category) {
-        return itemService.getItemListByCategory(request, category);
+    public List<ItemResponse> getMyItemListByCategory(HttpServletRequest request,
+                                                      @RequestParam(value = "category") String category) {
+        return itemService.getMyItemListByCategory(request, category);
     }
 
     @GetMapping("/items/{itemId}")
     @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public ItemResponse GetItem(@PathVariable("itemId") Long itemId) {
+    public ItemResponse getItem(@PathVariable("itemId") Long itemId) {
         return itemService.getItem(itemId);
     }
 
     @PatchMapping("/items/{itemId}")
     @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public ItemResponse UpdateItem(HttpServletRequest request,
+    public ItemResponse updateItem(HttpServletRequest request,
                                    @PathVariable("itemId") Long itemId,
                                    @RequestBody() UpdateItemRequest updateItemRequest) {
         return itemService.updateItem(request, itemId, updateItemRequest);
@@ -52,62 +48,54 @@ public class ItemController {
 
     @PatchMapping("/items/{itemId}/usage-count")
     @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public ItemResponse IncreaseUsageCount(HttpServletRequest request,
+    public ItemResponse increaseUsageCount(HttpServletRequest request,
                                            @PathVariable("itemId") Long itemId) {
         return itemService.increaseUsageCount(request, itemId);
     }
 
     @PatchMapping("/items/{itemId}/title-tumbler")
     @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public ItemResponse ChangeTitleTumbler(HttpServletRequest request,
+    public ItemResponse changeTitleTumbler(HttpServletRequest request,
                                            @PathVariable("itemId") Long itemId) {
         return itemService.changeTitleTumbler(request, itemId);
     }
 
     @PatchMapping("/items/{itemId}/title-ecobag")
     @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public ItemResponse ChangeTitleEcobag(HttpServletRequest request,
+    public ItemResponse changeTitleEcobag(HttpServletRequest request,
                                           @PathVariable("itemId") Long itemId) {
         return itemService.changeTitleEcobag(request, itemId);
     }
 
     @GetMapping("/users/me/title-tumbler")
     @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public ItemResponse GetTitleTumbler(HttpServletRequest request) {
+    public ItemResponse getTitleTumbler(HttpServletRequest request) {
         return itemService.getTitleTumbler(request);
     }
 
     @GetMapping("/users/me/title-ecobag")
     @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public ItemResponse GetTitleEcobag(HttpServletRequest request) {
+    public ItemResponse getTitleEcobag(HttpServletRequest request) {
         return itemService.getTitleEcobag(request);
     }
 
     @DeleteMapping("/items/{itemId}")
     @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public void DeleteItem(@PathVariable("itemId") Long itemId) {
+    public void deleteItem(@PathVariable("itemId") Long itemId) {
         itemService.deleteItem(itemId);
     }
 
     // TEST API
     @GetMapping("/items/all")
     @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public List<ItemResponse> GetAllItemList() {
+    public List<ItemResponse> getAllItemList() {
         return itemService.getAllItemList();
     }
 
     // TEST API
     @DeleteMapping("/items")
     @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public void DeleteAllItem() {
+    public void deleteAllItem() {
         itemService.deleteAllItem();
     }
 }

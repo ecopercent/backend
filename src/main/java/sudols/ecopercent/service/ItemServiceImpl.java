@@ -44,11 +44,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemResponse> getItemListByCategory(HttpServletRequest request, String category) {
-        String email = jwtTokenProvider.getEmailFromRequest(request);
+    public List<ItemResponse> getMyItemListByCategory(HttpServletRequest request, String category) {
         if (!isValidCategory(category)) {
             throw new ItemCategoryNotExistsException(category);
         }
+        String email = jwtTokenProvider.getEmailFromRequest(request);
         return itemRepository.findByCategoryAndUser_EmailOrderById(category, email)
                 .stream()
                 .map(itemMapper::itemToItemResponse)
@@ -66,9 +66,9 @@ public class ItemServiceImpl implements ItemService {
     public ItemResponse updateItem(HttpServletRequest request, Long itemId, UpdateItemRequest updateItemRequest) {
         return itemRepository.findById(itemId)
                 .map(item -> {
+                    isItemOwnedUserByEmail(request, item);
                     BeanUtils.copyProperties(updateItemRequest, item, "id");
                     Item updateditem = itemRepository.save(item);
-                    isItemOwnedUserByEmail(request, item);
                     return itemMapper.itemToItemResponse(updateditem);
                 })
                 .orElseThrow(() -> new ItemNotExistsException(itemId));
@@ -153,18 +153,8 @@ public class ItemServiceImpl implements ItemService {
         itemRepository.deleteAll();
     }
 
-
-    private LocalDateTime getKSTDateTime() {
-        return ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime().withNano(0);
-    }
-
     private boolean isValidCategory(String category) {
         return category.equals("ecobag") || category.equals("tumbler");
-    }
-
-    private void isItemExist(Long itemId) {
-        itemRepository.findById(itemId)
-                .orElseThrow(() -> new ItemNotExistsException(itemId));
     }
 
     private void isItemOwnedUserByEmail(HttpServletRequest request, Item item) {
@@ -173,5 +163,9 @@ public class ItemServiceImpl implements ItemService {
         if (!itemOwnedUserEmail.equals(email)) {
             throw new UserNotItemOwnedException(item.getId());
         }
+    }
+
+    private LocalDateTime getKSTDateTime() {
+        return ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime().withNano(0);
     }
 }
