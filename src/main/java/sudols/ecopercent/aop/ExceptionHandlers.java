@@ -46,4 +46,10 @@ public class ExceptionHandlers {
         log.debug("Handling exception: " + e);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
+
+    @ExceptionHandler(CategoryMismatchException.class)
+    public ResponseEntity<?> handleCategoryMismatchException(CategoryMismatchException e) {
+        log.debug("Handling exception: " + e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
 }

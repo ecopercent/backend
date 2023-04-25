@@ -64,21 +64,21 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemResponse updateItem(HttpServletRequest request, Long itemId, UpdateItemRequest updateItemRequest) {
-        return itemRepository.findById(itemId)
-                .map(item -> {
-                    isItemOwnedUserByEmail(request, item);
-                    BeanUtils.copyProperties(updateItemRequest, item, "id");
-                    Item updateditem = itemRepository.save(item);
-                    return itemMapper.itemToItemResponse(updateditem);
-                })
+        Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotExistsException(itemId));
+        String email = jwtTokenProvider.getEmailFromRequest(request);
+        isItemOwnedUserByEmail(item, email);
+        BeanUtils.copyProperties(updateItemRequest, item, "id");
+        Item updateditem = itemRepository.save(item);
+        return itemMapper.itemToItemResponse(updateditem);
     }
 
     @Override
     public ItemResponse increaseUsageCount(HttpServletRequest request, Long itemId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotExistsException(itemId));
-        isItemOwnedUserByEmail(request, item);
+        String email = jwtTokenProvider.getEmailFromRequest(request);
+        isItemOwnedUserByEmail(item, email);
         item.setCurrentUsageCount(item.getCurrentUsageCount() + 1);
         item.setLatestDate(getKSTDateTime());
         Item updatedItem = itemRepository.save(item);
@@ -97,21 +97,21 @@ public class ItemServiceImpl implements ItemService {
 
     private ItemResponse setTitleItem(HttpServletRequest request, Long itemId, String category) {
         String email = jwtTokenProvider.getEmailFromRequest(request);
-        itemRepository.findByCategoryAndIsTitleTrueAndUser_Email(category, email)
-                .ifPresent(titleItem -> {
-                    titleItem.setIsTitle(false);
-                });
-        return itemRepository.findByIdAndCategory(itemId, category)
+        ItemResponse itemResponse = itemRepository.findById(itemId)
                 .map(item -> {
-                    String itemOwnedUserEmail = item.getUser().getEmail();
-                    if (!itemOwnedUserEmail.equals(email)) {
-                        throw new UserNotItemOwnedException(itemId);
-                    }
+                    isCategoryMatching(item, category);
+                    isItemOwnedUserByEmail(item, email);
                     item.setIsTitle(true);
                     itemRepository.save(item);
                     return itemMapper.itemToItemResponse(item);
                 })
                 .orElseThrow(() -> new ItemNotExistsException(itemId));
+        itemRepository.findByCategoryAndIsTitleTrueAndUser_Email(category, email)
+                .ifPresent(titleItem -> {
+                    titleItem.setIsTitle(false);
+                    itemRepository.save(titleItem);
+                });
+        return itemResponse;
     }
 
     @Override
@@ -157,11 +157,16 @@ public class ItemServiceImpl implements ItemService {
         return category.equals("ecobag") || category.equals("tumbler");
     }
 
-    private void isItemOwnedUserByEmail(HttpServletRequest request, Item item) {
-        String email = jwtTokenProvider.getEmailFromRequest(request);
+    private void isItemOwnedUserByEmail(Item item, String email) {
         String itemOwnedUserEmail = item.getUser().getEmail();
         if (!itemOwnedUserEmail.equals(email)) {
             throw new UserNotItemOwnedException(item.getId());
+        }
+    }
+
+    private void isCategoryMatching(Item item, String category) {
+        if (!item.getCategory().equals(category)) {
+            throw new CategoryMismatchException(item.getId());
         }
     }
 
