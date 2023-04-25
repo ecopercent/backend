@@ -18,6 +18,7 @@ import sudols.ecopercent.mapper.UserMapper;
 import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.JwtTokenProvider;
+import sudols.ecopercent.security.OAuth2ResponseProvider;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,13 +32,22 @@ public class UserServiceImpl implements UserService {
     private final ItemRepository itemRepository;
     private final UserMapper userMapper;
     private final JwtTokenProvider jwtTokenProvider;
+    private final OAuth2ResponseProvider oAuth2ResponseProvider;
 
     // TODO: 구현. 유저 생성 시 등록된 아이템을 대표 아이템으로 등록
     @Override
-    public UserResponse createUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest) {
+    public UserResponse createKakaoUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest) {
         User user = userRepository.findByEmail(createUserRequest.getEmail())
                 .orElseGet(() -> userRepository.save(userMapper.createUserRequestToUser(createUserRequest)));
-        jwtTokenProvider.generateTokenAndReturnResponseWithCookie(response, user);
+        oAuth2ResponseProvider.generateTokenAndReturnResponseWithCookie(response, user);
+        return userMapper.userToUserResponse(user);
+    }
+
+    @Override
+    public UserResponse createAppleUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest) {
+        User user = userRepository.findByEmail(createUserRequest.getEmail())
+                .orElseGet(() -> userRepository.save(userMapper.createUserRequestToUser(createUserRequest)));
+        oAuth2ResponseProvider.generateTokenAndReturnResponseWithBody(user);
         return userMapper.userToUserResponse(user);
     }
 

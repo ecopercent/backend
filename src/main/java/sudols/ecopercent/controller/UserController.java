@@ -20,16 +20,25 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/users")
+    @PostMapping("/users/kakao")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public UserResponse createUser(HttpServletRequest request, HttpServletResponse response, @RequestBody CreateUserRequest createUserRequest) {
-        return userService.createUser(request, response, createUserRequest);
+    public UserResponse createKakaoUser(HttpServletRequest request, HttpServletResponse response, @RequestBody CreateUserRequest createUserRequest) {
+        return userService.createKakaoUser(request, response, createUserRequest);
     }
+
+    @PostMapping("users/apple")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public UserResponse createAppleUser(HttpServletRequest request, HttpServletResponse response, @RequestBody CreateUserRequest createUserRequest) {
+        return userService.createAppleUser(request, response, createUserRequest);
+    }
+
 
     @GetMapping("/nicknames/{nickname}")
     @ResponseBody
     public ResponseEntity<?> checkNicknameExists(@PathVariable("nickname") String nickname) {
+        System.out.println("checkNicknameExists");
         return userService.isNicknameDuplicate(nickname);
     }
 
