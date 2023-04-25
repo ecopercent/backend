@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import sudols.ecopercent.dto.oauth2.apple.AppleTokenResponse;
 import sudols.ecopercent.dto.user.UpdateUserRequest;
 import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.dto.user.UserResponse;
@@ -27,18 +28,16 @@ public class UserController {
         return userService.createKakaoUser(request, response, createUserRequest);
     }
 
-    @PostMapping("users/apple")
+    @PostMapping("/users/apple")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public UserResponse createAppleUser(HttpServletRequest request, HttpServletResponse response, @RequestBody CreateUserRequest createUserRequest) {
+    public ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request, HttpServletResponse response, @RequestBody CreateUserRequest createUserRequest) {
         return userService.createAppleUser(request, response, createUserRequest);
     }
-
 
     @GetMapping("/nicknames/{nickname}")
     @ResponseBody
     public ResponseEntity<?> checkNicknameExists(@PathVariable("nickname") String nickname) {
-        System.out.println("checkNicknameExists");
         return userService.isNicknameDuplicate(nickname);
     }
 

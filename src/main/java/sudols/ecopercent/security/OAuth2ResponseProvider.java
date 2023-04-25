@@ -7,8 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import sudols.ecopercent.domain.User;
-import sudols.ecopercent.dto.oauth2.SendEmailForSignupResponse;
-import sudols.ecopercent.dto.oauth2.apple.AppleSignInResponse;
+import sudols.ecopercent.dto.oauth2.EmailResponse;
+import sudols.ecopercent.dto.oauth2.apple.AppleTokenResponse;
 
 @Component
 @RequiredArgsConstructor
@@ -16,14 +16,13 @@ public class OAuth2ResponseProvider {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    public ResponseEntity<SendEmailForSignupResponse> returnResponseWithEmailForSignup(String email) {
-        SendEmailForSignupResponse sendEmailForSignupResponse = SendEmailForSignupResponse.builder()
+    public EmailResponse returnEmailResponse(String email) {
+        return EmailResponse.builder()
                 .email(email)
                 .build();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(sendEmailForSignupResponse);
     }
 
-    public ResponseEntity<Void> generateTokenAndReturnResponseWithCookie(HttpServletResponse response, User user) {
+    public void generateTokenAndAddCookie(HttpServletResponse response, User user) {
         String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
 
@@ -39,17 +38,16 @@ public class OAuth2ResponseProvider {
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
         response.addCookie(useridCookie);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    public ResponseEntity<AppleSignInResponse> generateTokenAndReturnResponseWithBody(User user) {
+    public AppleTokenResponse generateTokenReturnTokenResponse(User user) {
         String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
 
-        AppleSignInResponse appleSignInResponse = AppleSignInResponse.builder()
+        return AppleTokenResponse.builder()
                 .access(accessToken)
                 .refresh(refreshToken)
                 .build();
-        return ResponseEntity.status(HttpStatus.OK).body(appleSignInResponse);
     }
 }

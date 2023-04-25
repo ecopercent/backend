@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class SendEmailForSignupResponse {
+public class EmailResponse {
 
     String email;
 }

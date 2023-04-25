@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sudols.ecopercent.domain.User;
+import sudols.ecopercent.dto.oauth2.apple.AppleTokenResponse;
 import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.dto.user.UpdateUserRequest;
 import sudols.ecopercent.dto.user.UserResponse;
@@ -37,18 +38,24 @@ public class UserServiceImpl implements UserService {
     // TODO: 구현. 유저 생성 시 등록된 아이템을 대표 아이템으로 등록
     @Override
     public UserResponse createKakaoUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest) {
-        User user = userRepository.findByEmail(createUserRequest.getEmail())
-                .orElseGet(() -> userRepository.save(userMapper.createUserRequestToUser(createUserRequest)));
-        oAuth2ResponseProvider.generateTokenAndReturnResponseWithCookie(response, user);
+        String email = createUserRequest.getEmail();
+        if (userRepository.existsByEmail(email)) {
+            throw new UserAlreadyExistsException(email);
+        }
+        User user = userRepository.save(userMapper.createUserRequestToUser(createUserRequest));
+        oAuth2ResponseProvider.generateTokenAndAddCookie(response, user);
         return userMapper.userToUserResponse(user);
     }
 
     @Override
-    public UserResponse createAppleUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest) {
-        User user = userRepository.findByEmail(createUserRequest.getEmail())
-                .orElseGet(() -> userRepository.save(userMapper.createUserRequestToUser(createUserRequest)));
-        oAuth2ResponseProvider.generateTokenAndReturnResponseWithBody(user);
-        return userMapper.userToUserResponse(user);
+    public ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest) {
+        String email = createUserRequest.getEmail();
+        if (userRepository.existsByEmail(email)) {
+            throw new UserAlreadyExistsException(email);
+        }
+        User user = userRepository.save(userMapper.createUserRequestToUser(createUserRequest));
+        AppleTokenResponse appleTokenResponse = oAuth2ResponseProvider.generateTokenReturnTokenResponse(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(appleTokenResponse);
     }
 
     @Override

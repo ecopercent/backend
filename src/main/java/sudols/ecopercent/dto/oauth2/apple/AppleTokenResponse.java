@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class AppleSignInResponse {
+public class AppleTokenResponse {
 
     private String access;
     private String refresh;
