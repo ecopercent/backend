@@ -11,8 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import sudols.ecopercent.domain.User;
+import sudols.ecopercent.dto.oauth2.EmailResponse;
 import sudols.ecopercent.dto.oauth2.apple.AppleIdentityToken;
 import sudols.ecopercent.dto.oauth2.apple.AppleJWKSetResponse;
+import sudols.ecopercent.dto.oauth2.apple.AppleTokenResponse;
 import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.JwtTokenProvider;
 import sudols.ecopercent.security.OAuth2ResponseProvider;
@@ -56,9 +58,11 @@ public class AppleOAuth2Service implements OAuth2Service {
             String email = claimsOfIdentityToken.get("email", String.class);
             Optional<User> optionalUser = userRepository.findByEmail(email);
             if (optionalUser.isEmpty()) {
-                return oAuth2ResponseProvider.returnResponseWithEmailForSignup(email);
+                EmailResponse emailResponse = oAuth2ResponseProvider.returnEmailResponse(email);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(emailResponse);
             }
-            return oAuth2ResponseProvider.generateTokenAndReturnResponseWithBody(optionalUser.get());
+            AppleTokenResponse appleTokenResponse = oAuth2ResponseProvider.generateTokenReturnTokenResponse(optionalUser.get());
+            return ResponseEntity.status(HttpStatus.OK).body(appleTokenResponse);
         } catch (Exception e) {
             log.debug("Apple OAuth 로그인 중 문제 발생: " + e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // TODO: 수정.
