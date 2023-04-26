@@ -13,13 +13,14 @@ import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.dto.user.UpdateUserRequest;
 import sudols.ecopercent.dto.user.UserResponse;
 import sudols.ecopercent.exception.UserAlreadyExistsException;
+import sudols.ecopercent.exception.UserNotExistsException;
 import sudols.ecopercent.mapper.UserMapper;
 import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
+import sudols.ecopercent.security.JwtTokenProvider;
 import sudols.ecopercent.security.OAuth2ResponseProvider;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,23 +31,29 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final UserMapper userMapper;
+    private final JwtTokenProvider jwtTokenProvider;
     private final OAuth2ResponseProvider oAuth2ResponseProvider;
 
     // TODO: 구현. 유저 생성 시 등록된 아이템을 대표 아이템으로 등록
     @Override
-    public UserResponse createUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest) {
-        if (userRepository.existsByEmail(createUserRequest.getEmail())) {
-            throw new UserAlreadyExistsException(createUserRequest.getEmail());
-        }
-        User user = userRepository.save(userMapper.createUserRequestToUser(createUserRequest));
+    public UserResponse createKakaoUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest) {
+        User user = userRepository.findByEmail(createUserRequest.getEmail())
+                .orElseGet(() -> userRepository.save(userMapper.createUserRequestToUser(createUserRequest)));
         oAuth2ResponseProvider.generateTokenAndReturnResponseWithCookie(response, user);
         return userMapper.userToUserResponse(user);
     }
 
     @Override
+    public UserResponse createAppleUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest) {
+        User user = userRepository.findByEmail(createUserRequest.getEmail())
+                .orElseGet(() -> userRepository.save(userMapper.createUserRequestToUser(createUserRequest)));
+        oAuth2ResponseProvider.generateTokenAndReturnResponseWithBody(user);
+        return userMapper.userToUserResponse(user);
+    }
+
+    @Override
     public ResponseEntity<?> isNicknameDuplicate(String nickname) {
-        boolean isDuplicate = userRepository.existsByNickname(nickname);
-        if (isDuplicate) {
+        if (userRepository.existsByNickname(nickname)) {
             return ResponseEntity.status(HttpStatus.OK).build();
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -54,25 +61,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserResponse> getUser(Long userId) {
-        return userRepository.findById(userId)
-                .map(userMapper::userToUserResponse);
+    public UserResponse getCurrentUserInfo(HttpServletRequest request) {
+        String email = jwtTokenProvider.getEmailFromRequest(request);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotExistsException(email));
+        return userMapper.userToUserResponse(user);
+
     }
 
     @Override
-    public Optional<UserResponse> updateUser(Long userId, UpdateUserRequest updateUserRequest) {
-        return userRepository.findById(userId)
-                .map(user -> {
-                    BeanUtils.copyProperties(updateUserRequest, user, "id");
-                    return userRepository.save(user);
-                })
-                .map(userMapper::userToUserResponse);
+    public UserResponse updateUser(HttpServletRequest request, UpdateUserRequest updateUserRequest) {
+        String email = jwtTokenProvider.getEmailFromRequest(request);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotExistsException(email));
+        BeanUtils.copyProperties(updateUserRequest, user, "id");
+        userRepository.save(user);
+        return userMapper.userToUserResponse(user);
     }
 
     @Override
-    public void deleteUser(Long userId) {
-        itemRepository.deleteByUser_Id(userId);
-        userRepository.deleteById(userId);
+    public void deleteUser(HttpServletRequest request) {
+        String email = jwtTokenProvider.getEmailFromRequest(request);
+        if (userRepository.existsByEmail(email)) {
+            itemRepository.deleteByUser_Email(email);
+            userRepository.deleteByEmail(email);
+        } else {
+            throw new UserNotExistsException(email);
+        }
     }
 
     @Override

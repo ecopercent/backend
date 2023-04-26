@@ -8,19 +8,21 @@ import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.dto.user.UserResponse;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface UserService {
 
-    UserResponse createUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest);
+    UserResponse createKakaoUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest);
+
+    UserResponse createAppleUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest);
+
 
     ResponseEntity<?> isNicknameDuplicate(String nickname);
 
-    Optional<UserResponse> getUser(Long userId);
+    UserResponse getCurrentUserInfo(HttpServletRequest request);
 
-    Optional<UserResponse> updateUser(Long userId, UpdateUserRequest updateUserRequest);
+    UserResponse updateUser(HttpServletRequest request, UpdateUserRequest updateUserRequest);
 
-    void deleteUser(Long userId);
+    void deleteUser(HttpServletRequest request);
 
     // Test
     List<UserResponse> getAllUser();

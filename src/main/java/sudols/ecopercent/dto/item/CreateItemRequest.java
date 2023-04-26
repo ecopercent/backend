@@ -6,7 +6,6 @@ import java.time.LocalDate;
 
 @Data
 public class CreateItemRequest {
-    private Long userId;
 
     // TODO: image 자료형 뭐로 해야하는지?
     private String image;

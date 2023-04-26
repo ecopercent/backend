@@ -7,13 +7,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.dto.user.UpdateUserRequest;
+import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.dto.user.UserResponse;
 import sudols.ecopercent.service.UserService;
 
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -21,54 +20,58 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/users")
+    @PostMapping("/users/kakao")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public UserResponse CreateUser(HttpServletRequest request, HttpServletResponse response, @RequestBody CreateUserRequest createUserRequest) {
-        return userService.createUser(request, response, createUserRequest);
+    public UserResponse createKakaoUser(HttpServletRequest request, HttpServletResponse response, @RequestBody CreateUserRequest createUserRequest) {
+        return userService.createKakaoUser(request, response, createUserRequest);
     }
+
+    @PostMapping("users/apple")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public UserResponse createAppleUser(HttpServletRequest request, HttpServletResponse response, @RequestBody CreateUserRequest createUserRequest) {
+        return userService.createAppleUser(request, response, createUserRequest);
+    }
+
 
     @GetMapping("/nicknames/{nickname}")
     @ResponseBody
     public ResponseEntity<?> checkNicknameExists(@PathVariable("nickname") String nickname) {
+        System.out.println("checkNicknameExists");
         return userService.isNicknameDuplicate(nickname);
     }
 
-    @GetMapping("/users/{userId}")
+    @GetMapping("/users/me")
     @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public Optional<UserResponse> GetUser(@PathVariable("userId") Long userId) {
-        return userService.getUser(userId);
+    public UserResponse getCurrentUserInfo(HttpServletRequest request) {
+        return userService.getCurrentUserInfo(request);
     }
 
-    @PatchMapping("/users/{userId}")
+    @PatchMapping("/users")
     @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public Optional<UserResponse> UpdateUser(@PathVariable("userId") Long userId,
-                                             @RequestBody UpdateUserRequest updateUserRequest) {
-        return userService.updateUser(userId, updateUserRequest);
+    public UserResponse updateUser(HttpServletRequest request,
+                                   @RequestBody UpdateUserRequest updateUserRequest) {
+        return userService.updateUser(request, updateUserRequest);
     }
 
-    @DeleteMapping("/users/{userId}")
+    @DeleteMapping("/users")
     @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public void DeleteUser(@PathVariable("userId") Long userId) {
-        userService.deleteUser(userId);
+    public void deleteUser(HttpServletRequest request) {
+        userService.deleteUser(request);
     }
 
     // Test
-    @GetMapping("/users")
+    @GetMapping("/users/all")
     @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public List<UserResponse> GetAllUser() {
+    public List<UserResponse> getAllUser() {
         return userService.getAllUser();
     }
 
     // Test
-    @DeleteMapping("/users")
+    @DeleteMapping("/users/all")
     @ResponseBody
-    @ResponseStatus(code = HttpStatus.OK)
-    public void DeleteAllUser() {
+    public void deleteAllUser() {
         userService.deleteAllUser();
     }
 }

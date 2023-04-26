@@ -103,4 +103,9 @@ public class JwtTokenProvider {
         }
         return null;
     }
+
+    public String getEmailFromRequest(HttpServletRequest request) {
+        String token = getTokenFromRequest(request);
+        return getEmailFromToken(token);
+    }
 }

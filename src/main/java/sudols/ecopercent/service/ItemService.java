@@ -1,35 +1,35 @@
 package sudols.ecopercent.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import sudols.ecopercent.dto.item.CreateItemRequest;
 import sudols.ecopercent.dto.item.ItemResponse;
 import sudols.ecopercent.dto.item.UpdateItemRequest;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ItemService {
 
     // TODO: 구현. type 에 따라 goalUsageCount 설정
-    ItemResponse createItem(CreateItemRequest createItemRequest);
+    ItemResponse createItem(HttpServletRequest request, CreateItemRequest createItemRequest);
 
     // TODO: 변경. 좀 더 나은 방법을 찾아볼까?
-    List<ItemResponse> getItemList(Long userId, String category);
+    List<ItemResponse> getMyItemListByCategory(HttpServletRequest request, String category);
 
-    Optional<ItemResponse> getItem(Long itemId);
+    ItemResponse getItem(Long itemId);
 
     // TODO: 구현. type 에 따라 goalUsageCount 설정
-    Optional<ItemResponse> updateItem(Long itemId, UpdateItemRequest updateItemRequest);
+    ItemResponse updateItem(HttpServletRequest request, Long itemId, UpdateItemRequest updateItemRequest);
 
     // TODO: 구현. 마지막 사용횟수 증가
-    Optional<ItemResponse> increaseUsageCount(Long itemId);
+    ItemResponse increaseUsageCount(HttpServletRequest request, Long itemId);
 
-    Optional<ItemResponse> updateTitleTumbler(Long itemId, Long userId);
+    ItemResponse changeTitleTumbler(HttpServletRequest request, Long itemId);
 
-    Optional<ItemResponse> updateTitleEcobag(Long itemId, Long userId);
+    ItemResponse changeTitleEcobag(HttpServletRequest request, Long itemId);
 
-    Optional<ItemResponse> getTitleTumbler(Long userId);
+    ItemResponse getTitleTumbler(HttpServletRequest request);
 
-    Optional<ItemResponse> getTitleEcobag(Long userId);
+    ItemResponse getTitleEcobag(HttpServletRequest request);
 
     void deleteItem(Long itemId);
 
