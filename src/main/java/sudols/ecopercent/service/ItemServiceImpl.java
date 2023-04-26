@@ -2,7 +2,6 @@ package sudols.ecopercent.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sudols.ecopercent.domain.Item;
@@ -29,6 +28,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final ItemMapper itemMapper;
 
+    @Override
     public ItemResponse createItem(CreateItemRequest createItemRequest) {
         return userRepository.findById(createItemRequest.getUserId())
                 .map(user -> {
@@ -39,6 +39,7 @@ public class ItemServiceImpl implements ItemService {
                 .map(itemMapper::itemToItemResponse).get();
     }
 
+    @Override
     public List<ItemResponse> getItemList(Long userId, String category) {
         if (!category.equals("ecobag") && !category.equals("tumbler")) {
             throw new IllegalStateException("존재하지 않는 카테고리입니다.");
@@ -49,11 +50,13 @@ public class ItemServiceImpl implements ItemService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public Optional<ItemResponse> getItem(Long itemId) {
         return itemRepository.findById(itemId)
                 .map(itemMapper::itemToItemResponse);
     }
 
+    @Override
     public Optional<ItemResponse> updateItem(Long itemId, UpdateItemRequest updateItemRequest) {
         return itemRepository.findById(itemId)
                 .map(item -> {
@@ -63,6 +66,7 @@ public class ItemServiceImpl implements ItemService {
                 .map(itemMapper::itemToItemResponse);
     }
 
+    @Override
     public Optional<ItemResponse> increaseUsageCount(Long itemId) {
         return itemRepository.findById(itemId)
                 .map(item -> {
@@ -73,13 +77,46 @@ public class ItemServiceImpl implements ItemService {
                 .map(itemMapper::itemToItemResponse);
     }
 
+
+    @Override
     public Optional<ItemResponse> updateTitleTumbler(Long itemId, Long userId) {
         return updateTitleItem(itemId, "tumbler", userId);
     }
 
 
+    @Override
     public Optional<ItemResponse> updateTitleEcobag(Long itemId, Long userId) {
         return updateTitleItem(itemId, "ecobag", userId);
+    }
+
+    @Override
+    public Optional<ItemResponse> getTitleTumbler(Long userId) {
+        return itemRepository.findByCategoryAndIsTitleAndUser_Id("tumbler", true, userId)
+                .map(itemMapper::itemToItemResponse);
+    }
+
+    @Override
+    public Optional<ItemResponse> getTitleEcobag(Long userId) {
+        return itemRepository.findByCategoryAndIsTitleAndUser_Id("ecobag", true, userId)
+                .map(itemMapper::itemToItemResponse);
+    }
+
+    @Override
+    public void deleteItem(Long itemId) {
+        itemRepository.deleteById(itemId);
+    }
+
+    @Override
+    public List<ItemResponse> getAllItemList() {
+        return itemRepository.findAll()
+                .stream()
+                .map(itemMapper::itemToItemResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteAllItem() {
+        itemRepository.deleteAll();
     }
 
     private Optional<ItemResponse> updateTitleItem(Long itemId, String category, Long userId) {
@@ -94,31 +131,6 @@ public class ItemServiceImpl implements ItemService {
                     return itemRepository.save(item);
                 })
                 .map(itemMapper::itemToItemResponse);
-    }
-
-    public Optional<ItemResponse> getTitleTumbler(Long userId) {
-        return itemRepository.findByCategoryAndIsTitleAndUser_Id("tumbler", true, userId)
-                .map(itemMapper::itemToItemResponse);
-    }
-
-    public Optional<ItemResponse> getTitleEcobag(Long userId) {
-        return itemRepository.findByCategoryAndIsTitleAndUser_Id("ecobag", true, userId)
-                .map(itemMapper::itemToItemResponse);
-    }
-
-    public void deleteItem(Long itemId) {
-        itemRepository.deleteById(itemId);
-    }
-
-    public List<ItemResponse> getAllItemList() {
-        return itemRepository.findAll()
-                .stream()
-                .map(itemMapper::itemToItemResponse)
-                .collect(Collectors.toList());
-    }
-
-    public void deleteAllItem() {
-        itemRepository.deleteAll();
     }
 
     private LocalDateTime getKSTDateTime() {
