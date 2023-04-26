@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
             throw new UserAlreadyExistsException(email);
         }
         User user = userRepository.save(userMapper.createUserRequestToUser(createUserRequest));
-        oAuth2ResponseProvider.generateTokenAndAddCookie(response, user);
+        oAuth2ResponseProvider.generateTokenAndAddTokenCookie(response, user);
         return userMapper.userToUserResponse(user);
     }
 
@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
             throw new UserAlreadyExistsException(email);
         }
         User user = userRepository.save(userMapper.createUserRequestToUser(createUserRequest));
-        AppleTokenResponse appleTokenResponse = oAuth2ResponseProvider.generateTokenReturnTokenResponse(user);
+        AppleTokenResponse appleTokenResponse = oAuth2ResponseProvider.generateTokenAndGetTokenResponse(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(appleTokenResponse);
     }
 

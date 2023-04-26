@@ -3,16 +3,11 @@ package sudols.ecopercent.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import sudols.ecopercent.domain.User;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -81,6 +76,10 @@ public class JwtTokenProvider {
     public String getEmailFromToken(String token) {
         return getClaimsFromTokenWithKey(token, secretKey)
                 .getSubject();
+    }
+
+    public String getEmailFromTokenWithPublicKey(String token, Key key) {
+        return getClaimsFromTokenWithKey(token, key).get("email", String.class);
     }
 
     public boolean validateToken(String token) {
