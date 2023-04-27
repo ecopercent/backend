@@ -97,7 +97,12 @@ public class ItemServiceImpl implements ItemService {
 
     private ItemResponse setTitleItem(HttpServletRequest request, Long itemId, String category) {
         String email = jwtTokenProvider.getEmailFromRequest(request);
-        ItemResponse itemResponse = itemRepository.findById(itemId)
+        itemRepository.findByCategoryAndIsTitleTrueAndUser_Email(category, email)
+                .ifPresent(prevTitleItem -> {
+                    prevTitleItem.setIsTitle(false);
+                    itemRepository.save(prevTitleItem);
+                });
+        return itemRepository.findById(itemId)
                 .map(item -> {
                     isCategoryMatching(item, category);
                     isItemOwnedUserByEmail(item, email);
@@ -106,12 +111,6 @@ public class ItemServiceImpl implements ItemService {
                     return itemMapper.itemToItemResponse(item);
                 })
                 .orElseThrow(() -> new ItemNotExistsException(itemId));
-        itemRepository.findByCategoryAndIsTitleTrueAndUser_Email(category, email)
-                .ifPresent(titleItem -> {
-                    titleItem.setIsTitle(false);
-                    itemRepository.save(titleItem);
-                });
-        return itemResponse;
     }
 
     @Override
