@@ -1,23 +1,27 @@
 package sudols.ecopercent.mapper;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import sudols.ecopercent.domain.Item;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.item.CreateItemRequest;
 import sudols.ecopercent.dto.item.ItemResponse;
+import sudols.ecopercent.util.ImageUtil;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @Component
+@RequiredArgsConstructor
 public class ItemMapper {
+
+    private final ImageUtil imageUtil;
 
     // TODO: 구현. 주어진 type 에 맞게 설정
     public Item createItemRequestToItem(CreateItemRequest request, User user) {
         return Item.builder()
                 .user(user)
-                .image(request.getImage())
                 .nickname(request.getNickname())
                 .category(request.getCategory())
                 .type(request.getType())
@@ -35,7 +39,7 @@ public class ItemMapper {
         return ItemResponse.builder()
                 .id(item.getId())
                 .userId(item.getUser().getId())
-                .image(item.getImage())
+                .image(imageUtil.byteaToBase64(item.getImage()))
                 .nickname(item.getNickname())
                 .category(item.getCategory())
                 .type(item.getType())

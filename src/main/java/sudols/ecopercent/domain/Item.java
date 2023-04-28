@@ -24,7 +24,7 @@ public class Item {
     private User user;
 
     @Column(name = "image")
-    private String image;
+    private byte[] image;
 
     @Column(name = "nickname")
     private String nickname;
