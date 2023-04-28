@@ -2,6 +2,8 @@ package sudols.ecopercent.dto.user;
 
 import lombok.*;
 
+import java.sql.Blob;
+
 @Data
 @Builder
 public class UserResponse {

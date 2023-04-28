@@ -26,8 +26,8 @@ public class User {
     @Column(name = "email", unique = true)
     private String email;
 
-    @Column(name = "profile_image")
-    private String profileImage;
+    @Column(name = "profile_image", length = 2048)
+    private byte[] profileImage;
 
     @Column(name = "profile_message")
     private String profileMessage;

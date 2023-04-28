@@ -4,12 +4,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import sudols.ecopercent.dto.oauth2.apple.AppleTokenResponse;
-import sudols.ecopercent.dto.user.UpdateUserRequest;
 import sudols.ecopercent.dto.user.CreateUserRequest;
+import sudols.ecopercent.dto.user.UpdateUserRequest;
 import sudols.ecopercent.dto.user.UserResponse;
 import sudols.ecopercent.service.UserService;
 
@@ -24,7 +26,9 @@ public class UserController {
     @PostMapping("/users/kakao")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public UserResponse createKakaoUser(HttpServletRequest request, HttpServletResponse response, @RequestBody CreateUserRequest createUserRequest) {
+    public UserResponse createKakaoUser(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        @RequestBody CreateUserRequest createUserRequest) {
         return userService.createKakaoUser(request, response, createUserRequest);
     }
 
@@ -47,11 +51,12 @@ public class UserController {
         return userService.getCurrentUserInfo(request);
     }
 
-    @PatchMapping("/users")
+    @PatchMapping(value = "/users", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseBody
     public UserResponse updateUser(HttpServletRequest request,
-                                   @RequestBody UpdateUserRequest updateUserRequest) {
-        return userService.updateUser(request, updateUserRequest);
+                                   @RequestPart("data") UpdateUserRequest updateUserRequest,
+                                   @RequestPart(value = "profileImage", required = false) MultipartFile profileImageMultipartFile) {
+        return userService.updateUser(request, updateUserRequest, profileImageMultipartFile);
     }
 
     @DeleteMapping("/users")

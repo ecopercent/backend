@@ -15,7 +15,7 @@ public class CreateUserRequest {
     @Email
     private String email;
 
-    private String profileImage;
+    private byte[] profileImage;
 
     private String profileMessage;
 

@@ -3,11 +3,13 @@ package sudols.ecopercent.service;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.oauth2.apple.AppleTokenResponse;
 import sudols.ecopercent.dto.user.CreateUserRequest;
@@ -20,10 +22,12 @@ import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.JwtTokenProvider;
 import sudols.ecopercent.security.OAuth2ResponseProvider;
+import sudols.ecopercent.util.ImageUtil;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -34,9 +38,11 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final JwtTokenProvider jwtTokenProvider;
     private final OAuth2ResponseProvider oAuth2ResponseProvider;
+    private final ImageUtil imageUtil;
 
     // TODO: 구현. 유저 생성 시 등록된 아이템을 대표 아이템으로 등록
     @Override
+
     public UserResponse createKakaoUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest) {
         String email = createUserRequest.getEmail();
         if (userRepository.existsByEmail(email)) {
@@ -73,15 +79,18 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotExistsException(email));
         return userMapper.userToUserResponse(user);
-
     }
 
     @Override
-    public UserResponse updateUser(HttpServletRequest request, UpdateUserRequest updateUserRequest) {
+    public UserResponse updateUser(HttpServletRequest request, UpdateUserRequest updateUserRequest, MultipartFile profileImageMultipartFile) {
         String email = jwtTokenProvider.getEmailFromRequest(request);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotExistsException(email));
         BeanUtils.copyProperties(updateUserRequest, user, "id");
+        byte[] bytes = imageUtil.getBytesFromMultipartFile(profileImageMultipartFile);
+        if (bytes != null) {
+            user.setProfileImage(bytes);
+        }
         userRepository.save(user);
         return userMapper.userToUserResponse(user);
     }
