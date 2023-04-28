@@ -15,8 +15,6 @@ public class CreateUserRequest {
     @Email
     private String email;
 
-    private byte[] profileImage;
-
     private String profileMessage;
 
     private String oAuthProvider;

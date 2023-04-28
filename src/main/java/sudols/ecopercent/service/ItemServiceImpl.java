@@ -76,9 +76,12 @@ public class ItemServiceImpl implements ItemService {
         String email = jwtTokenProvider.getEmailFromRequest(request);
         isItemOwnedUserByEmail(item, email);
         BeanUtils.copyProperties(updateItemRequest, item, "id");
-        byte[] bytes = imageUtil.getBytesFromMultipartFile(itemImageMultipartFile);
-        if (bytes != null) {
-            item.setImage(bytes);
+        byte[] itemImageBytes = imageUtil.getBytesFromMultipartFile(itemImageMultipartFile);
+        if (itemImageBytes != null) {
+            item.setImage(itemImageBytes);
+            System.out.println(itemImageMultipartFile.getOriginalFilename());
+            System.out.println(itemImageMultipartFile.getName());
+            System.out.println(itemImageMultipartFile.getContentType());
         }
         Item updateditem = itemRepository.save(item);
         return itemMapper.itemToItemResponse(updateditem);

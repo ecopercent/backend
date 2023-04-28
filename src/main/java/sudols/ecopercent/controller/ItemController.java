@@ -23,7 +23,7 @@ public class ItemController {
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
     public ItemResponse createItem(HttpServletRequest request,
-                                   @RequestPart("createItemData") CreateItemRequest createItemRequest,
+                                   @RequestPart("itemData") CreateItemRequest createItemRequest,
                                    @RequestPart(value = "itemImage", required = false) MultipartFile itemImageMultipartFile) {
         return itemService.createItem(request, createItemRequest, itemImageMultipartFile);
     }
@@ -45,7 +45,7 @@ public class ItemController {
     @ResponseBody
     public ItemResponse updateItem(HttpServletRequest request,
                                    @PathVariable("itemId") Long itemId,
-                                   @RequestPart("updateItemData") UpdateItemRequest updateItemRequest,
+                                   @RequestPart("itemData") UpdateItemRequest updateItemRequest,
                                    @RequestPart(value = "itemImage", required = false) MultipartFile itemImageMultipartFile) {
         return itemService.updateItem(request, itemId, updateItemRequest, itemImageMultipartFile);
     }

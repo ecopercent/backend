@@ -1,16 +1,11 @@
 package sudols.ecopercent.mapper;
 
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.dto.user.UserResponse;
 import sudols.ecopercent.util.ImageUtil;
-
-import javax.sql.DataSource;
-import javax.sql.rowset.serial.SerialBlob;
-import java.util.Base64;
 
 @Component
 @RequiredArgsConstructor
@@ -22,7 +17,6 @@ public class UserMapper {
         return User.builder()
                 .nickname(request.getNickname())
                 .email(request.getEmail())
-                .profileImage(request.getProfileImage())
                 .profileMessage(request.getProfileMessage())
                 .oAuthProvider(request.getOAuthProvider())
                 .build();
@@ -38,6 +32,4 @@ public class UserMapper {
                 .oAuthProvider(user.getOAuthProvider())
                 .build();
     }
-
-
 }

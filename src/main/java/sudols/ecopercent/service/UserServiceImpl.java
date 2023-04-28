@@ -40,15 +40,18 @@ public class UserServiceImpl implements UserService {
     private final OAuth2ResponseProvider oAuth2ResponseProvider;
     private final ImageUtil imageUtil;
 
-    // TODO: 구현. 유저 생성 시 등록된 아이템을 대표 아이템으로 등록
     @Override
-
-    public UserResponse createKakaoUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest) {
+    public UserResponse createKakaoUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest, MultipartFile profileImageMultipartFile) {
         String email = createUserRequest.getEmail();
         if (userRepository.existsByEmail(email)) {
             throw new UserAlreadyExistsException(email);
         }
-        User user = userRepository.save(userMapper.createUserRequestToUser(createUserRequest));
+        User user = userMapper.createUserRequestToUser(createUserRequest);
+        byte[] profileImageBytes = imageUtil.getBytesFromMultipartFile(profileImageMultipartFile);
+        if (profileImageBytes != null) {
+            user.setProfileImage(profileImageBytes);
+        }
+        userRepository.save(user);
         oAuth2ResponseProvider.generateTokenAndAddCookie(response, user);
         return userMapper.userToUserResponse(user);
     }
@@ -87,9 +90,9 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotExistsException(email));
         BeanUtils.copyProperties(updateUserRequest, user, "id");
-        byte[] bytes = imageUtil.getBytesFromMultipartFile(profileImageMultipartFile);
-        if (bytes != null) {
-            user.setProfileImage(bytes);
+        byte[] profileImageBytes = imageUtil.getBytesFromMultipartFile(profileImageMultipartFile);
+        if (profileImageBytes != null) {
+            user.setProfileImage(profileImageBytes);
         }
         userRepository.save(user);
         return userMapper.userToUserResponse(user);
