@@ -17,10 +17,8 @@ import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.JwtTokenProvider;
 import sudols.ecopercent.util.ImageUtil;
+import sudols.ecopercent.util.TimeUtil;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +32,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemMapper itemMapper;
     private final JwtTokenProvider jwtTokenProvider;
     private final ImageUtil imageUtil;
+    private final TimeUtil timeUtil;
 
     @Override
     public ItemResponse createItem(HttpServletRequest request, CreateItemRequest createItemRequest, MultipartFile itemImageMultipartFile) {
@@ -41,7 +40,6 @@ public class ItemServiceImpl implements ItemService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotExistsException(email));
         Item item = itemMapper.createItemRequestToItem(createItemRequest, user);
-        item.setRegistrationDate(getKSTDateTime());
         byte[] itemImageBytes = imageUtil.getBytesFromMultipartFile(itemImageMultipartFile);
         if (itemImageBytes != null) {
             item.setImage(itemImageBytes);
@@ -94,7 +92,7 @@ public class ItemServiceImpl implements ItemService {
         String email = jwtTokenProvider.getEmailFromRequest(request);
         isItemOwnedUserByEmail(item, email);
         item.setCurrentUsageCount(item.getCurrentUsageCount() + 1);
-        item.setLatestDate(getKSTDateTime());
+        item.setLatestDate(timeUtil.getKSTDateTime());
         Item updatedItem = itemRepository.save(item);
         return itemMapper.itemToItemResponse(updatedItem);
     }
@@ -181,9 +179,5 @@ public class ItemServiceImpl implements ItemService {
         if (!item.getCategory().equals(category)) {
             throw new CategoryMismatchException(item.getId());
         }
-    }
-
-    private LocalDateTime getKSTDateTime() {
-        return ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime().withNano(0);
     }
 }
