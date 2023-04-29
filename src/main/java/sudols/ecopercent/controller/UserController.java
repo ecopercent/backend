@@ -34,11 +34,11 @@ public class UserController {
     public UserResponse createKakaoUser(HttpServletRequest request,
                                         HttpServletResponse response,
                                         @RequestPart("userData") CreateUserRequest createUserRequest,
-                                        @RequestPart("profileImage") MultipartFile profileImageMultipartFile,
-                                        @RequestPart("tumblerData") CreateItemRequest createTumblerRequest,
-                                        @RequestPart("tumblerImage") MultipartFile tumblerImageMultipartFile,
-                                        @RequestPart("ecobagData") CreateItemRequest createEcobagRequest,
-                                        @RequestPart("ecobagImage") MultipartFile ecobagImageMultipartFile) {
+                                        @RequestPart(value = "profileImage", required = false) MultipartFile profileImageMultipartFile,
+                                        @RequestPart(value = "tumblerData", required = false) CreateItemRequest createTumblerRequest,
+                                        @RequestPart(value = "tumblerImage",required = false) MultipartFile tumblerImageMultipartFile,
+                                        @RequestPart(value = "ecobagData", required = false) CreateItemRequest createEcobagRequest,
+                                        @RequestPart(value = "ecobagImage", required = false) MultipartFile ecobagImageMultipartFile) {
         ItemResponse tumblerResponse = itemService.createItem(request, createTumblerRequest, tumblerImageMultipartFile);
         ItemResponse ecobagResponse = itemService.createItem(request, createEcobagRequest, ecobagImageMultipartFile);
         itemService.changeTitleTumbler(request, tumblerResponse.getId());
