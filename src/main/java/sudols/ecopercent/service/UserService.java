@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
+import sudols.ecopercent.dto.item.CreateItemRequest;
 import sudols.ecopercent.dto.oauth2.apple.AppleTokenResponse;
 import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.dto.user.UpdateUserRequest;
@@ -13,9 +14,21 @@ import java.util.List;
 
 public interface UserService {
 
-    UserResponse createKakaoUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest, MultipartFile profileImageMultipartFile);
+    UserResponse createKakaoUser(HttpServletRequest request, HttpServletResponse response,
+                                 CreateUserRequest createUserRequest,
+                                 MultipartFile profileImageMultipartFile,
+                                 CreateItemRequest createTumblerRequest,
+                                 MultipartFile tumblerImageMultipartFile,
+                                 CreateItemRequest createEcobagRequest,
+                                 MultipartFile ecobagImageMultipartFile);
 
-    ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest, MultipartFile profileImageMultipartFile);
+    ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request, HttpServletResponse response,
+                                                       CreateUserRequest createUserRequest,
+                                                       MultipartFile profileImageMultipartFile,
+                                                       CreateItemRequest createTumblerRequest,
+                                                       MultipartFile tumblerImageMultipartFile,
+                                                       CreateItemRequest createEcobagRequest,
+                                                       MultipartFile ecobagImageMultipartFile);
 
     ResponseEntity<?> isNicknameDuplicate(String nickname);
 

@@ -29,16 +29,13 @@ public class OAuth2ResponseProvider {
 
         Cookie accessTokenCookie = new Cookie("access", accessToken);
         Cookie refreshTokenCookie = new Cookie("refresh", refreshToken);
-        Cookie useridCookie = new Cookie("userid", user.getId().toString());
 
         accessTokenCookie.setPath("/");
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setPath("/");
-        useridCookie.setPath("/");
 
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
-        response.addCookie(useridCookie);
         ResponseEntity.status(HttpStatus.OK).build();
     }
 

@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import sudols.ecopercent.domain.User;
+import sudols.ecopercent.dto.item.CreateItemRequest;
+import sudols.ecopercent.dto.item.ItemResponse;
 import sudols.ecopercent.dto.oauth2.apple.AppleTokenResponse;
 import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.dto.user.UpdateUserRequest;
@@ -33,6 +35,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    private final ItemService itemService;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final UserMapper userMapper;
@@ -41,7 +44,14 @@ public class UserServiceImpl implements UserService {
     private final ImageUtil imageUtil;
 
     @Override
-    public UserResponse createKakaoUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest, MultipartFile profileImageMultipartFile) {
+    public UserResponse createKakaoUser(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        CreateUserRequest createUserRequest,
+                                        MultipartFile profileImageMultipartFile,
+                                        CreateItemRequest createTumblerRequest,
+                                        MultipartFile tumblerImageMultipartFile,
+                                        CreateItemRequest createEcobagRequest,
+                                        MultipartFile ecobagImageMultipartFile) {
         String email = jwtTokenProvider.getEmailFromRequest(request);
         if (userRepository.existsByEmail(email)) {
             throw new UserAlreadyExistsException(email);
@@ -54,11 +64,26 @@ public class UserServiceImpl implements UserService {
         }
         userRepository.save(user);
         oAuth2ResponseProvider.generateAccessRefreshTokenAndAddCookie(response, user);
+        if (createTumblerRequest != null) {
+            ItemResponse tumblerResponse = itemService.createItem(request, createTumblerRequest, tumblerImageMultipartFile);
+            itemService.changeTitleTumbler(request, tumblerResponse.getId());
+        }
+        if (createEcobagRequest != null) {
+            ItemResponse ecobagResponse = itemService.createItem(request, createEcobagRequest, ecobagImageMultipartFile);
+            itemService.changeTitleEcobag(request, ecobagResponse.getId());
+        }
         return userMapper.userToUserResponse(user);
     }
 
     @Override
-    public ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest, MultipartFile profileImageMultipartFile) {
+    public ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request,
+                                                              HttpServletResponse response,
+                                                              CreateUserRequest createUserRequest,
+                                                              MultipartFile profileImageMultipartFile,
+                                                              CreateItemRequest createTumblerRequest,
+                                                              MultipartFile tumblerImageMultipartFile,
+                                                              CreateItemRequest createEcobagRequest,
+                                                              MultipartFile ecobagImageMultipartFile) {
         String email = jwtTokenProvider.getEmailFromRequest(request);
         if (userRepository.existsByEmail(email)) {
             throw new UserAlreadyExistsException(email);
@@ -70,6 +95,14 @@ public class UserServiceImpl implements UserService {
             user.setProfileImage(profileImageBytes);
         }
         AppleTokenResponse appleTokenResponse = oAuth2ResponseProvider.generateAccessRefreshTokenAndReturnResponse(user);
+        if (createTumblerRequest != null) {
+            ItemResponse tumblerResponse = itemService.createItem(request, createTumblerRequest, tumblerImageMultipartFile);
+            itemService.changeTitleTumbler(request, tumblerResponse.getId());
+        }
+        if (createEcobagRequest != null) {
+            ItemResponse ecobagResponse = itemService.createItem(request, createEcobagRequest, ecobagImageMultipartFile);
+            itemService.changeTitleEcobag(request, ecobagResponse.getId());
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(appleTokenResponse);
     }
 

@@ -39,12 +39,15 @@ public class UserController {
                                         @RequestPart(value = "tumblerImage",required = false) MultipartFile tumblerImageMultipartFile,
                                         @RequestPart(value = "ecobagData", required = false) CreateItemRequest createEcobagRequest,
                                         @RequestPart(value = "ecobagImage", required = false) MultipartFile ecobagImageMultipartFile) {
-        UserResponse userResponse = userService.createKakaoUser(request, response, createUserRequest, profileImageMultipartFile);
-        ItemResponse tumblerResponse = itemService.createItem(request, createTumblerRequest, tumblerImageMultipartFile);
-        ItemResponse ecobagResponse = itemService.createItem(request, createEcobagRequest, ecobagImageMultipartFile);
-        itemService.changeTitleTumbler(request, tumblerResponse.getId());
-        itemService.changeTitleEcobag(request, ecobagResponse.getId());
-        return userResponse;
+        return userService.createKakaoUser(
+                request,
+                response,
+                createUserRequest,
+                profileImageMultipartFile,
+                createTumblerRequest,
+                tumblerImageMultipartFile,
+                createEcobagRequest,
+                ecobagImageMultipartFile);
     }
 
     @PostMapping("/users/apple")
@@ -58,12 +61,15 @@ public class UserController {
                                                               @RequestPart(value = "tumblerImage",required = false) MultipartFile tumblerImageMultipartFile,
                                                               @RequestPart(value = "ecobagData", required = false) CreateItemRequest createEcobagRequest,
                                                               @RequestPart(value = "ecobagImage", required = false) MultipartFile ecobagImageMultipartFile) {
-        ResponseEntity<AppleTokenResponse> userResponse = userService.createAppleUser(request, response, createUserRequest, profileImageMultipartFile);
-        ItemResponse tumblerResponse = itemService.createItem(request, createTumblerRequest, tumblerImageMultipartFile);
-        ItemResponse ecobagResponse = itemService.createItem(request, createEcobagRequest, ecobagImageMultipartFile);
-        itemService.changeTitleTumbler(request, tumblerResponse.getId());
-        itemService.changeTitleEcobag(request, ecobagResponse.getId());
-        return userResponse;
+        return userService.createAppleUser(
+                request,
+                response,
+                createUserRequest,
+                profileImageMultipartFile,
+                createTumblerRequest,
+                tumblerImageMultipartFile,
+                createEcobagRequest,
+                ecobagImageMultipartFile);
     }
 
     @GetMapping("/nicknames/{nickname}")
