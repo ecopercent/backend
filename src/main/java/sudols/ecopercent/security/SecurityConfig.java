@@ -33,8 +33,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/users/all").permitAll() // TODO: 삭제. TEST
                         .requestMatchers(HttpMethod.GET, "/items/all").permitAll() // TODO: 삭제. TEST
                         .requestMatchers(HttpMethod.DELETE, "/items/all").permitAll() // TODO: 삭제. TEST
-                        .requestMatchers(HttpMethod.POST, "/users/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/nicknames/**").permitAll()
                         .requestMatchers("/login/oauth2/**").permitAll()
                         .anyRequest().authenticated()
                 )
