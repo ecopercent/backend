@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import sudols.ecopercent.domain.User;
-import sudols.ecopercent.dto.oauth2.EmailResponse;
+import sudols.ecopercent.dto.oauth2.SignupResponse;
 import sudols.ecopercent.dto.oauth2.apple.AppleTokenResponse;
 
 @Component
@@ -16,13 +16,14 @@ public class OAuth2ResponseProvider {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    public EmailResponse returnEmailResponse(String email) {
-        return EmailResponse.builder()
-                .email(email)
+    public SignupResponse generateSignupTokenAndReturnResponse(String email) {
+        String emailToken = jwtTokenProvider.generateAccessTokenForSignup(email);
+        return SignupResponse.builder()
+                .access(emailToken)
                 .build();
     }
 
-    public void generateTokenAndAddCookie(HttpServletResponse response, User user) {
+    public void generateAccessRefreshTokenAndAddCookie(HttpServletResponse response, User user) {
         String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
 
@@ -41,7 +42,7 @@ public class OAuth2ResponseProvider {
         ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    public AppleTokenResponse generateTokenReturnTokenResponse(User user) {
+    public AppleTokenResponse generateAccessRefreshTokenAndReturnResponse(User user) {
         String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
 

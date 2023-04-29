@@ -2,6 +2,8 @@ package sudols.ecopercent.domain;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,6 +25,7 @@ public class User {
     @Column(name = "nickname")
     private String nickname;
 
+    @Email
     @Column(name = "email", unique = true)
     private String email;
 

@@ -15,7 +15,7 @@ public interface UserService {
 
     UserResponse createKakaoUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest, MultipartFile profileImageMultipartFile);
 
-    ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest);
+    ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest, MultipartFile profileImageMultipartFile);
 
     ResponseEntity<?> isNicknameDuplicate(String nickname);
 

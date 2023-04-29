@@ -42,28 +42,34 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse createKakaoUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest, MultipartFile profileImageMultipartFile) {
-        String email = createUserRequest.getEmail();
+        String email = jwtTokenProvider.getEmailFromRequest(request);
         if (userRepository.existsByEmail(email)) {
             throw new UserAlreadyExistsException(email);
         }
         User user = userMapper.createUserRequestToUser(createUserRequest);
+        user.setEmail(email);
         byte[] profileImageBytes = imageUtil.getBytesFromMultipartFile(profileImageMultipartFile);
         if (profileImageBytes != null) {
             user.setProfileImage(profileImageBytes);
         }
         userRepository.save(user);
-        oAuth2ResponseProvider.generateTokenAndAddCookie(response, user);
+        oAuth2ResponseProvider.generateAccessRefreshTokenAndAddCookie(response, user);
         return userMapper.userToUserResponse(user);
     }
 
     @Override
-    public ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest) {
-        String email = createUserRequest.getEmail();
+    public ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest, MultipartFile profileImageMultipartFile) {
+        String email = jwtTokenProvider.getEmailFromRequest(request);
         if (userRepository.existsByEmail(email)) {
             throw new UserAlreadyExistsException(email);
         }
         User user = userRepository.save(userMapper.createUserRequestToUser(createUserRequest));
-        AppleTokenResponse appleTokenResponse = oAuth2ResponseProvider.generateTokenReturnTokenResponse(user);
+        user.setEmail(email);
+        byte[] profileImageBytes = imageUtil.getBytesFromMultipartFile(profileImageMultipartFile);
+        if (profileImageBytes != null) {
+            user.setProfileImage(profileImageBytes);
+        }
+        AppleTokenResponse appleTokenResponse = oAuth2ResponseProvider.generateAccessRefreshTokenAndReturnResponse(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(appleTokenResponse);
     }
 

@@ -25,7 +25,7 @@ public class OAuth2Controller {
         return kakaoOAuth2Service.login(request, response);
     }
 
-    @PostMapping("/apple")
+    @PostMapping("/apple/ios")
     @ResponseBody
     public ResponseEntity<?> AppleOAuth2Login(HttpServletRequest request, HttpServletResponse response) {
         return appleOAuth2Service.login(request, response);

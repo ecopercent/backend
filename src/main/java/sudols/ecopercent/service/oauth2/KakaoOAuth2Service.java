@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import sudols.ecopercent.domain.User;
-import sudols.ecopercent.dto.oauth2.EmailResponse;
+import sudols.ecopercent.dto.oauth2.SignupResponse;
 import sudols.ecopercent.dto.oauth2.kakao.KakaoAccountResponse;
 import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.JwtTokenProvider;
@@ -34,18 +34,18 @@ public class KakaoOAuth2Service implements OAuth2Service {
     @Override
     public ResponseEntity<?> login(HttpServletRequest request, HttpServletResponse response) {
         String kakaoAccessToken = jwtTokenProvider.getTokenFromRequest(request);
-        KakaoAccountResponse.KakaoAccount kakaoUserDetail = requestUserDetailByAccessToken(kakaoAccessToken);
+        KakaoAccountResponse.KakaoAccount kakaoUserDetail = requestUserDetailFromKakaoByAccessToken(kakaoAccessToken);
         String email = kakaoUserDetail.getEmail();
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
-            EmailResponse emailResponse = oAuth2ResponseProvider.returnEmailResponse(email);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(emailResponse);
+            SignupResponse signupResponse = oAuth2ResponseProvider.generateSignupTokenAndReturnResponse(email);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(signupResponse);
         }
-        oAuth2ResponseProvider.generateTokenAndAddCookie(response, optionalUser.get());
+        oAuth2ResponseProvider.generateAccessRefreshTokenAndAddCookie(response, optionalUser.get());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    private KakaoAccountResponse.KakaoAccount requestUserDetailByAccessToken(String accessToken) {
+    private KakaoAccountResponse.KakaoAccount requestUserDetailFromKakaoByAccessToken(String accessToken) {
         WebClient client = WebClient.builder()
                 .baseUrl(kapiUri)
                 .defaultHeader("Authorization", "Bearer " + accessToken)
