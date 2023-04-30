@@ -1,9 +1,8 @@
 package sudols.ecopercent.dto.user;
 
-import jakarta.validation.constraints.Email;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
-import sudols.ecopercent.domain.User;
+import lombok.Data;
 
 @Data
 public class CreateUserRequest {
@@ -13,5 +12,6 @@ public class CreateUserRequest {
 
     private String profileMessage;
 
+    @JsonProperty("oAuthProvider")
     private String oAuthProvider;
 }
