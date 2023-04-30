@@ -17,6 +17,7 @@ import sudols.ecopercent.dto.oauth2.apple.AppleTokenResponse;
 import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.dto.user.UpdateUserRequest;
 import sudols.ecopercent.dto.user.UserResponse;
+import sudols.ecopercent.exception.NicknameAlreadyExistsException;
 import sudols.ecopercent.exception.UserAlreadyExistsException;
 import sudols.ecopercent.exception.UserNotExistsException;
 import sudols.ecopercent.mapper.UserMapper;
@@ -52,23 +53,25 @@ public class UserServiceImpl implements UserService {
                                         MultipartFile tumblerImageMultipartFile,
                                         CreateItemRequest createEcobagRequest,
                                         MultipartFile ecobagImageMultipartFile) {
+        if (userRepository.existsByNickname(createUserRequest.getNickname())) {
+            throw new NicknameAlreadyExistsException(createUserRequest.getNickname());
+        }
         String email = jwtTokenProvider.getEmailFromRequest(request);
         if (userRepository.existsByEmail(email)) {
             throw new UserAlreadyExistsException(email);
         }
         User user = userMapper.createUserRequestToUser(createUserRequest);
         user.setEmail(email);
-        byte[] profileImageBytes = imageUtil.getBytesFromMultipartFile(profileImageMultipartFile);
-        if (profileImageBytes != null) {
-            user.setProfileImage(profileImageBytes);
-        }
+        user.setProfileImage(imageUtil.getBytesFromMultipartFile(profileImageMultipartFile));
         userRepository.save(user);
         oAuth2ResponseProvider.generateAccessRefreshTokenAndAddCookie(response, user);
         if (createTumblerRequest != null) {
+            System.out.println(createTumblerRequest.toString());
             ItemResponse tumblerResponse = itemService.createItem(request, createTumblerRequest, tumblerImageMultipartFile);
             itemService.changeTitleTumbler(request, tumblerResponse.getId());
         }
         if (createEcobagRequest != null) {
+            System.out.println(createEcobagRequest.toString());
             ItemResponse ecobagResponse = itemService.createItem(request, createEcobagRequest, ecobagImageMultipartFile);
             itemService.changeTitleEcobag(request, ecobagResponse.getId());
         }
@@ -84,16 +87,16 @@ public class UserServiceImpl implements UserService {
                                                               MultipartFile tumblerImageMultipartFile,
                                                               CreateItemRequest createEcobagRequest,
                                                               MultipartFile ecobagImageMultipartFile) {
+        if (userRepository.existsByNickname(createUserRequest.getNickname())) {
+            throw new NicknameAlreadyExistsException(createUserRequest.getNickname());
+        }
         String email = jwtTokenProvider.getEmailFromRequest(request);
         if (userRepository.existsByEmail(email)) {
             throw new UserAlreadyExistsException(email);
         }
         User user = userRepository.save(userMapper.createUserRequestToUser(createUserRequest));
         user.setEmail(email);
-        byte[] profileImageBytes = imageUtil.getBytesFromMultipartFile(profileImageMultipartFile);
-        if (profileImageBytes != null) {
-            user.setProfileImage(profileImageBytes);
-        }
+        user.setProfileImage(imageUtil.getBytesFromMultipartFile(profileImageMultipartFile));
         AppleTokenResponse appleTokenResponse = oAuth2ResponseProvider.generateAccessRefreshTokenAndReturnResponse(user);
         if (createTumblerRequest != null) {
             ItemResponse tumblerResponse = itemService.createItem(request, createTumblerRequest, tumblerImageMultipartFile);

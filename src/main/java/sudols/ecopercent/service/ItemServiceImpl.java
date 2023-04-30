@@ -40,10 +40,7 @@ public class ItemServiceImpl implements ItemService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotExistsException(email));
         Item item = itemMapper.createItemRequestToItem(createItemRequest, user);
-        byte[] itemImageBytes = imageUtil.getBytesFromMultipartFile(itemImageMultipartFile);
-        if (itemImageBytes != null) {
-            item.setImage(itemImageBytes);
-        }
+        item.setImage(imageUtil.getBytesFromMultipartFile(itemImageMultipartFile));
         itemRepository.save(item);
         return itemMapper.itemToItemResponse(item);
     }

@@ -52,4 +52,10 @@ public class ExceptionHandlers {
         log.debug("Handling exception: " + e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
+
+    @ExceptionHandler(NicknameAlreadyExistsException.class)
+    public ResponseEntity<?> handleNicknameAlreadyExistsException(NicknameAlreadyExistsException e) {
+        log.debug("Handling: exception: " + e);
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
 }
