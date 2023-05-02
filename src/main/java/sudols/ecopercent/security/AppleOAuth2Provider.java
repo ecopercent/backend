@@ -24,7 +24,7 @@ public class AppleOAuth2Provider {
 
     public PublicKey getPublicKey(String identityToken) {
         try {
-            List<AppleJWKSetResponse.Key> jsonWebKeys = requestJsonWebKeysFromApple();
+            List<AppleJWKSetResponse.Key> jsonWebKeys = getJsonWebKeysFromApple();
             AppleJWKSetResponse.Key jsonWebKey = getJsonWebKeyForIdentityTokenFromJsonWebKeys(jsonWebKeys, identityToken)
                     .orElseThrow(() -> new NullPointerException("Failed get public key from apple's id server."));
 
@@ -42,7 +42,7 @@ public class AppleOAuth2Provider {
         }
     }
 
-    private List<AppleJWKSetResponse.Key> requestJsonWebKeysFromApple() {
+    private List<AppleJWKSetResponse.Key> getJsonWebKeysFromApple() {
         return WebClient.create("https://appleid.apple.com")
                 .get()
                 .uri(uriBuilder -> uriBuilder.path("/auth/keys")
@@ -69,8 +69,7 @@ public class AppleOAuth2Provider {
             String headerOfIdentityToken = identityToken.substring(0, identityToken.indexOf("."));
             return objectMapper.readValue(new String(Base64.getDecoder().decode(headerOfIdentityToken), StandardCharsets.UTF_8), AppleIdentityToken.Header.class);
         } catch (Exception e) {
-            log.debug("Exception from decodeIdentityTokenHeader: " + e);
-            return null; // TODO: 예외처리
+            throw new AppleOAuth2Exception(e);
         }
     }
 }

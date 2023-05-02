@@ -3,6 +3,7 @@ package sudols.ecopercent.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,8 @@ public class OAuth2Controller {
 
     @PostMapping("/kakao")
     @ResponseBody
-    public ResponseEntity<?> kakaoOAuth2Login(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> kakaoOAuth2Login(HttpServletRequest request,
+                                              HttpServletResponse response) {
         System.out.println("kakaoOAuth2Login");
         return kakaoOAuth2Service.login(request, response);
     }
@@ -33,9 +35,10 @@ public class OAuth2Controller {
         return appleOAuth2IosService.login(request);
     }
 
-    @PostMapping("/apple/web")
-    public ResponseEntity<?> appleOAuth2LoginWeb(HttpServletRequest request, HttpServletResponse response, @RequestBody AppleAuthorizationResponse appleAuthorizationResponse) {
+    @PostMapping(value = "/apple/web", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<?> appleOAuth2LoginWeb(HttpServletResponse response,
+                                                 @RequestBody AppleAuthorizationResponse appleAuthorizationResponse) {
+        System.out.println("appleOAuth2LoginWeb");
         return appleOAuth2WebService.login(response, appleAuthorizationResponse);
-
     }
 }

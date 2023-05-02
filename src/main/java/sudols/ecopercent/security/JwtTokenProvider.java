@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import sudols.ecopercent.exception.AppleOAuth2Exception;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -68,8 +69,8 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (Exception e) {
-            log.debug("Exception From getClaimsFromTokenWithKey: " + e);
-            return null; // TODO: 예외처리
+            System.out.println("claims Error: " + e);
+            throw new AppleOAuth2Exception(e);
         }
     }
 
@@ -79,7 +80,9 @@ public class JwtTokenProvider {
     }
 
     public String getEmailFromTokenWithPublicKey(String token, Key key) {
-        return getClaimsFromTokenWithKey(token, key).get("email", String.class);
+        Claims claims = getClaimsFromTokenWithKey(token, key);
+        return claims.get("email", String.class);
+//        return getClaimsFromTokenWithKey(token, key).get("email", String.class);
     }
 
     public boolean validateToken(String token) {
