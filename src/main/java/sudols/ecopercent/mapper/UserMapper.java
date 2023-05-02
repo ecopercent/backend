@@ -10,7 +10,7 @@ import sudols.ecopercent.dto.user.UserResponse;
 @RequiredArgsConstructor
 public class UserMapper {
 
-¬    public User createUserRequestToUser(CreateUserRequest request) {
+    public User createUserRequestToUser(CreateUserRequest request) {
         return User.builder()
                 .profileImage(request.getProfileImage())
                 .nickname(request.getNickname())
