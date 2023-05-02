@@ -35,7 +35,7 @@ public class OAuth2Controller {
         return appleOAuth2IosService.login(request);
     }
 
-    @PostMapping(value = "/apple/web", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(value = "/apple/web", consumes = "application/x-www-form-urlencoded")
     public ResponseEntity<?> appleOAuth2LoginWeb(HttpServletResponse response,
                                                  @RequestBody AppleAuthorizationResponse appleAuthorizationResponse) {
         System.out.println("appleOAuth2LoginWeb");
