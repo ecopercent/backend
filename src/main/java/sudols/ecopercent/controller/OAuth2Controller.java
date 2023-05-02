@@ -12,6 +12,8 @@ import sudols.ecopercent.service.oauth2.AppleOAuth2IosService;
 import sudols.ecopercent.service.oauth2.AppleOAuth2WebService;
 import sudols.ecopercent.service.oauth2.KakaoOAuth2Service;
 
+import org.springframework.util.MultiValueMap;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/login/oauth2")
@@ -35,10 +37,11 @@ public class OAuth2Controller {
         return appleOAuth2IosService.login(request);
     }
 
-    @PostMapping(value = "/apple/web", consumes = { MediaType.APPLICATION_FORM_URLENCODED_VALUE })
-    public ResponseEntity<?> appleOAuth2LoginWeb(HttpServletResponse response,
-                                                 @RequestBody AppleAuthorizationResponse appleAuthorizationResponse) {
+    @PostMapping(path = "/apple/web", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+public ResponseEntity<?> appleOAuth2LoginWeb(HttpServletResponse response,
+                                             @RequestBody MultiValueMap<String, String> appleAuthorizationResponse) {
         System.out.println("appleOAuth2LoginWeb123");
+        System.out.println(appleAuthorizationResponse);
         return appleOAuth2WebService.login(response, appleAuthorizationResponse);
     }
 }
