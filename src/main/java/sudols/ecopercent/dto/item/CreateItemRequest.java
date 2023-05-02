@@ -7,6 +7,8 @@ import java.time.LocalDate;
 @Data
 public class CreateItemRequest {
 
+    private String image;
+
     private String nickname;
 
     private String category;
@@ -18,5 +20,4 @@ public class CreateItemRequest {
     private Integer price;
 
     private LocalDate purchaseDate;
-
 }

@@ -6,6 +6,8 @@ import java.time.LocalDate;
 @Data
 public class UpdateItemRequest {
 
+    private String image;
+
     private String nickname;
 
     private String type;

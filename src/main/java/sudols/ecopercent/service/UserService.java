@@ -16,25 +16,14 @@ public interface UserService {
 
     UserResponse createKakaoUser(HttpServletRequest request, HttpServletResponse response,
                                  CreateUserRequest createUserRequest,
-                                 MultipartFile profileImageMultipartFile,
                                  CreateItemRequest createTumblerRequest,
-                                 MultipartFile tumblerImageMultipartFile,
-                                 CreateItemRequest createEcobagRequest,
-                                 MultipartFile ecobagImageMultipartFile);
+                                 CreateItemRequest createEcobagRequest);
 
-    ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request, HttpServletResponse response,
-                                                       CreateUserRequest createUserRequest,
-                                                       MultipartFile profileImageMultipartFile,
-                                                       CreateItemRequest createTumblerRequest,
-                                                       MultipartFile tumblerImageMultipartFile,
-                                                       CreateItemRequest createEcobagRequest,
-                                                       MultipartFile ecobagImageMultipartFile);
-
-    ResponseEntity<?> isNicknameDuplicate(String nickname);
+    ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest);
 
     UserResponse getCurrentUserInfo(HttpServletRequest request);
 
-    UserResponse updateUser(HttpServletRequest request, UpdateUserRequest updateUserRequest, MultipartFile profileImageMultipartFile);
+    UserResponse updateUser(HttpServletRequest request, UpdateUserRequest updateUserRequest);
 
     void deleteUser(HttpServletRequest request);
 

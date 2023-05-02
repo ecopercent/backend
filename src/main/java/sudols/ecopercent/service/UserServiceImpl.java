@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.item.CreateItemRequest;
 import sudols.ecopercent.dto.item.ItemResponse;
@@ -25,7 +24,6 @@ import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.JwtTokenProvider;
 import sudols.ecopercent.security.OAuth2ResponseProvider;
-import sudols.ecopercent.util.ImageUtil;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,17 +40,13 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final JwtTokenProvider jwtTokenProvider;
     private final OAuth2ResponseProvider oAuth2ResponseProvider;
-    private final ImageUtil imageUtil;
 
     @Override
     public UserResponse createKakaoUser(HttpServletRequest request,
                                         HttpServletResponse response,
                                         CreateUserRequest createUserRequest,
-                                        MultipartFile profileImageMultipartFile,
                                         CreateItemRequest createTumblerRequest,
-                                        MultipartFile tumblerImageMultipartFile,
-                                        CreateItemRequest createEcobagRequest,
-                                        MultipartFile ecobagImageMultipartFile) {
+                                        CreateItemRequest createEcobagRequest) {
         if (userRepository.existsByNickname(createUserRequest.getNickname())) {
             throw new NicknameAlreadyExistsException(createUserRequest.getNickname());
         }
@@ -62,31 +56,22 @@ public class UserServiceImpl implements UserService {
         }
         User user = userMapper.createUserRequestToUser(createUserRequest);
         user.setEmail(email);
-        user.setProfileImage(imageUtil.getBytesFromMultipartFile(profileImageMultipartFile));
+        user.setProfileImage(createUserRequest.getProfileImage());
         userRepository.save(user);
         oAuth2ResponseProvider.generateAccessRefreshTokenAndAddCookie(response, user);
         if (createTumblerRequest != null) {
-            System.out.println(createTumblerRequest.toString());
-            ItemResponse tumblerResponse = itemService.createItem(request, createTumblerRequest, tumblerImageMultipartFile);
+            ItemResponse tumblerResponse = itemService.createItem(request, createTumblerRequest);
             itemService.changeTitleTumbler(request, tumblerResponse.getId());
         }
         if (createEcobagRequest != null) {
-            System.out.println(createEcobagRequest.toString());
-            ItemResponse ecobagResponse = itemService.createItem(request, createEcobagRequest, ecobagImageMultipartFile);
+            ItemResponse ecobagResponse = itemService.createItem(request, createEcobagRequest);
             itemService.changeTitleEcobag(request, ecobagResponse.getId());
         }
         return userMapper.userToUserResponse(user);
     }
 
     @Override
-    public ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request,
-                                                              HttpServletResponse response,
-                                                              CreateUserRequest createUserRequest,
-                                                              MultipartFile profileImageMultipartFile,
-                                                              CreateItemRequest createTumblerRequest,
-                                                              MultipartFile tumblerImageMultipartFile,
-                                                              CreateItemRequest createEcobagRequest,
-                                                              MultipartFile ecobagImageMultipartFile) {
+    public ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest) {
         if (userRepository.existsByNickname(createUserRequest.getNickname())) {
             throw new NicknameAlreadyExistsException(createUserRequest.getNickname());
         }
@@ -96,26 +81,8 @@ public class UserServiceImpl implements UserService {
         }
         User user = userRepository.save(userMapper.createUserRequestToUser(createUserRequest));
         user.setEmail(email);
-        user.setProfileImage(imageUtil.getBytesFromMultipartFile(profileImageMultipartFile));
         AppleTokenResponse appleTokenResponse = oAuth2ResponseProvider.generateAccessRefreshTokenAndReturnResponse(user);
-        if (createTumblerRequest != null) {
-            ItemResponse tumblerResponse = itemService.createItem(request, createTumblerRequest, tumblerImageMultipartFile);
-            itemService.changeTitleTumbler(request, tumblerResponse.getId());
-        }
-        if (createEcobagRequest != null) {
-            ItemResponse ecobagResponse = itemService.createItem(request, createEcobagRequest, ecobagImageMultipartFile);
-            itemService.changeTitleEcobag(request, ecobagResponse.getId());
-        }
         return ResponseEntity.status(HttpStatus.CREATED).body(appleTokenResponse);
-    }
-
-    @Override
-    public ResponseEntity<?> isNicknameDuplicate(String nickname) {
-        if (userRepository.existsByNickname(nickname)) {
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
     }
 
     @Override
@@ -127,14 +94,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse updateUser(HttpServletRequest request, UpdateUserRequest updateUserRequest, MultipartFile profileImageMultipartFile) {
+    public UserResponse updateUser(HttpServletRequest request, UpdateUserRequest updateUserRequest) {
         String email = jwtTokenProvider.getEmailFromRequest(request);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotExistsException(email));
-        BeanUtils.copyProperties(updateUserRequest, user, "id");
-        byte[] profileImageBytes = imageUtil.getBytesFromMultipartFile(profileImageMultipartFile);
-        if (profileImageBytes != null) {
-            user.setProfileImage(profileImageBytes);
+        BeanUtils.copyProperties(updateUserRequest, user);
+        if (updateUserRequest.getProfileImage() != null) {
+            user.setProfileImage(updateUserRequest.getProfileImage());
         }
         userRepository.save(user);
         return userMapper.userToUserResponse(user);

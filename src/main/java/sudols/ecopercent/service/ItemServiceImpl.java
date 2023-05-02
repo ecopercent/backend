@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import sudols.ecopercent.domain.Item;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.item.CreateItemRequest;
@@ -16,7 +15,6 @@ import sudols.ecopercent.mapper.ItemMapper;
 import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.JwtTokenProvider;
-import sudols.ecopercent.util.ImageUtil;
 import sudols.ecopercent.util.TimeUtil;
 
 import java.util.List;
@@ -31,16 +29,14 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final ItemMapper itemMapper;
     private final JwtTokenProvider jwtTokenProvider;
-    private final ImageUtil imageUtil;
     private final TimeUtil timeUtil;
 
     @Override
-    public ItemResponse createItem(HttpServletRequest request, CreateItemRequest createItemRequest, MultipartFile itemImageMultipartFile) {
+    public ItemResponse createItem(HttpServletRequest request, CreateItemRequest createItemRequest) {
         String email = jwtTokenProvider.getEmailFromRequest(request);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotExistsException(email));
         Item item = itemMapper.createItemRequestToItem(createItemRequest, user);
-        item.setImage(imageUtil.getBytesFromMultipartFile(itemImageMultipartFile));
         itemRepository.save(item);
         return itemMapper.itemToItemResponse(item);
     }
@@ -65,18 +61,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemResponse updateItem(HttpServletRequest request, Long itemId, UpdateItemRequest updateItemRequest, MultipartFile itemImageMultipartFile) {
+    public ItemResponse updateItem(HttpServletRequest request, Long itemId, UpdateItemRequest updateItemRequest) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotExistsException(itemId));
         String email = jwtTokenProvider.getEmailFromRequest(request);
         isItemOwnedUserByEmail(item, email);
-        BeanUtils.copyProperties(updateItemRequest, item, "id");
-        byte[] itemImageBytes = imageUtil.getBytesFromMultipartFile(itemImageMultipartFile);
-        if (itemImageBytes != null) {
-            item.setImage(itemImageBytes);
-            System.out.println(itemImageMultipartFile.getOriginalFilename());
-            System.out.println(itemImageMultipartFile.getName());
-            System.out.println(itemImageMultipartFile.getContentType());
+        BeanUtils.copyProperties(updateItemRequest, item);
+        if (updateItemRequest.getImage() != null) {
+            item.setImage(updateItemRequest.getImage());
         }
         Item updateditem = itemRepository.save(item);
         return itemMapper.itemToItemResponse(updateditem);

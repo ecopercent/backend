@@ -5,16 +5,14 @@ import org.springframework.stereotype.Component;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.dto.user.UserResponse;
-import sudols.ecopercent.util.ImageUtil;
 
 @Component
 @RequiredArgsConstructor
 public class UserMapper {
 
-    private final ImageUtil imageUtil;
-
-    public User createUserRequestToUser(CreateUserRequest request) {
+¬    public User createUserRequestToUser(CreateUserRequest request) {
         return User.builder()
+                .profileImage(request.getProfileImage())
                 .nickname(request.getNickname())
                 .profileMessage(request.getProfileMessage())
                 .oAuthProvider(request.getOAuthProvider())
@@ -26,7 +24,7 @@ public class UserMapper {
                 .id(user.getId())
                 .nickname(user.getNickname())
                 .email(user.getEmail())
-                .profileImage(imageUtil.byteaToBase64(user.getProfileImage()))
+                .profileImage(user.getProfileImage())
                 .profileMessage(user.getProfileMessage())
                 .oAuthProvider(user.getOAuthProvider())
                 .build();
