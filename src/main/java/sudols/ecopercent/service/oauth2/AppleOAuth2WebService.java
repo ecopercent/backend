@@ -1,18 +1,15 @@
 package sudols.ecopercent.service.oauth2;
 
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import sudols.ecopercent.domain.User;
-import sudols.ecopercent.dto.oauth2.EmailResponse;
 import sudols.ecopercent.dto.oauth2.apple.AppleAuthorizationResponse;
-import sudols.ecopercent.dto.oauth2.apple.AppleTokenResponse;
 import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.AppleOAuth2Provider;
 import sudols.ecopercent.security.JwtTokenProvider;
@@ -22,8 +19,6 @@ import java.net.URI;
 import java.security.PublicKey;
 import java.util.Optional;
 
-import org.springframework.util.MultiValueMap;
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AppleOAuth2WebService {
@@ -33,8 +28,9 @@ public class AppleOAuth2WebService {
     private final OAuth2ResponseProvider oAuth2ResponseProvider;
     private final AppleOAuth2Provider appleOAuth2Provider;
 
-    public ResponseEntity<?> login(HttpServletRequest request, HttpServletResponse response,  AppleAuthorizationResponse appleAuthorizationResponse) {
-        String referer = request.getHeader("Referer");
+    public ResponseEntity<?> login(HttpServletRequest request, HttpServletResponse response, AppleAuthorizationResponse appleAuthorizationResponse) {
+        // TODO: 하드코딩
+        final String referer = "https://www.ecopercent.com";
         System.out.println("referer: " + referer);
         String identityToken = appleAuthorizationResponse.getId_token();
         System.out.println("identityToken: " + identityToken);
