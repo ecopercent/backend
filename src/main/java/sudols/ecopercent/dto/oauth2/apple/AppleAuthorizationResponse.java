@@ -9,7 +9,7 @@ public class AppleAuthorizationResponse {
 
     private String code;
 
-    private String idToken;
+    private String id_token;
 
     private String state;
 }

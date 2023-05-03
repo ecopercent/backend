@@ -34,7 +34,7 @@ public class AppleOAuth2WebService {
     private final AppleOAuth2Provider appleOAuth2Provider;
 
     public ResponseEntity<?> login(HttpServletResponse response,  AppleAuthorizationResponse appleAuthorizationResponse) {
-        String identityToken = appleAuthorizationResponse.getIdToken();
+        String identityToken = appleAuthorizationResponse.getId_token();
         System.out.println("identityToken: " + identityToken);
         PublicKey publicKey = appleOAuth2Provider.getPublicKey(identityToken);
         System.out.println("publicKey: " + publicKey);
