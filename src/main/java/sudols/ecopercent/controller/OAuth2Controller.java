@@ -3,17 +3,16 @@ package sudols.ecopercent.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import sudols.ecopercent.dto.oauth2.apple.AppleAuthorizationResponse;
 import sudols.ecopercent.service.oauth2.AppleOAuth2IosService;
 import sudols.ecopercent.service.oauth2.AppleOAuth2WebService;
 import sudols.ecopercent.service.oauth2.KakaoOAuth2Service;
-
-import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -40,8 +39,8 @@ public class OAuth2Controller {
 
     @PostMapping("/apple/web")
     public ResponseEntity<?> appleOAuth2LoginWeb(HttpServletResponse response,
-                                                 @ModelAttribute AppleAuthorizationResponse appleAuthorizationResponse) {
-        System.out.println("appleOAuth2LoginWeb");
+                                                 @RequestParam AppleAuthorizationResponse appleAuthorizationResponse) {
+        System.out.println("### appleOAuth2LoginWeb ###");
         System.out.println(appleAuthorizationResponse.toString());
         return appleOAuth2WebService.login(response, appleAuthorizationResponse);
     }
