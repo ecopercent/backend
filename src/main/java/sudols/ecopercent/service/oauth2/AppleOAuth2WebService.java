@@ -33,8 +33,8 @@ public class AppleOAuth2WebService {
     private final OAuth2ResponseProvider oAuth2ResponseProvider;
     private final AppleOAuth2Provider appleOAuth2Provider;
 
-    public ResponseEntity<?> login(HttpServletResponse response,  MultiValueMap<String,String> appleAuthorizationResponse) {
-        String identityToken = appleAuthorizationResponse.get("id_token").get(0);
+    public ResponseEntity<?> login(HttpServletResponse response,  AppleAuthorizationResponse appleAuthorizationResponse) {
+        String identityToken = appleAuthorizationResponse.getIdToken();
         PublicKey publicKey = appleOAuth2Provider.getPublicKey(identityToken);
         String email = jwtTokenProvider.getEmailFromTokenWithPublicKey(identityToken, publicKey);
         Optional<User> optionalUser = userRepository.findByEmail(email);
