@@ -40,7 +40,7 @@ public class OAuth2Controller {
 
     @PostMapping("/apple/web")
     public ResponseEntity<?> appleOAuth2LoginWeb(HttpServletResponse response,
-                                                 @RequestBody AppleAuthorizationResponse appleAuthorizationResponse) {
+                                                 @ModelAttribute AppleAuthorizationResponse appleAuthorizationResponse) {
         System.out.println("appleOAuth2LoginWeb");
         System.out.println(appleAuthorizationResponse.toString());
         return appleOAuth2WebService.login(response, appleAuthorizationResponse);
