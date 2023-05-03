@@ -5,10 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import sudols.ecopercent.dto.oauth2.apple.AppleAuthorizationResponse;
 import sudols.ecopercent.service.oauth2.AppleOAuth2IosService;
 import sudols.ecopercent.service.oauth2.AppleOAuth2WebService;
@@ -39,7 +36,7 @@ public class OAuth2Controller {
 
     @PostMapping("/apple/web")
     public ResponseEntity<?> appleOAuth2LoginWeb(HttpServletResponse response,
-                                                 @RequestParam AppleAuthorizationResponse appleAuthorizationResponse) {
+                                                 @ModelAttribute AppleAuthorizationResponse appleAuthorizationResponse) {
         System.out.println("### appleOAuth2LoginWeb ###");
         System.out.println(appleAuthorizationResponse.toString());
         return appleOAuth2WebService.login(response, appleAuthorizationResponse);

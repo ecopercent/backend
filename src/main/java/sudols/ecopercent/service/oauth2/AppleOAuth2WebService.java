@@ -35,8 +35,11 @@ public class AppleOAuth2WebService {
 
     public ResponseEntity<?> login(HttpServletResponse response,  AppleAuthorizationResponse appleAuthorizationResponse) {
         String identityToken = appleAuthorizationResponse.getIdToken();
+        System.out.println("identityToken: " + identityToken);
         PublicKey publicKey = appleOAuth2Provider.getPublicKey(identityToken);
+        System.out.println("publicKey: " + publicKey);
         String email = jwtTokenProvider.getEmailFromTokenWithPublicKey(identityToken, publicKey);
+        System.out.println("email: " + email);
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
             oAuth2ResponseProvider.addEmailCookie(response, email);
