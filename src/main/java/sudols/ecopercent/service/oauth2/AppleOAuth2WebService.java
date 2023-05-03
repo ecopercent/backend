@@ -33,7 +33,9 @@ public class AppleOAuth2WebService {
     private final OAuth2ResponseProvider oAuth2ResponseProvider;
     private final AppleOAuth2Provider appleOAuth2Provider;
 
-    public ResponseEntity<?> login(HttpServletResponse response,  AppleAuthorizationResponse appleAuthorizationResponse) {
+    public ResponseEntity<?> login(HttpServletRequest request, HttpServletResponse response,  AppleAuthorizationResponse appleAuthorizationResponse) {
+        String referer = request.getHeader("Referer");
+        System.out.println("referer: " + referer);
         String identityToken = appleAuthorizationResponse.getId_token();
         System.out.println("identityToken: " + identityToken);
         PublicKey publicKey = appleOAuth2Provider.getPublicKey(identityToken);
@@ -44,12 +46,12 @@ public class AppleOAuth2WebService {
         if (optionalUser.isEmpty()) {
             oAuth2ResponseProvider.addEmailCookie(response, email);
             HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setLocation(URI.create("/signup"));
+            httpHeaders.setLocation(URI.create(referer + "/signup"));
             return new ResponseEntity<>(httpHeaders, HttpStatus.MOVED_PERMANENTLY);
         }
         oAuth2ResponseProvider.generateTokenAndAddTokenCookie(response, optionalUser.get());
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create("/welcome"));
+        httpHeaders.setLocation(URI.create(referer + "/welcome"));
         return new ResponseEntity<>(httpHeaders, HttpStatus.MOVED_PERMANENTLY);
     }
 }
