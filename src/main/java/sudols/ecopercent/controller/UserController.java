@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import sudols.ecopercent.dto.item.CreateItemRequest;
 import sudols.ecopercent.dto.oauth2.apple.AppleTokenResponse;
 import sudols.ecopercent.dto.user.CreateUserRequest;
@@ -25,22 +26,32 @@ public class UserController {
 
     @PostMapping("/users/kakao")
     @ResponseBody
-    @ResponseStatus(code = HttpStatus.CREATED)
     public UserResponse createKakaoUser(HttpServletRequest request,
                                         HttpServletResponse response,
                                         @RequestPart("userData") CreateUserRequest createUserRequest,
+                                        @RequestPart("profileImgae") MultipartFile profileImage,
                                         @RequestPart(value = "tumblerData", required = false) CreateItemRequest createTumblerRequest,
-                                        @RequestPart(value = "ecobagData", required = false) CreateItemRequest createEcobagRequest) {
-        return userService.createKakaoUser(request, response, createUserRequest, createTumblerRequest, createEcobagRequest);
+                                        @RequestPart(value = "tumblerImage", required = false) MultipartFile tumblerImage,
+                                        @RequestPart(value = "ecobagData", required = false) CreateItemRequest createEcobagRequest,
+                                        @RequestPart(value = "ecobagImage", required = false) MultipartFile ecobagImage) {
+        return userService.createKakaoUser(
+                request, response,
+                createUserRequest, profileImage,
+                createTumblerRequest, tumblerImage,
+                createEcobagRequest, ecobagImage);
     }
 
-    @PostMapping("/users/apple")
+    @PostMapping(value = "/users/apple", consumes = { "multipart/form-data" })
     @ResponseBody
-    @ResponseStatus(code = HttpStatus.CREATED)
     public ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request,
                                                               HttpServletResponse response,
-                                                              @RequestBody CreateUserRequest createUserRequest) {
-        return userService.createAppleUser(request, response, createUserRequest);
+                                                              @RequestPart(value = "userData", required = false) CreateUserRequest createUserRequest,
+                                                              @RequestPart(value = "profileImage", required = false) MultipartFile profileImage) {
+        System.out.println("Post /users/apple");
+        System.out.println("userData: " + createUserRequest.toString());
+        System.out.println("profileImage: " + profileImage);
+        return userService.createAppleUser(request, response, createUserRequest, profileImage);
+//        return null;
     }
 
     @GetMapping("/users/me")

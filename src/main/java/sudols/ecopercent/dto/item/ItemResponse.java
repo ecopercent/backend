@@ -14,7 +14,7 @@ public class ItemResponse {
 
     private Long userId;
 
-    private String image;
+    private byte[] image;
 
     private String nickname;
 

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.item.CreateItemRequest;
 import sudols.ecopercent.dto.item.ItemResponse;
@@ -42,11 +43,10 @@ public class UserServiceImpl implements UserService {
     private final OAuth2ResponseProvider oAuth2ResponseProvider;
 
     @Override
-    public UserResponse createKakaoUser(HttpServletRequest request,
-                                        HttpServletResponse response,
-                                        CreateUserRequest createUserRequest,
-                                        CreateItemRequest createTumblerRequest,
-                                        CreateItemRequest createEcobagRequest) {
+    public UserResponse createKakaoUser(HttpServletRequest request, HttpServletResponse response,
+                                        CreateUserRequest createUserRequest, MultipartFile profileImage,
+                                        CreateItemRequest createTumblerRequest, MultipartFile tumblerImage,
+                                        CreateItemRequest createEcobagRequest, MultipartFile ecobagImage) {
         if (userRepository.existsByNickname(createUserRequest.getNickname())) {
             throw new NicknameAlreadyExistsException(createUserRequest.getNickname());
         }
@@ -56,7 +56,6 @@ public class UserServiceImpl implements UserService {
         }
         User user = userMapper.createUserRequestToUser(createUserRequest);
         user.setEmail(email);
-        user.setProfileImage(createUserRequest.getProfileImage());
         userRepository.save(user);
         oAuth2ResponseProvider.generateAccessRefreshTokenAndAddCookie(response, user);
         if (createTumblerRequest != null) {
@@ -71,7 +70,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest) {
+    public ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request, HttpServletResponse response,
+                                                              CreateUserRequest createUserRequest, MultipartFile profileImage) {
         if (userRepository.existsByNickname(createUserRequest.getNickname())) {
             throw new NicknameAlreadyExistsException(createUserRequest.getNickname());
         }
@@ -81,6 +81,12 @@ public class UserServiceImpl implements UserService {
         }
         User user = userRepository.save(userMapper.createUserRequestToUser(createUserRequest));
         user.setEmail(email);
+        try {
+            user.setProfileImage(profileImage.getBytes());
+        } catch (Exception e) {
+            user.setProfileImage(null);
+        }
+        userRepository.save(user);
         AppleTokenResponse appleTokenResponse = oAuth2ResponseProvider.generateAccessRefreshTokenAndReturnResponse(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(appleTokenResponse);
     }

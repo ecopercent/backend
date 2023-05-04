@@ -24,8 +24,8 @@ public class Item {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "image", length = 2048)
-    private String image;
+    @Column(name = "image", length = 56000)
+    private byte[] image;
 
     @Column(name = "nickname")
     private String nickname;

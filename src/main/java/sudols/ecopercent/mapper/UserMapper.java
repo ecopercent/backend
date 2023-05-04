@@ -12,7 +12,6 @@ public class UserMapper {
 
     public User createUserRequestToUser(CreateUserRequest request) {
         return User.builder()
-                .profileImage(request.getProfileImage())
                 .nickname(request.getNickname())
                 .profileMessage(request.getProfileMessage())
                 .oAuthProvider(request.getOAuthProvider())

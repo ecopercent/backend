@@ -15,11 +15,12 @@ import java.util.List;
 public interface UserService {
 
     UserResponse createKakaoUser(HttpServletRequest request, HttpServletResponse response,
-                                 CreateUserRequest createUserRequest,
-                                 CreateItemRequest createTumblerRequest,
-                                 CreateItemRequest createEcobagRequest);
+                                 CreateUserRequest createUserRequest, MultipartFile profileImage,
+                                 CreateItemRequest createTumblerRequest, MultipartFile tumblerImage,
+                                 CreateItemRequest createEcobagRequest, MultipartFile ecobagImage);
 
-    ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest);
+    ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request, HttpServletResponse response,
+                                                       CreateUserRequest createUserRequest, MultipartFile profileImage);
 
     UserResponse getCurrentUserInfo(HttpServletRequest request);
 
