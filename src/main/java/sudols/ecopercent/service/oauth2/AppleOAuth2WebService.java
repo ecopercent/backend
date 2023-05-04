@@ -44,7 +44,7 @@ public class AppleOAuth2WebService {
         }
         oAuth2ResponseProvider.generateTokenAndAddTokenCookie(response, optionalUser.get(), cookieDomain);
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create(domain + cookieDomain + "/welcome"));
+        httpHeaders.setLocation(URI.create(domain + "/welcome"));
         return new ResponseEntity<>(httpHeaders, HttpStatus.MOVED_PERMANENTLY);
     }
 }
