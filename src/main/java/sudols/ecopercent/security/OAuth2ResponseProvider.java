@@ -14,11 +14,13 @@ public class OAuth2ResponseProvider {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    public void addEmailCookie(HttpServletResponse response, String email, String domain) {
-        Cookie emailCookie = new Cookie("email", email);
-        emailCookie.setDomain(domain);
-        emailCookie.setPath("/");
-        response.addCookie(emailCookie);
+    public void generateAccessTokenAndAddCookie(HttpServletResponse response, String email, String domain) {
+        String access = jwtTokenProvider.generateAccessToken(email);
+        Cookie accessTokenCookie = new Cookie("access", access);
+        accessTokenCookie.setDomain(domain);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setSecure(true);
+        response.addCookie(accessTokenCookie);
     }
 
     public EmailResponse getEmailResponse(String email) {

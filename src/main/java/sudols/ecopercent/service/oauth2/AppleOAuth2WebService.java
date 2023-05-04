@@ -1,9 +1,7 @@
 package sudols.ecopercent.service.oauth2;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +35,7 @@ public class AppleOAuth2WebService {
         String email = jwtTokenProvider.getEmailFromTokenWithPublicKey(identityToken, publicKey);
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
-            oAuth2ResponseProvider.addEmailCookie(response, email, cookieDomain);
+            oAuth2ResponseProvider.generateAccessTokenAndAddCookie(response, email, cookieDomain);
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setLocation(URI.create(domain + "/signup"));
             return new ResponseEntity<>(httpHeaders, HttpStatus.MOVED_PERMANENTLY);
