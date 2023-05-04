@@ -38,12 +38,12 @@ public class AppleOAuth2WebService {
         if (optionalUser.isEmpty()) {
             oAuth2ResponseProvider.addEmailCookie(response, email, domain);
             HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setLocation(URI.create(domain + "/signup"));
+            httpHeaders.setLocation(URI.create("https://" + domain + "/signup"));
             return new ResponseEntity<>(httpHeaders, HttpStatus.MOVED_PERMANENTLY);
         }
         oAuth2ResponseProvider.generateTokenAndAddTokenCookie(response, optionalUser.get(), domain);
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create(domain + "/welcome"));
+        httpHeaders.setLocation(URI.create("https://" + domain + "/welcome"));
         return new ResponseEntity<>(httpHeaders, HttpStatus.MOVED_PERMANENTLY);
     }
 }
