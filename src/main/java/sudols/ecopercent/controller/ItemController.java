@@ -45,7 +45,7 @@ public class ItemController {
     @ResponseBody
     public ItemResponse updateItem(HttpServletRequest request,
                                    @PathVariable("itemId") Long itemId,
-                                   @RequestPart("itemData") UpdateItemRequest updateItemRequest,
+                                   @RequestPart(value = "itemData", required = false) UpdateItemRequest updateItemRequest,
                                    @RequestPart(value = "itemImage", required = false) MultipartFile itemImageMultipartFile) {
         return itemService.updateItem(request, itemId, updateItemRequest, itemImageMultipartFile);
     }

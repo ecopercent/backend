@@ -14,6 +14,8 @@ import sudols.ecopercent.dto.user.UpdateUserRequest;
 import sudols.ecopercent.dto.user.UserResponse;
 import sudols.ecopercent.service.UserService;
 
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
 @Controller
@@ -41,21 +43,21 @@ public class UserController {
     @PostMapping("/users/apple")
     @ResponseBody
     public ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request, HttpServletResponse response,
-                                                              @RequestPart(value = "userData", required = false) CreateUserRequest createUserRequest,
-                                                              @RequestPart(value = "profileImage", required = false) MultipartFile profileImage) {
-        return userService.createAppleUser(request, response, createUserRequest, profileImage);
+                                                              @RequestPart("userData") CreateUserRequest createUserRequest,
+                                                              @RequestPart(value = "profileImage", required = false) MultipartFile profileImageMultipartFile) {
+        return userService.createAppleUser(request, response, createUserRequest, profileImageMultipartFile);
     }
 
     @GetMapping("/users/me")
     @ResponseBody
-    public UserResponse getCurrentUserInfo(HttpServletRequest request) {
+    public UserResponse getMyInfo(HttpServletRequest request) {
         return userService.getMyInfo(request);
     }
 
     @PatchMapping("/users")
     @ResponseBody
     public UserResponse updateUser(HttpServletRequest request,
-                                   @RequestPart("userData") UpdateUserRequest updateUserRequest,
+                                   @RequestPart(value = "userData", required = false) UpdateUserRequest updateUserRequest,
                                    @RequestPart(value = "profileImage", required = false) MultipartFile profileImageMultipartFile) {
         return userService.updateUser(request, updateUserRequest, profileImageMultipartFile);
     }
