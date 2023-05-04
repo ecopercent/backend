@@ -19,7 +19,6 @@ public class ItemMapper {
     public Item createItemRequestToItem(CreateItemRequest createItemRequest, User user) {
         return Item.builder()
                 .user(user)
-                .image(createItemRequest.getImage())
                 .nickname(createItemRequest.getNickname())
                 .category(createItemRequest.getCategory())
                 .type(createItemRequest.getType())

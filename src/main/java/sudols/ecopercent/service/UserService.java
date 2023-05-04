@@ -22,9 +22,9 @@ public interface UserService {
     ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request, HttpServletResponse response,
                                                        CreateUserRequest createUserRequest, MultipartFile profileImage);
 
-    UserResponse getCurrentUserInfo(HttpServletRequest request);
+    UserResponse getMyInfo(HttpServletRequest request);
 
-    UserResponse updateUser(HttpServletRequest request, UpdateUserRequest updateUserRequest);
+    UserResponse updateUser(HttpServletRequest request, UpdateUserRequest updateUserRequest, MultipartFile itemImageMultipartFile);
 
     void deleteUser(HttpServletRequest request);
 

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import sudols.ecopercent.domain.Item;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.item.CreateItemRequest;
@@ -32,11 +33,16 @@ public class ItemServiceImpl implements ItemService {
     private final TimeUtil timeUtil;
 
     @Override
-    public ItemResponse createItem(HttpServletRequest request, CreateItemRequest createItemRequest) {
+    public ItemResponse createItem(HttpServletRequest request, CreateItemRequest createItemRequest, MultipartFile itemImageMultipartFile) {
         String email = jwtTokenProvider.getEmailFromRequest(request);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotExistsException(email));
         Item item = itemMapper.createItemRequestToItem(createItemRequest, user);
+        try {
+            item.setImage(itemImageMultipartFile.getBytes());
+        } catch (Exception e) {
+            item.setImage(null);
+        }
         itemRepository.save(item);
         return itemMapper.itemToItemResponse(item);
     }
@@ -61,14 +67,15 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemResponse updateItem(HttpServletRequest request, Long itemId, UpdateItemRequest updateItemRequest) {
+    public ItemResponse updateItem(HttpServletRequest request, Long itemId, UpdateItemRequest updateItemRequest, MultipartFile itemImageMultipartFile) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotExistsException(itemId));
         String email = jwtTokenProvider.getEmailFromRequest(request);
         isItemOwnedUserByEmail(item, email);
         BeanUtils.copyProperties(updateItemRequest, item);
-        if (updateItemRequest.getImage() != null) {
-            item.setImage(updateItemRequest.getImage());
+        try {
+            item.setImage(itemImageMultipartFile.getBytes());
+        } catch (Exception ignore) {
         }
         Item updateditem = itemRepository.save(item);
         return itemMapper.itemToItemResponse(updateditem);

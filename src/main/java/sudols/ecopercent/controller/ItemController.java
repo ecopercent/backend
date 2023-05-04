@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import sudols.ecopercent.dto.item.CreateItemRequest;
 import sudols.ecopercent.dto.item.ItemResponse;
 import sudols.ecopercent.dto.item.UpdateItemRequest;
@@ -22,8 +23,9 @@ public class ItemController {
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
     public ItemResponse createItem(HttpServletRequest request,
-                                   @RequestBody CreateItemRequest createItemRequest) {
-        return itemService.createItem(request, createItemRequest);
+                                   @RequestPart("itemData") CreateItemRequest createItemRequest,
+                                   @RequestPart(value = "itemImage", required = false) MultipartFile itemImageMultipartFile) {
+        return itemService.createItem(request, createItemRequest, itemImageMultipartFile);
     }
 
     @GetMapping("/items")
@@ -43,8 +45,9 @@ public class ItemController {
     @ResponseBody
     public ItemResponse updateItem(HttpServletRequest request,
                                    @PathVariable("itemId") Long itemId,
-                                   @RequestBody UpdateItemRequest updateItemRequest) {
-        return itemService.updateItem(request, itemId, updateItemRequest);
+                                   @RequestPart("itemData") UpdateItemRequest updateItemRequest,
+                                   @RequestPart(value = "itemImage", required = false) MultipartFile itemImageMultipartFile) {
+        return itemService.updateItem(request, itemId, updateItemRequest, itemImageMultipartFile);
     }
 
     @PatchMapping("/items/{itemId}/usage-count")

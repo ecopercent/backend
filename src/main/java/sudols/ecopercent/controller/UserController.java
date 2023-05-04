@@ -3,8 +3,6 @@ package sudols.ecopercent.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -26,45 +24,40 @@ public class UserController {
 
     @PostMapping("/users/kakao")
     @ResponseBody
-    public UserResponse createKakaoUser(HttpServletRequest request,
-                                        HttpServletResponse response,
+    public UserResponse createKakaoUser(HttpServletRequest request, HttpServletResponse response,
                                         @RequestPart("userData") CreateUserRequest createUserRequest,
-                                        @RequestPart("profileImgae") MultipartFile profileImage,
+                                        @RequestPart(value = "profileImage", required = false) MultipartFile profileImageMultipartFile,
                                         @RequestPart(value = "tumblerData", required = false) CreateItemRequest createTumblerRequest,
-                                        @RequestPart(value = "tumblerImage", required = false) MultipartFile tumblerImage,
+                                        @RequestPart(value = "tumblerImage", required = false) MultipartFile tumblerImageMultipartFile,
                                         @RequestPart(value = "ecobagData", required = false) CreateItemRequest createEcobagRequest,
-                                        @RequestPart(value = "ecobagImage", required = false) MultipartFile ecobagImage) {
+                                        @RequestPart(value = "ecobagImage", required = false) MultipartFile ecobagImageMultipartFile) {
         return userService.createKakaoUser(
                 request, response,
-                createUserRequest, profileImage,
-                createTumblerRequest, tumblerImage,
-                createEcobagRequest, ecobagImage);
+                createUserRequest, profileImageMultipartFile,
+                createTumblerRequest, tumblerImageMultipartFile,
+                createEcobagRequest, ecobagImageMultipartFile);
     }
 
-    @PostMapping(value = "/users/apple", consumes = { "multipart/form-data" })
+    @PostMapping("/users/apple")
     @ResponseBody
-    public ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request,
-                                                              HttpServletResponse response,
+    public ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request, HttpServletResponse response,
                                                               @RequestPart(value = "userData", required = false) CreateUserRequest createUserRequest,
                                                               @RequestPart(value = "profileImage", required = false) MultipartFile profileImage) {
-        System.out.println("Post /users/apple");
-        System.out.println("userData: " + createUserRequest.toString());
-        System.out.println("profileImage: " + profileImage);
         return userService.createAppleUser(request, response, createUserRequest, profileImage);
-//        return null;
     }
 
     @GetMapping("/users/me")
     @ResponseBody
     public UserResponse getCurrentUserInfo(HttpServletRequest request) {
-        return userService.getCurrentUserInfo(request);
+        return userService.getMyInfo(request);
     }
 
     @PatchMapping("/users")
     @ResponseBody
     public UserResponse updateUser(HttpServletRequest request,
-                                   @RequestBody UpdateUserRequest updateUserRequest) {
-        return userService.updateUser(request, updateUserRequest);
+                                   @RequestPart("userData") UpdateUserRequest updateUserRequest,
+                                   @RequestPart(value = "profileImage", required = false) MultipartFile profileImageMultipartFile) {
+        return userService.updateUser(request, updateUserRequest, profileImageMultipartFile);
     }
 
     @DeleteMapping("/users")

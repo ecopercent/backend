@@ -10,7 +10,5 @@ public class UpdateUserRequest {
 
     private String nickname;
 
-    private byte[] profileImage;
-
     private String profileMessage;
 }

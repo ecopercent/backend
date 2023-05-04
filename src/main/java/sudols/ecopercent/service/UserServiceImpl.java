@@ -26,6 +26,7 @@ import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.JwtTokenProvider;
 import sudols.ecopercent.security.OAuth2ResponseProvider;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,9 +45,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse createKakaoUser(HttpServletRequest request, HttpServletResponse response,
-                                        CreateUserRequest createUserRequest, MultipartFile profileImage,
-                                        CreateItemRequest createTumblerRequest, MultipartFile tumblerImage,
-                                        CreateItemRequest createEcobagRequest, MultipartFile ecobagImage) {
+                                        CreateUserRequest createUserRequest, MultipartFile profileImageMultipartFile,
+                                        CreateItemRequest createTumblerRequest, MultipartFile tumblerImageMultipartFile,
+                                        CreateItemRequest createEcobagRequest, MultipartFile ecobagImageMultipartFile) {
         if (userRepository.existsByNickname(createUserRequest.getNickname())) {
             throw new NicknameAlreadyExistsException(createUserRequest.getNickname());
         }
@@ -56,14 +57,19 @@ public class UserServiceImpl implements UserService {
         }
         User user = userMapper.createUserRequestToUser(createUserRequest);
         user.setEmail(email);
+        try {
+            user.setProfileImage(profileImageMultipartFile.getBytes());
+        } catch (Exception e) {
+            user.setProfileImage(null);
+        }
         userRepository.save(user);
         oAuth2ResponseProvider.generateAccessRefreshTokenAndAddCookie(response, user);
         if (createTumblerRequest != null) {
-            ItemResponse tumblerResponse = itemService.createItem(request, createTumblerRequest);
+            ItemResponse tumblerResponse = itemService.createItem(request, createTumblerRequest, tumblerImageMultipartFile);
             itemService.changeTitleTumbler(request, tumblerResponse.getId());
         }
         if (createEcobagRequest != null) {
-            ItemResponse ecobagResponse = itemService.createItem(request, createEcobagRequest);
+            ItemResponse ecobagResponse = itemService.createItem(request, createEcobagRequest, ecobagImageMultipartFile);
             itemService.changeTitleEcobag(request, ecobagResponse.getId());
         }
         return userMapper.userToUserResponse(user);
@@ -92,7 +98,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse getCurrentUserInfo(HttpServletRequest request) {
+    public UserResponse getMyInfo(HttpServletRequest request) {
         String email = jwtTokenProvider.getEmailFromRequest(request);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotExistsException(email));
@@ -100,13 +106,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse updateUser(HttpServletRequest request, UpdateUserRequest updateUserRequest) {
+    public UserResponse updateUser(HttpServletRequest request, UpdateUserRequest updateUserRequest, MultipartFile profileImageMultipartFile) {
         String email = jwtTokenProvider.getEmailFromRequest(request);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotExistsException(email));
         BeanUtils.copyProperties(updateUserRequest, user);
-        if (updateUserRequest.getProfileImage() != null) {
-            user.setProfileImage(updateUserRequest.getProfileImage());
+        try {
+            user.setProfileImage(profileImageMultipartFile.getBytes());
+        } catch (Exception ignore) {
         }
         userRepository.save(user);
         return userMapper.userToUserResponse(user);

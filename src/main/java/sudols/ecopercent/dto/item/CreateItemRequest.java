@@ -7,8 +7,6 @@ import java.time.LocalDate;
 @Data
 public class CreateItemRequest {
 
-    private byte[] image;
-
     private String nickname;
 
     private String category;
