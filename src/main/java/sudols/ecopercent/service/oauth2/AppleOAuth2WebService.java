@@ -30,7 +30,7 @@ public class AppleOAuth2WebService {
 
     public ResponseEntity<?> login(HttpServletRequest request, HttpServletResponse response, AppleAuthorizationResponse appleAuthorizationResponse) {
         // TODO: 하드코딩
-        final String domain = "https://www.ecopercent.com";
+        final String domain = "www.ecopercent.com";
         String identityToken = appleAuthorizationResponse.getId_token();
         PublicKey publicKey = appleOAuth2Provider.getPublicKey(identityToken);
         String email = jwtTokenProvider.getEmailFromTokenWithPublicKey(identityToken, publicKey);
