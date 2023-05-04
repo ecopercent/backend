@@ -14,8 +14,9 @@ public class OAuth2ResponseProvider {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    public void addEmailCookie(HttpServletResponse response, String email) {
+    public void addEmailCookie(HttpServletResponse response, String email, String domain) {
         Cookie emailCookie = new Cookie("email", email);
+        emailCookie.setDomain(domain);
         emailCookie.setPath("/");
         response.addCookie(emailCookie);
     }
@@ -26,18 +27,21 @@ public class OAuth2ResponseProvider {
                 .build();
     }
 
-    public void generateTokenAndAddTokenCookie(HttpServletResponse response, User user) {
+    public void generateTokenAndAddTokenCookie(HttpServletResponse response, User user, String domain) {
         String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
 
         Cookie accessTokenCookie = new Cookie("access", accessToken);
+        accessTokenCookie.setDomain(domain);
         accessTokenCookie.setPath("/");
 
         Cookie refreshTokenCookie = new Cookie("refresh", refreshToken);
+        refreshTokenCookie.setDomain(domain);
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setPath("/");
 
         Cookie useridCookie = new Cookie("userid", user.getId().toString());
+        useridCookie.setDomain(domain);
         useridCookie.setPath("/");
 
         response.addCookie(accessTokenCookie);

@@ -32,6 +32,7 @@ public class KakaoOAuth2Service {
     private String userInfoAPI;
 
     public ResponseEntity<?> login(HttpServletRequest request, HttpServletResponse response) {
+        final String domain = "https://www.ecopercent.com";
         String kakaoAccessToken = jwtTokenProvider.getTokenFromRequest(request);
         KakaoAccountResponse.KakaoAccount kakaoUserDetail = requestUserDetailByAccessToken(kakaoAccessToken);
         String email = kakaoUserDetail.getEmail();
@@ -41,7 +42,7 @@ public class KakaoOAuth2Service {
             EmailResponse emailResponse = oAuth2ResponseProvider.getEmailResponse(email);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(emailResponse);
         }
-        oAuth2ResponseProvider.generateTokenAndAddTokenCookie(response, optionalUser.get());
+        oAuth2ResponseProvider.generateTokenAndAddTokenCookie(response, optionalUser.get(), domain);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

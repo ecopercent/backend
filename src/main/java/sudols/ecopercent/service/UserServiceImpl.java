@@ -38,12 +38,13 @@ public class UserServiceImpl implements UserService {
     // TODO: 구현. 유저 생성 시 등록된 아이템을 대표 아이템으로 등록
     @Override
     public UserResponse createKakaoUser(HttpServletRequest request, HttpServletResponse response, CreateUserRequest createUserRequest) {
+        final String domain = "https://www.ecopercent.com";
         String email = createUserRequest.getEmail();
         if (userRepository.existsByEmail(email)) {
             throw new UserAlreadyExistsException(email);
         }
         User user = userRepository.save(userMapper.createUserRequestToUser(createUserRequest));
-        oAuth2ResponseProvider.generateTokenAndAddTokenCookie(response, user);
+        oAuth2ResponseProvider.generateTokenAndAddTokenCookie(response, user, domain);
         return userMapper.userToUserResponse(user);
     }
 

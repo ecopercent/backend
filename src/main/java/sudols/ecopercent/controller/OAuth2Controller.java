@@ -41,8 +41,6 @@ public class OAuth2Controller {
     public ResponseEntity<?> appleOAuth2LoginWeb(HttpServletRequest request,
                                                  HttpServletResponse response,
                                                  @ModelAttribute AppleAuthorizationResponse appleAuthorizationResponse) {
-        System.out.println("### appleOAuth2LoginWeb ###");
-        System.out.println(appleAuthorizationResponse.toString());
         return appleOAuth2WebService.login(request, response, appleAuthorizationResponse);
     }
 }
