@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class KakaoOAuth2Service implements OAuth2Service {
+public class KakaoOAuth2Service {
 
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
@@ -31,17 +31,18 @@ public class KakaoOAuth2Service implements OAuth2Service {
     @Value("${kakao.user-info-uri}")
     private String userInfoAPI;
 
-    @Override
     public ResponseEntity<?> login(HttpServletRequest request, HttpServletResponse response) {
+        final String domain = "https://www.ecopercent.com";
         String kakaoAccessToken = jwtTokenProvider.getTokenFromRequest(request);
         KakaoAccountResponse.KakaoAccount kakaoUserDetail = requestUserDetailByAccessToken(kakaoAccessToken);
         String email = kakaoUserDetail.getEmail();
+        System.out.println("email: " + email);
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
-            EmailResponse emailResponse = oAuth2ResponseProvider.returnEmailResponse(email);
+            EmailResponse emailResponse = oAuth2ResponseProvider.getEmailResponse(email);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(emailResponse);
         }
-        oAuth2ResponseProvider.generateTokenAndAddCookie(response, optionalUser.get());
+        oAuth2ResponseProvider.generateTokenAndAddTokenCookie(response, optionalUser.get(), domain);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
