@@ -3,16 +3,12 @@ package sudols.ecopercent.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import sudols.ecopercent.domain.User;
+import sudols.ecopercent.exception.AppleOAuth2Exception;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -91,14 +87,20 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (Exception e) {
-            log.debug("Exception From getClaimsFromTokenWithKey: " + e);
-            return null; // TODO: 예외처리
+            System.out.println("claims Error: " + e);
+            throw new AppleOAuth2Exception(e);
         }
     }
 
     public String getEmailFromToken(String token) {
         return getClaimsFromTokenWithKey(token, secretKey)
                 .getSubject();
+    }
+
+    public String getEmailFromTokenWithPublicKey(String token, Key key) {
+        Claims claims = getClaimsFromTokenWithKey(token, key);
+        return claims.get("email", String.class);
+//        return getClaimsFromTokenWithKey(token, key).get("email", String.class);
     }
 
     public boolean validateToken(String token) {

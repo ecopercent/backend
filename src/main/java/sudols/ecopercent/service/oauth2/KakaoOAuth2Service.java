@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import sudols.ecopercent.domain.User;
-import sudols.ecopercent.dto.oauth2.SignupResponse;
+import sudols.ecopercent.dto.oauth2.EmailResponse;
 import sudols.ecopercent.dto.oauth2.kakao.KakaoAccountResponse;
 import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.JwtTokenProvider;
@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class KakaoOAuth2Service implements OAuth2Service {
+public class KakaoOAuth2Service {
 
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
@@ -31,21 +31,22 @@ public class KakaoOAuth2Service implements OAuth2Service {
     @Value("${kakao.user-info-uri}")
     private String userInfoAPI;
 
-    @Override
     public ResponseEntity<?> login(HttpServletRequest request, HttpServletResponse response) {
+        final String domain = "https://www.ecopercent.com";
         String kakaoAccessToken = jwtTokenProvider.getTokenFromRequest(request);
-        KakaoAccountResponse.KakaoAccount kakaoUserDetail = requestUserDetailFromKakaoByAccessToken(kakaoAccessToken);
+        KakaoAccountResponse.KakaoAccount kakaoUserDetail = requestUserDetailByAccessToken(kakaoAccessToken);
         String email = kakaoUserDetail.getEmail();
+        System.out.println("email: " + email);
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
-            SignupResponse signupResponse = oAuth2ResponseProvider.generateSignupTokenAndReturnResponse(email);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(signupResponse);
+            EmailResponse emailResponse = oAuth2ResponseProvider.getEmailResponse(email);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(emailResponse);
         }
-        oAuth2ResponseProvider.generateAccessRefreshTokenAndAddCookie(response, optionalUser.get());
+        oAuth2ResponseProvider.generateTokenAndAddTokenCookie(response, optionalUser.get(), domain);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    private KakaoAccountResponse.KakaoAccount requestUserDetailFromKakaoByAccessToken(String accessToken) {
+    private KakaoAccountResponse.KakaoAccount requestUserDetailByAccessToken(String accessToken) {
         WebClient client = WebClient.builder()
                 .baseUrl(kapiUri)
                 .defaultHeader("Authorization", "Bearer " + accessToken)

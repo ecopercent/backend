@@ -56,6 +56,7 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByEmail(email)) {
             throw new UserAlreadyExistsException(email);
         }
+        final String domain = "https://www.ecopercent.com";
         User user = userMapper.createUserRequestToUser(createUserRequest);
         user.setEmail(email);
         try {
@@ -64,7 +65,7 @@ public class UserServiceImpl implements UserService {
             user.setProfileImage(null);
         }
         userRepository.save(user);
-        oAuth2ResponseProvider.generateAccessRefreshTokenAndAddCookie(response, user);
+        oAuth2ResponseProvider.generateTokenAndAddTokenCookie(response, user, domain);
         if (createTumblerRequest != null) {
             ItemResponse tumblerResponse = itemService.createItem(request, createTumblerRequest, tumblerImageMultipartFile);
             itemService.changeTitleTumbler(request, tumblerResponse.getId());

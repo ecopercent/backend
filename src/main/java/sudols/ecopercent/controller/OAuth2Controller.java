@@ -5,11 +5,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import sudols.ecopercent.service.oauth2.AppleOAuth2Service;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import sudols.ecopercent.dto.oauth2.apple.AppleAuthorizationResponse;
+import sudols.ecopercent.service.oauth2.AppleOAuth2IosService;
+import sudols.ecopercent.service.oauth2.AppleOAuth2WebService;
 import sudols.ecopercent.service.oauth2.KakaoOAuth2Service;
-
-import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -17,17 +20,26 @@ import java.util.Map;
 public class OAuth2Controller {
 
     private final KakaoOAuth2Service kakaoOAuth2Service;
-    private final AppleOAuth2Service appleOAuth2Service;
+    private final AppleOAuth2IosService appleOAuth2IosService;
+    private final AppleOAuth2WebService appleOAuth2WebService;
 
     @PostMapping("/kakao")
     @ResponseBody
-    public ResponseEntity<?> KakaoOAuth2Login(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> kakaoOAuth2Login(HttpServletRequest request,
+                                              HttpServletResponse response) {
+        System.out.println("kakaoOAuth2Login");
         return kakaoOAuth2Service.login(request, response);
     }
 
     @PostMapping("/apple/ios")
     @ResponseBody
-    public ResponseEntity<?> AppleOAuth2Login(HttpServletRequest request, HttpServletResponse response) {
-        return appleOAuth2Service.login(request, response);
+    public ResponseEntity<?> appleOAuth2IosLogin(HttpServletRequest request) {
+        return appleOAuth2IosService.login(request);
+    }
+
+    @PostMapping("/apple/web")
+    public ResponseEntity<?> appleOAuth2LoginWeb(HttpServletResponse response,
+                                                 @ModelAttribute AppleAuthorizationResponse appleAuthorizationResponse) {
+        return appleOAuth2WebService.login(response, appleAuthorizationResponse);
     }
 }
