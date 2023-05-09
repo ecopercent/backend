@@ -26,8 +26,6 @@ import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.JwtTokenProvider;
 import sudols.ecopercent.security.OAuth2ResponseProvider;
 
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,7 +63,7 @@ public class UserServiceImpl implements UserService {
             user.setProfileImage(null);
         }
         userRepository.save(user);
-        oAuth2ResponseProvider.generateTokenAndAddTokenCookie(response, user, domain);
+        oAuth2ResponseProvider.generateAccessRefreshTokenAndAddTokenCookie(response, user, domain);
         if (createTumblerRequest != null) {
             ItemResponse tumblerResponse = itemService.createItem(request, createTumblerRequest, tumblerImageMultipartFile);
             itemService.changeTitleTumbler(request, tumblerResponse.getId());
@@ -95,7 +93,7 @@ public class UserServiceImpl implements UserService {
             user.setProfileImage(null);
         }
         userRepository.save(user);
-        AppleTokenResponse appleTokenResponse = oAuth2ResponseProvider.generateAccessRefreshTokenAndReturnResponse(user);
+        AppleTokenResponse appleTokenResponse = oAuth2ResponseProvider.generateTokenAndGetTokenResponse(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(appleTokenResponse);
     }
 

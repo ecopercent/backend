@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import sudols.ecopercent.domain.User;
-import sudols.ecopercent.dto.oauth2.EmailResponse;
+import sudols.ecopercent.dto.oauth2.SignupResponse;
 import sudols.ecopercent.dto.oauth2.apple.AppleTokenResponse;
 import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.AppleOAuth2Provider;
@@ -33,8 +33,8 @@ public class AppleOAuth2IosService {
         String email = jwtTokenProvider.getEmailFromTokenWithPublicKey(identityToken, publicKey);
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
-            EmailResponse emailResponse = oAuth2ResponseProvider.getEmailResponse(email);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(emailResponse);
+            SignupResponse signupResponse = oAuth2ResponseProvider.generateAccessTokenAndGetSignupResponse(email);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(signupResponse);
         }
         AppleTokenResponse appleTokenResponse = oAuth2ResponseProvider.generateTokenAndGetTokenResponse(optionalUser.get());
         return ResponseEntity.status(HttpStatus.OK).body(appleTokenResponse);

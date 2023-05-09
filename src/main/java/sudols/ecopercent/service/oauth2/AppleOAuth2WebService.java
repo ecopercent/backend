@@ -40,7 +40,7 @@ public class AppleOAuth2WebService {
             httpHeaders.setLocation(URI.create(domain + "/signup"));
             return new ResponseEntity<>(httpHeaders, HttpStatus.MOVED_PERMANENTLY);
         }
-        oAuth2ResponseProvider.generateTokenAndAddTokenCookie(response, optionalUser.get(), cookieDomain);
+        oAuth2ResponseProvider.generateAccessRefreshTokenAndAddTokenCookie(response, optionalUser.get(), cookieDomain);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(URI.create(domain + "/welcome"));
         return new ResponseEntity<>(httpHeaders, HttpStatus.MOVED_PERMANENTLY);

@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import sudols.ecopercent.domain.User;
-import sudols.ecopercent.dto.oauth2.EmailResponse;
+import sudols.ecopercent.dto.oauth2.SignupResponse;
 import sudols.ecopercent.dto.oauth2.kakao.KakaoAccountResponse;
 import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.JwtTokenProvider;
@@ -36,13 +36,12 @@ public class KakaoOAuth2Service {
         String kakaoAccessToken = jwtTokenProvider.getTokenFromRequest(request);
         KakaoAccountResponse.KakaoAccount kakaoUserDetail = requestUserDetailByAccessToken(kakaoAccessToken);
         String email = kakaoUserDetail.getEmail();
-        System.out.println("email: " + email);
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
-            EmailResponse emailResponse = oAuth2ResponseProvider.getEmailResponse(email);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(emailResponse);
+            SignupResponse signupResponse = oAuth2ResponseProvider.generateAccessTokenAndGetSignupResponse(email);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(signupResponse);
         }
-        oAuth2ResponseProvider.generateTokenAndAddTokenCookie(response, optionalUser.get(), domain);
+        oAuth2ResponseProvider.generateAccessRefreshTokenAndAddTokenCookie(response, optionalUser.get(), domain);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
