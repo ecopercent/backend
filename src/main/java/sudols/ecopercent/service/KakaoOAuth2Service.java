@@ -14,11 +14,12 @@ import sudols.ecopercent.security.JwtTokenProvider;
 import sudols.ecopercent.service.provider.KakaoOAuth2Provider;
 import sudols.ecopercent.service.provider.OAuth2ResponseProvider;
 
+import java.net.URL;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class KakaoOAuth2WebService {
+public class KakaoOAuth2Service {
 
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
@@ -26,7 +27,6 @@ public class KakaoOAuth2WebService {
     private final KakaoOAuth2Provider kakaoOAuth2Provider;
 
     public ResponseEntity<?> login(HttpServletRequest request, HttpServletResponse response) {
-        final String domain = "https://www.ecopercent.com";
         String kakaoAccessToken = jwtTokenProvider.getTokenFromRequest(request);
         KakaoAccountResponse.KakaoAccount kakaoUserDetail = kakaoOAuth2Provider.requestUserDetailByAccessToken(kakaoAccessToken);
         String email = kakaoUserDetail.getEmail();
@@ -35,7 +35,13 @@ public class KakaoOAuth2WebService {
             SignupResponse signupResponse = oAuth2ResponseProvider.generateAccessTokenAndGetSignupResponse(email);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(signupResponse);
         }
-        oAuth2ResponseProvider.generateTokensAndAddCookieForWeb(response, optionalUser.get(), domain);
+        try {
+            final String referer = request.getHeader("Referer");
+            final String HostOfReferer = new URL(referer).getHost();
+            oAuth2ResponseProvider.generateTokensAndAddCookieForWeb(response, optionalUser.get(), HostOfReferer);
+        } catch (Exception e) {
+            oAuth2ResponseProvider.generateTokensAndAddCookieForIos(response, optionalUser.get());
+        }
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

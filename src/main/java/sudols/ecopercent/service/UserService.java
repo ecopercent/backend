@@ -26,6 +26,7 @@ import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.JwtTokenProvider;
 import sudols.ecopercent.service.provider.OAuth2ResponseProvider;
 
+import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,7 +54,6 @@ public class UserService {
         if (userRepository.existsByEmail(email)) {
             throw new UserAlreadyExistsException(email);
         }
-        final String domain = "https://www.ecopercent.com";
         User user = userMapper.createUserRequestToUser(createUserRequest);
         user.setEmail(email);
         try {
@@ -62,7 +62,13 @@ public class UserService {
             user.setProfileImage(null);
         }
         userRepository.save(user);
-        OAuth2ResponseProvider.generateTokensAndAddCookieForWeb(response, user, domain);
+        final String referer = request.getHeader("Referer");
+        try {
+            final String domain = new URL(referer).getHost();
+            OAuth2ResponseProvider.generateTokensAndAddCookieForWeb(response, user, domain);
+        } catch (Exception ignore) {
+            OAuth2ResponseProvider.generateTokensAndAddCookieForIos(response, user);
+        }
         if (createTumblerRequest != null) {
             ItemResponse tumblerResponse = itemService.createItem(request, createTumblerRequest, tumblerImageMultipartFile);
             itemService.changeTitleTumbler(request, tumblerResponse.getId());

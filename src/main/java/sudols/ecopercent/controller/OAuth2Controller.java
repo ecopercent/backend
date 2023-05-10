@@ -12,31 +12,22 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import sudols.ecopercent.dto.oauth2.apple.AppleAuthorizationResponse;
 import sudols.ecopercent.service.AppleOAuth2IosService;
 import sudols.ecopercent.service.AppleOAuth2WebService;
-import sudols.ecopercent.service.KakaoOAuth2IosService;
-import sudols.ecopercent.service.KakaoOAuth2WebService;
+import sudols.ecopercent.service.KakaoOAuth2Service;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/login/oauth2")
 public class OAuth2Controller {
 
-    private final KakaoOAuth2WebService kakaoOAuth2WebService;
-    private final KakaoOAuth2IosService kakaoOAuth2IosService;
+    private final KakaoOAuth2Service kakaoOAuth2Service;
     private final AppleOAuth2IosService appleOAuth2IosService;
     private final AppleOAuth2WebService appleOAuth2WebService;
 
-    @PostMapping("/kakao/web")
+    @PostMapping("/kakao")
     @ResponseBody
-    public ResponseEntity<?> kakaoOAuth2WebLogin(HttpServletRequest request,
+    public ResponseEntity<?> kakaoOAuth2Login(HttpServletRequest request,
                                               HttpServletResponse response) {
-        return kakaoOAuth2WebService.login(request, response);
-    }
-
-    @PostMapping("/kakao/ios")
-    @ResponseBody
-    public ResponseEntity<?> kakaoOAuth2IosLogin(HttpServletRequest request,
-                                              HttpServletResponse response) {
-        return kakaoOAuth2IosService.login(request, response);
+        return kakaoOAuth2Service.login(request, response);
     }
 
     @PostMapping("/apple/ios")
