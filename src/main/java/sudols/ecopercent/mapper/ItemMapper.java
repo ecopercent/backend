@@ -1,32 +1,34 @@
 package sudols.ecopercent.mapper;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import sudols.ecopercent.domain.Item;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.item.CreateItemRequest;
 import sudols.ecopercent.dto.item.ItemResponse;
-
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import sudols.ecopercent.dto.item.UpdateItemRequest;
+import sudols.ecopercent.util.TimeUtil;
 
 @Component
+@RequiredArgsConstructor
 public class ItemMapper {
 
-    // TODO: 구현. 주어진 type 에 맞게 설정
-    public Item createItemRequestToItem(CreateItemRequest request, User user) {
+    private final TimeUtil timeUtil;
+
+    public Item createItemRequestToItem(CreateItemRequest createItemRequest, User user) {
         return Item.builder()
                 .user(user)
-                .image(request.getImage())
-                .nickname(request.getNickname())
-                .category(request.getCategory())
-                .type(request.getType())
-                .brand(request.getBrand())
-                .price(request.getPrice())
+                .nickname(createItemRequest.getNickname())
+                .category(createItemRequest.getCategory())
+                .type(createItemRequest.getType())
+                .brand(createItemRequest.getBrand())
+                .price(createItemRequest.getPrice())
                 .goalUsageCount(100L)
                 .currentUsageCount(0L)
                 .isTitle(false)
-                .purchaseDate(request.getPurchaseDate())
+                .purchaseDate(createItemRequest.getPurchaseDate())
+                .registrationDate(timeUtil.getKSTDateTime())
                 .latestDate(null)
                 .build();
     }

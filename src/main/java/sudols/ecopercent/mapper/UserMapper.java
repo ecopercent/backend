@@ -1,18 +1,18 @@
 package sudols.ecopercent.mapper;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.dto.user.UserResponse;
 
 @Component
+@RequiredArgsConstructor
 public class UserMapper {
 
     public User createUserRequestToUser(CreateUserRequest request) {
         return User.builder()
                 .nickname(request.getNickname())
-                .email(request.getEmail())
-                .profileImage(request.getProfileImage())
                 .profileMessage(request.getProfileMessage())
                 .oAuthProvider(request.getOAuthProvider())
                 .build();

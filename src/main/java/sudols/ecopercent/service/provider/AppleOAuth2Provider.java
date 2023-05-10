@@ -1,4 +1,4 @@
-package sudols.ecopercent.security;
+package sudols.ecopercent.service.provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;

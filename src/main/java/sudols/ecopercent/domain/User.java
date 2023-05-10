@@ -2,6 +2,8 @@ package sudols.ecopercent.domain;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,11 +25,12 @@ public class User {
     @Column(name = "nickname")
     private String nickname;
 
+    @Email
     @Column(name = "email", unique = true)
     private String email;
 
     @Column(name = "profile_image")
-    private String profileImage;
+    private byte[] profileImage;
 
     @Column(name = "profile_message")
     private String profileMessage;

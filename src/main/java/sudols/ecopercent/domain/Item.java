@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Table(name = "items")
 public class Item {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -23,8 +24,8 @@ public class Item {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "image")
-    private String image;
+    @Column(name = "image", length = 56000)
+    private byte[] image;
 
     @Column(name = "nickname")
     private String nickname;
@@ -50,7 +51,6 @@ public class Item {
     @Column(name = "purchase_data")
     private LocalDate purchaseDate;
 
-    // TODO: date 형식 정하는게 있는지 찾아보기. 어노테이션
     @Column(name = "registration_date")
     private LocalDateTime registrationDate;
 

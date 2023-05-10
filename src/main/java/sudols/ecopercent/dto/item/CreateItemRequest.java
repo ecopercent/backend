@@ -7,9 +7,6 @@ import java.time.LocalDate;
 @Data
 public class CreateItemRequest {
 
-    // TODO: image 자료형 뭐로 해야하는지?
-    private String image;
-
     private String nickname;
 
     private String category;
@@ -21,5 +18,4 @@ public class CreateItemRequest {
     private Integer price;
 
     private LocalDate purchaseDate;
-
 }

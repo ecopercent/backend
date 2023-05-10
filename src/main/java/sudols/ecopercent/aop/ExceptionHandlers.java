@@ -53,10 +53,9 @@ public class ExceptionHandlers {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    @ExceptionHandler(AppleOAuth2Exception.class)
-    public ResponseEntity<?> handleAppleOAuth2Exception(AppleOAuth2Exception e) {
-        log.debug("Handling exception: " + e);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    @ExceptionHandler(NicknameAlreadyExistsException.class)
+    public ResponseEntity<?> handleNicknameAlreadyExistsException(NicknameAlreadyExistsException e) {
+        log.debug("Handling: exception: " + e);
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
-
 }

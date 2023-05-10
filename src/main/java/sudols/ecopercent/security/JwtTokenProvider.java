@@ -23,7 +23,10 @@ public class JwtTokenProvider {
     @Value("${jwt.secret-key}")
     private String key;
 
-    @Value("${jwt.aceess-token-expiry-date}")
+    @Value("${jwt.signup-access-token-expiry-date}")
+    private Long signupAccessTokenExpiryDate;
+
+    @Value("${jwt.access-token-expiry-date}")
     private Long accessTokenExpiryDate;
 
     @Value("${jwt.refresh-token-expiry-date}")
@@ -37,6 +40,19 @@ public class JwtTokenProvider {
         this.secretKey = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
     }
 
+    public String generateAccessTokenForSignup(String email) {
+        final long jwtExpirationInMillis = signupAccessTokenExpiryDate;
+        Date currentDate = new Date();
+        Date expiryDate = new Date(currentDate.getTime() + jwtExpirationInMillis);
+        return Jwts.builder()
+                .setIssuedAt(currentDate)
+                .setExpiration(expiryDate)
+                .setSubject(email)
+                .signWith(secretKey)
+                .claim("ROLE", "SIGNUP")
+                .compact();
+    }
+
     public String generateAccessToken(String email) {
         final long jwtExpirationInMillis = accessTokenExpiryDate;
         Date currentDate = new Date();
@@ -46,6 +62,7 @@ public class JwtTokenProvider {
                 .setExpiration(expiryDate)
                 .setSubject(email)
                 .signWith(secretKey)
+                .claim("ROLE", "USER")
                 .compact();
     }
 
@@ -58,6 +75,7 @@ public class JwtTokenProvider {
                 .setExpiration(expiryDate)
                 .setSubject(email)
                 .signWith(secretKey)
+                .claim("ROLE", "USER")
                 .compact();
     }
 
