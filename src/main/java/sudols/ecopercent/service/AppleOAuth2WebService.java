@@ -1,4 +1,4 @@
-package sudols.ecopercent.service.oauth2;
+package sudols.ecopercent.service;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -9,9 +9,8 @@ import org.springframework.stereotype.Service;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.oauth2.apple.AppleAuthorizationResponse;
 import sudols.ecopercent.repository.UserRepository;
-import sudols.ecopercent.security.AppleOAuth2Provider;
 import sudols.ecopercent.security.JwtTokenProvider;
-import sudols.ecopercent.security.OAuth2ResponseProvider;
+import sudols.ecopercent.service.provider.AppleOAuth2Provider;
 
 import java.net.URI;
 import java.security.PublicKey;
@@ -23,7 +22,7 @@ public class AppleOAuth2WebService {
 
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final OAuth2ResponseProvider oAuth2ResponseProvider;
+    private final sudols.ecopercent.service.provider.OAuth2ResponseProvider OAuth2ResponseProvider;
     private final AppleOAuth2Provider appleOAuth2Provider;
 
     public ResponseEntity<?> login(HttpServletResponse response, AppleAuthorizationResponse appleAuthorizationResponse) {
@@ -35,12 +34,12 @@ public class AppleOAuth2WebService {
         String email = jwtTokenProvider.getEmailFromTokenWithPublicKey(identityToken, publicKey);
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
-            oAuth2ResponseProvider.generateAccessTokenAndAddCookie(response, email, cookieDomain);
+            OAuth2ResponseProvider.generateAccessTokenAndAddCookieForWeb(response, email, cookieDomain);
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setLocation(URI.create(domain + "/signup"));
             return new ResponseEntity<>(httpHeaders, HttpStatus.MOVED_PERMANENTLY);
         }
-        oAuth2ResponseProvider.generateAccessRefreshTokenAndAddTokenCookie(response, optionalUser.get(), cookieDomain);
+        OAuth2ResponseProvider.generateTokensAndAddCookieForWeb(response, optionalUser.get(), cookieDomain);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(URI.create(domain + "/welcome"));
         return new ResponseEntity<>(httpHeaders, HttpStatus.MOVED_PERMANENTLY);

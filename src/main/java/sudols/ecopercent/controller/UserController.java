@@ -8,14 +8,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import sudols.ecopercent.dto.item.CreateItemRequest;
-import sudols.ecopercent.dto.oauth2.apple.AppleTokenResponse;
+import sudols.ecopercent.dto.oauth2.apple.AppleSignInResponse;
 import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.dto.user.UpdateUserRequest;
 import sudols.ecopercent.dto.user.UserResponse;
 import sudols.ecopercent.service.UserService;
 
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
 
 @Controller
@@ -42,9 +40,9 @@ public class UserController {
 
     @PostMapping("/users/apple")
     @ResponseBody
-    public ResponseEntity<AppleTokenResponse> createAppleUser(HttpServletRequest request, HttpServletResponse response,
-                                                              @RequestPart("userData") CreateUserRequest createUserRequest,
-                                                              @RequestPart(value = "profileImage", required = false) MultipartFile profileImageMultipartFile) {
+    public ResponseEntity<AppleSignInResponse> createAppleUser(HttpServletRequest request, HttpServletResponse response,
+                                                               @RequestPart("userData") CreateUserRequest createUserRequest,
+                                                               @RequestPart(value = "profileImage", required = false) MultipartFile profileImageMultipartFile) {
         return userService.createAppleUser(request, response, createUserRequest, profileImageMultipartFile);
     }
 
