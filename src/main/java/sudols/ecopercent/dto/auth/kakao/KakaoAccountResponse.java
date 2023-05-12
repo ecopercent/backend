@@ -1,4 +1,4 @@
-package sudols.ecopercent.dto.oauth2.kakao;
+package sudols.ecopercent.dto.auth.kakao;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

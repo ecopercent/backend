@@ -1,6 +1,7 @@
 package sudols.ecopercent.aop;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -55,7 +56,19 @@ public class ExceptionHandlers {
 
     @ExceptionHandler(NicknameAlreadyExistsException.class)
     public ResponseEntity<?> handleNicknameAlreadyExistsException(NicknameAlreadyExistsException e) {
-        log.debug("Handling: exception: " + e);
+        log.debug("Handling exception: " + e);
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<?> handleInvalidTokenException(InvalidTokenException e) {
+        log.debug("Handling exception: " + e);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @ExceptionHandler(ForbiddenTokenException.class)
+    public ResponseEntity<?> handleForbiddenTokenException(ForbiddenTokenException e) {
+        log.debug("Handling exception: " + e);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 }

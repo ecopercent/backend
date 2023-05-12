@@ -1,4 +1,4 @@
-package sudols.ecopercent.dto.oauth2;
+package sudols.ecopercent.dto.auth;
 
 import lombok.Builder;
 import lombok.Data;

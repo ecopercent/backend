@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.item.CreateItemRequest;
 import sudols.ecopercent.dto.item.ItemResponse;
-import sudols.ecopercent.dto.oauth2.apple.AppleSignInResponse;
+import sudols.ecopercent.dto.auth.apple.AppleSignInResponse;
 import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.dto.user.UpdateUserRequest;
 import sudols.ecopercent.dto.user.UserResponse;

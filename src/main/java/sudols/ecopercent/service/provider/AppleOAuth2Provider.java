@@ -1,16 +1,20 @@
 package sudols.ecopercent.service.provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import sudols.ecopercent.dto.oauth2.apple.AppleIdentityToken;
-import sudols.ecopercent.dto.oauth2.apple.AppleJWKSetResponse;
+import sudols.ecopercent.dto.auth.apple.AppleIdentityToken;
+import sudols.ecopercent.dto.auth.apple.AppleJWKSetResponse;
 import sudols.ecopercent.exception.AppleOAuth2Exception;
+import sudols.ecopercent.security.JwtTokenProvider;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.RSAPublicKeySpec;
@@ -20,7 +24,10 @@ import java.util.Optional;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class AppleOAuth2Provider {
+
+    private final JwtTokenProvider jwtTokenProvider;
 
     public PublicKey getPublicKey(String identityToken) {
         try {
@@ -71,5 +78,10 @@ public class AppleOAuth2Provider {
         } catch (Exception e) {
             throw new AppleOAuth2Exception(e);
         }
+    }
+
+    public String getEmailFromTokenWithPublicKey(String token, Key key) {
+        Claims claims = jwtTokenProvider.getClaimsFromTokenWithKey(token, key);
+        return claims.get("email", String.class);
     }
 }

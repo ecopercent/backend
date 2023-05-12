@@ -97,12 +97,6 @@ public class JwtTokenProvider {
                 .getSubject();
     }
 
-    public String getEmailFromTokenWithPublicKey(String token, Key key) {
-        Claims claims = getClaimsFromTokenWithKey(token, key);
-        return claims.get("email", String.class);
-//        return getClaimsFromTokenWithKey(token, key).get("email", String.class);
-    }
-
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()

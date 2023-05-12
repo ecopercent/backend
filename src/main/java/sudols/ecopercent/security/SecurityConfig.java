@@ -34,6 +34,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/items/all").permitAll() // TODO: 삭제. TEST
                         .requestMatchers(HttpMethod.DELETE, "/items/all").permitAll() // TODO: 삭제. TEST
                         .requestMatchers("/login/oauth2/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login/token/access").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/logout").permitAll()
                         .anyRequest().authenticated()
                 )
                 .csrf().disable()
