@@ -11,8 +11,8 @@ import sudols.ecopercent.dto.auth.SignupResponse;
 import sudols.ecopercent.dto.auth.kakao.KakaoAccountResponse;
 import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.JwtTokenProvider;
-import sudols.ecopercent.service.provider.KakaoOAuth2Provider;
-import sudols.ecopercent.service.provider.OAuth2ResponseProvider;
+import sudols.ecopercent.security.auth.KakaoOAuth2Provider;
+import sudols.ecopercent.security.TokenResponseProvider;
 
 import java.net.URL;
 import java.util.Optional;
@@ -23,7 +23,7 @@ public class KakaoOAuth2Service {
 
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final OAuth2ResponseProvider oAuth2ResponseProvider;
+    private final TokenResponseProvider tokenResponseProvider;
     private final KakaoOAuth2Provider kakaoOAuth2Provider;
 
     public ResponseEntity<?> login(HttpServletRequest request, HttpServletResponse response) {
@@ -32,15 +32,15 @@ public class KakaoOAuth2Service {
         String email = kakaoUserDetail.getEmail();
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
-            SignupResponse signupResponse = oAuth2ResponseProvider.generateAccessTokenAndGetSignupResponse(email);
+            SignupResponse signupResponse = tokenResponseProvider.generateAccessTokenAndGetSignupResponse(email);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(signupResponse);
         }
         try {
             final String referer = request.getHeader("Referer");
             final String HostOfReferer = new URL(referer).getHost();
-            oAuth2ResponseProvider.generateTokensAndAddCookieForWeb(response, optionalUser.get(), HostOfReferer);
+            tokenResponseProvider.generateTokensAndAddCookieForWeb(response, optionalUser.get(), HostOfReferer);
         } catch (Exception e) {
-            oAuth2ResponseProvider.generateTokensAndAddCookieForIos(response, optionalUser.get());
+            tokenResponseProvider.generateTokensAndAddCookieForIos(response, optionalUser.get());
         }
         return ResponseEntity.status(HttpStatus.OK).build();
     }

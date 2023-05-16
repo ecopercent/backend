@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import sudols.ecopercent.dto.auth.apple.AppleAuthorizationResponse;
+import sudols.ecopercent.security.JwtTokenProvider;
 import sudols.ecopercent.service.*;
 
 @Controller
@@ -41,9 +42,12 @@ public class AuthController {
         return appleOAuth2WebService.login(response, appleAuthorizationResponse);
     }
 
-    @PostMapping("/login/token/access")
-    public void reissueAccessToken(HttpServletRequest request, @CookieValue("refresh") String refresh) {
-        tokenService.reissueAccessToken(request, refresh);
+    @PostMapping("/token/access")
+    public void reissueAccessToken(HttpServletRequest request, HttpServletResponse response,@CookieValue("refresh") String refresh) {
+        System.out.println("cookies: " + request.getCookies());
+        String referer = request.getHeader("Referer");
+        Cookie cookie = tokenService.reissueUserAccessToken(referer, refresh);
+        response.addCookie(cookie);
     }
 
     @PostMapping("/logout")

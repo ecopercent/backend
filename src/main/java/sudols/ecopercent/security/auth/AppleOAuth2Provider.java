@@ -1,4 +1,4 @@
-package sudols.ecopercent.service.provider;
+package sudols.ecopercent.security.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;

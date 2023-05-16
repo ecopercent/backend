@@ -1,7 +1,6 @@
 package sudols.ecopercent.aop;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -70,5 +69,11 @@ public class ExceptionHandlers {
     public ResponseEntity<?> handleForbiddenTokenException(ForbiddenTokenException e) {
         log.debug("Handling exception: " + e);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @ExceptionHandler(ExpiredTokenException.class)
+    public ResponseEntity<?> handleExpiredTokenException(ExpiredTokenException e) {
+        log.debug("Handling exception: " + e);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }

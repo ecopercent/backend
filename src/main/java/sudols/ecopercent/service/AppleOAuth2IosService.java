@@ -11,8 +11,8 @@ import sudols.ecopercent.dto.auth.SignupResponse;
 import sudols.ecopercent.dto.auth.apple.AppleSignInResponse;
 import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.JwtTokenProvider;
-import sudols.ecopercent.service.provider.AppleOAuth2Provider;
-import sudols.ecopercent.service.provider.OAuth2ResponseProvider;
+import sudols.ecopercent.security.auth.AppleOAuth2Provider;
+import sudols.ecopercent.security.TokenResponseProvider;
 
 import java.security.PublicKey;
 import java.util.Optional;
@@ -24,7 +24,7 @@ public class AppleOAuth2IosService {
 
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final OAuth2ResponseProvider oAuth2ResponseProvider;
+    private final TokenResponseProvider tokenResponseProvider;
     private final AppleOAuth2Provider appleOAuth2Provider;
 
     public ResponseEntity<?> login(HttpServletRequest request) {
@@ -33,10 +33,10 @@ public class AppleOAuth2IosService {
         String email = appleOAuth2Provider.getEmailFromTokenWithPublicKey(identityToken, publicKey);
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
-            SignupResponse signupResponse = oAuth2ResponseProvider.generateAccessTokenAndGetSignupResponse(email);
+            SignupResponse signupResponse = tokenResponseProvider.generateAccessTokenAndGetSignupResponse(email);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(signupResponse);
         }
-        AppleSignInResponse appleSignInResponse = oAuth2ResponseProvider.generateTokenAndGetTokenResponse(optionalUser.get());
+        AppleSignInResponse appleSignInResponse = tokenResponseProvider.generateTokenAndGetTokenResponse(optionalUser.get());
         return ResponseEntity.status(HttpStatus.OK).body(appleSignInResponse);
     }
 }

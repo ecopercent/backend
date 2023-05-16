@@ -1,4 +1,4 @@
-package sudols.ecopercent.service.provider;
+package sudols.ecopercent.security.auth;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

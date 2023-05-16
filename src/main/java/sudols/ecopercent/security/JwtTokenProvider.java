@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import sudols.ecopercent.exception.AppleOAuth2Exception;
+import sudols.ecopercent.exception.ExpiredTokenException;
+import sudols.ecopercent.exception.InvalidTokenException;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -40,20 +42,7 @@ public class JwtTokenProvider {
         this.secretKey = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
     }
 
-    public String generateAccessTokenForSignup(String email) {
-        final long jwtExpirationInMillis = signupAccessTokenExpiryDate;
-        Date currentDate = new Date();
-        Date expiryDate = new Date(currentDate.getTime() + jwtExpirationInMillis);
-        return Jwts.builder()
-                .setIssuedAt(currentDate)
-                .setExpiration(expiryDate)
-                .setSubject(email)
-                .signWith(secretKey)
-                .claim("ROLE", "SIGNUP")
-                .compact();
-    }
-
-    public String generateAccessToken(String email) {
+    public String generateAccessToken(String email, String role) {
         final long jwtExpirationInMillis = accessTokenExpiryDate;
         Date currentDate = new Date();
         Date expiryDate = new Date(currentDate.getTime() + jwtExpirationInMillis);
@@ -62,7 +51,7 @@ public class JwtTokenProvider {
                 .setExpiration(expiryDate)
                 .setSubject(email)
                 .signWith(secretKey)
-                .claim("ROLE", "USER")
+                .claim("ROLE", role)
                 .compact();
     }
 
@@ -87,7 +76,6 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (Exception e) {
-            System.out.println("claims Error: " + e);
             throw new AppleOAuth2Exception(e);
         }
     }
@@ -97,16 +85,16 @@ public class JwtTokenProvider {
                 .getSubject();
     }
 
-    public boolean validateToken(String token) {
+    public void validateToken(String token) {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token);
-            return true;
+        } catch (ExpiredJwtException e) {
+            throw new ExpiredTokenException(token);
         } catch (JwtException e) {
-            log.debug("Exception from validateToken: " + e);
-            return false;
+            throw new InvalidTokenException(token);
         }
     }
 

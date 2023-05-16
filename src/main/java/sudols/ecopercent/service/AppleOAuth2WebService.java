@@ -10,8 +10,8 @@ import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.auth.apple.AppleAuthorizationResponse;
 import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.JwtTokenProvider;
-import sudols.ecopercent.service.provider.AppleOAuth2Provider;
-import sudols.ecopercent.service.provider.OAuth2ResponseProvider;
+import sudols.ecopercent.security.auth.AppleOAuth2Provider;
+import sudols.ecopercent.security.TokenResponseProvider;
 
 import java.net.URI;
 import java.security.PublicKey;
@@ -23,7 +23,7 @@ public class AppleOAuth2WebService {
 
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final OAuth2ResponseProvider oAuth2ResponseProvider;
+    private final TokenResponseProvider tokenResponseProvider;
     private final AppleOAuth2Provider appleOAuth2Provider;
 
     public ResponseEntity<?> login(HttpServletResponse response, AppleAuthorizationResponse appleAuthorizationResponse) {
@@ -35,12 +35,12 @@ public class AppleOAuth2WebService {
         String email = appleOAuth2Provider.getEmailFromTokenWithPublicKey(identityToken, publicKey);
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
-            oAuth2ResponseProvider.generateAccessTokenAndAddCookieForWeb(response, email, cookieDomain);
+            tokenResponseProvider.generateAccessTokenAndAddCookieForWeb(response, email, cookieDomain);
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setLocation(URI.create(domain + "/signup"));
             return new ResponseEntity<>(httpHeaders, HttpStatus.MOVED_PERMANENTLY);
         }
-        oAuth2ResponseProvider.generateTokensAndAddCookieForWeb(response, optionalUser.get(), cookieDomain);
+        tokenResponseProvider.generateTokensAndAddCookieForWeb(response, optionalUser.get(), cookieDomain);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(URI.create(domain + "/welcome"));
         return new ResponseEntity<>(httpHeaders, HttpStatus.MOVED_PERMANENTLY);

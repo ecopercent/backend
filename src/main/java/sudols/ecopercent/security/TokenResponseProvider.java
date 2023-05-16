@@ -1,4 +1,4 @@
-package sudols.ecopercent.service.provider;
+package sudols.ecopercent.security;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,13 +12,13 @@ import sudols.ecopercent.service.CacheService;
 
 @Component
 @RequiredArgsConstructor
-public class OAuth2ResponseProvider {
+public class TokenResponseProvider {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final CacheService cacheService;
 
     public void generateAccessTokenAndAddCookieForWeb(HttpServletResponse response, String email, String domain) {
-        String access = jwtTokenProvider.generateAccessToken(email);
+        String access = jwtTokenProvider.generateAccessToken(email, "USER");
         Cookie accessTokenCookie = new Cookie("access", access);
         accessTokenCookie.setDomain(domain);
         accessTokenCookie.setPath("/");
@@ -26,23 +26,15 @@ public class OAuth2ResponseProvider {
         response.addCookie(accessTokenCookie);
     }
 
-    public void generateAccessTokenAndAddCookieForIOS(HttpServletResponse response, String email) {
-        String access = jwtTokenProvider.generateAccessToken(email);
-        Cookie accessTokenCookie = new Cookie("access", access);
-        accessTokenCookie.setPath("/");
-        accessTokenCookie.setSecure(true);
-        response.addCookie(accessTokenCookie);
-    }
-
     public SignupResponse generateAccessTokenAndGetSignupResponse(String email) {
-        String accessToken = jwtTokenProvider.generateAccessToken(email);
+        String accessToken = jwtTokenProvider.generateAccessToken(email, "USER");
         return SignupResponse.builder()
                 .access(accessToken)
                 .build();
     }
 
     public void generateTokensAndAddCookieForWeb(HttpServletResponse response, User user, String domain) {
-        String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail());
+        String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail(), "USER");
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
         System.out.println("refresh token: " + refreshToken);
         cacheService.saveRefreshToken(user.getEmail(), refreshToken);
@@ -61,7 +53,7 @@ public class OAuth2ResponseProvider {
     }
 
     public void generateTokensAndAddCookieForIos(HttpServletResponse response, User user) {
-        String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail());
+        String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail(), "USER");
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
         System.out.println("refresh token: " + refreshToken);
         cacheService.saveRefreshToken(user.getEmail(),refreshToken);
@@ -79,13 +71,27 @@ public class OAuth2ResponseProvider {
 
 
     public AppleSignInResponse generateTokenAndGetTokenResponse(User user) {
-        String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail());
+        String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail(), "USER");
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
-        System.out.println("refresh token: " + refreshToken);
         cacheService.saveRefreshToken(user.getEmail(),refreshToken);
         return AppleSignInResponse.builder()
                 .access(accessToken)
                 .refresh(refreshToken)
                 .build();
+    }
+
+    public Cookie generateUserAccessTokenCookieForIos(String email) {
+        String accessToken = jwtTokenProvider.generateAccessToken(email, "USER");
+        Cookie accessTokenCookie = new Cookie("access", accessToken);
+        accessTokenCookie.setPath("/");
+        return accessTokenCookie;
+    }
+
+    public Cookie generateUserAccessTokenCookieForWeb(String email, String domain) {
+        String accessToken = jwtTokenProvider.generateAccessToken(email, "USER");
+        Cookie accessTokenCookie = new Cookie("access", accessToken);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setDomain(domain);
+        return accessTokenCookie;
     }
 }
