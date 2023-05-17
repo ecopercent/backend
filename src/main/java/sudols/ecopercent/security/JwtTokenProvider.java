@@ -85,16 +85,17 @@ public class JwtTokenProvider {
                 .getSubject();
     }
 
-    public void validateToken(String token) {
+    public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token);
+            return true;
         } catch (ExpiredJwtException e) {
             throw new ExpiredTokenException(token);
         } catch (JwtException e) {
-            throw new InvalidTokenException(token);
+            return false;
         }
     }
 

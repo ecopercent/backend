@@ -5,7 +5,6 @@ import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sudols.ecopercent.exception.ExpiredTokenException;
 import sudols.ecopercent.exception.ForbiddenTokenException;
 import sudols.ecopercent.security.JwtTokenProvider;
 import sudols.ecopercent.security.TokenResponseProvider;
@@ -21,7 +20,7 @@ public class TokenService {
     private final CacheService cacheService;
     private final TokenResponseProvider tokenResponseProvider;
 
-    public Cookie reissueUserAccessToken(final String referer, String refresh) {
+    public Cookie reissueUserAccessTokenCookie(final String referer, String refresh) {
         if (refresh == null) {
             throw new ForbiddenTokenException(null);
         }
