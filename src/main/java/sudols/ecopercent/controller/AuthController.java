@@ -48,7 +48,12 @@ public class AuthController {
         response.addCookie(cookie);
     }
 
-    @PostMapping("/logout")
-    public void logout(HttpServletRequest request) {
+    @PostMapping("/signout")
+    public void logout(HttpServletRequest request, HttpServletResponse response, @CookieValue("refresh") String refresh) {
+        String referer = request.getHeader("Referer");
+        Cookie expiredRefreshCookie = tokenService.revokeRefreshTokenAndReturnExpiredRefreshCookie(referer, refresh);
+        if (expiredRefreshCookie != null) {
+            response.addCookie(expiredRefreshCookie);
+        }
     }
 }

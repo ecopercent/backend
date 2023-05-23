@@ -7,8 +7,9 @@ import org.springframework.stereotype.Component;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.auth.SignupResponse;
 import sudols.ecopercent.dto.auth.apple.AppleSignInResponse;
-import sudols.ecopercent.security.JwtTokenProvider;
 import sudols.ecopercent.service.CacheService;
+
+import java.net.URL;
 
 @Component
 @RequiredArgsConstructor
@@ -36,7 +37,6 @@ public class TokenResponseProvider {
     public void generateTokensAndAddCookieForWeb(HttpServletResponse response, User user, String domain) {
         String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail(), "USER");
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
-        System.out.println("refresh token: " + refreshToken);
         cacheService.saveRefreshToken(user.getEmail(), refreshToken);
 
         Cookie accessTokenCookie = new Cookie("access", accessToken);
@@ -55,13 +55,13 @@ public class TokenResponseProvider {
     public void generateTokensAndAddCookieForIos(HttpServletResponse response, User user) {
         String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail(), "USER");
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
-        System.out.println("refresh token: " + refreshToken);
         cacheService.saveRefreshToken(user.getEmail(),refreshToken);
 
         Cookie accessTokenCookie = new Cookie("access", accessToken);
         accessTokenCookie.setPath("/");
 
         Cookie refreshTokenCookie = new Cookie("refresh", refreshToken);
+
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setPath("/");
 
@@ -93,5 +93,18 @@ public class TokenResponseProvider {
         accessTokenCookie.setPath("/");
         accessTokenCookie.setDomain(domain);
         return accessTokenCookie;
+    }
+
+    public Cookie generateExpiredRefreshTokenCookie(String email, String referer) {
+        String refreshToken = jwtTokenProvider.generateExpiredRefreshToken(email);
+        Cookie refreshTokenCookie = new Cookie("refresh", refreshToken);
+        refreshTokenCookie.setPath("/");
+        try {
+            final String domain = new URL(referer).getHost();
+            refreshTokenCookie.setDomain(domain);
+        } catch (Exception ignore) {
+        }
+        refreshTokenCookie.setHttpOnly(true);
+        return refreshTokenCookie;
     }
 }

@@ -62,18 +62,12 @@ public class ExceptionHandlers {
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<?> handleInvalidTokenException(InvalidTokenException e) {
         log.debug("Handling exception: " + e);
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @ExceptionHandler(ForbiddenTokenException.class)
     public ResponseEntity<?> handleForbiddenTokenException(ForbiddenTokenException e) {
         log.debug("Handling exception: " + e);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    }
-
-    @ExceptionHandler(ExpiredTokenException.class)
-    public ResponseEntity<?> handleExpiredTokenException(ExpiredTokenException e) {
-        log.debug("Handling exception: " + e);
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }

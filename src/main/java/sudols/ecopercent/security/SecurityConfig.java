@@ -20,7 +20,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -30,14 +29,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/users/all").permitAll() // TODO: 삭제. TEST
                         .requestMatchers(HttpMethod.GET, "/items/all").permitAll() // TODO: 삭제. TEST
                         .requestMatchers(HttpMethod.DELETE, "/items/all").permitAll() // TODO: 삭제. TEST
-                        .requestMatchers(HttpMethod.POST, "/login/oauth2/kakao").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/login/oauth2/apple/ios").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/login/oauth2/apple/web").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login/oauth2/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/token/access").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/logout").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/signout").permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         http
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

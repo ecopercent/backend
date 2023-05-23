@@ -1,30 +1,28 @@
 package sudols.ecopercent.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class CacheService {
 
-    private final Cache refreshTokenCache;
-
-    @Autowired
-    public CacheService(CacheManager cacheManager) {
-        this.refreshTokenCache = cacheManager.getCache("refreshTokenStore");
+    @Cacheable(cacheNames = "refreshTokenStore", key = "#email")
+    public String saveRefreshToken(String email, String refresh) {
+        log.debug("refreshTokenStore 캐시 저장: " + email);
+        return refresh;
     }
 
-    public void saveRefreshToken(String email, String refresh) {
-        refreshTokenCache.put(email, refresh);
-    }
-
+    @Cacheable(cacheNames = "refreshTokenStore", key = "#email")
     public String getRefreshToken(String email) {
-        Cache.ValueWrapper valueWrapper = refreshTokenCache.get(email);
-        return valueWrapper == null ? null : (String) valueWrapper.get();
+        log.debug("refreshTokenStore 캐시 반환: " + email);
+        return null;
     }
 
+    @CacheEvict(value = "refreshTokenStore", key = "#email")
     public void deleteRefreshToken(String email) {
-        refreshTokenCache.evict(email);
+        log.debug("refreshTokenStore 캐시 삭제: " + email);
     }
 }
