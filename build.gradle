@@ -13,7 +13,10 @@ repositories {
 }
 
 dependencies {
-//    implementation 'org.springframework.security:spring-security-oauth2-jose'
+    // Cache
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.1'
+
     implementation 'org.springframework.security:spring-security-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-security'

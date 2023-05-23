@@ -1,4 +1,4 @@
-package sudols.ecopercent.dto.oauth2.apple;
+package sudols.ecopercent.dto.auth.apple;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

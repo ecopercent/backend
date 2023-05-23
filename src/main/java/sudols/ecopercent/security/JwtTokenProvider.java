@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import sudols.ecopercent.exception.AppleOAuth2Exception;
+import sudols.ecopercent.exception.InvalidTokenException;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -40,20 +40,7 @@ public class JwtTokenProvider {
         this.secretKey = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
     }
 
-    public String generateAccessTokenForSignup(String email) {
-        final long jwtExpirationInMillis = signupAccessTokenExpiryDate;
-        Date currentDate = new Date();
-        Date expiryDate = new Date(currentDate.getTime() + jwtExpirationInMillis);
-        return Jwts.builder()
-                .setIssuedAt(currentDate)
-                .setExpiration(expiryDate)
-                .setSubject(email)
-                .signWith(secretKey)
-                .claim("ROLE", "SIGNUP")
-                .compact();
-    }
-
-    public String generateAccessToken(String email) {
+    public String generateAccessToken(String email, String role) {
         final long jwtExpirationInMillis = accessTokenExpiryDate;
         Date currentDate = new Date();
         Date expiryDate = new Date(currentDate.getTime() + jwtExpirationInMillis);
@@ -62,7 +49,7 @@ public class JwtTokenProvider {
                 .setExpiration(expiryDate)
                 .setSubject(email)
                 .signWith(secretKey)
-                .claim("ROLE", "USER")
+                .claim("ROLE", role)
                 .compact();
     }
 
@@ -79,6 +66,28 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    public String generateExpiredRefreshToken(String email) {
+        Date currentDate = new Date();
+        return Jwts.builder()
+                .setIssuedAt(currentDate)
+                .setExpiration(currentDate)
+                .setSubject(email)
+                .signWith(secretKey)
+                .claim("ROLE", "USER")
+                .compact();
+    }
+
+    public void validateToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token);
+        } catch (JwtException e) {
+            throw new InvalidTokenException(token);
+        }
+    }
+
     public Claims getClaimsFromTokenWithKey(String token, Key key) {
         try {
             return Jwts.parserBuilder()
@@ -86,33 +95,8 @@ public class JwtTokenProvider {
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-        } catch (Exception e) {
-            System.out.println("claims Error: " + e);
-            throw new AppleOAuth2Exception(e);
-        }
-    }
-
-    public String getEmailFromToken(String token) {
-        return getClaimsFromTokenWithKey(token, secretKey)
-                .getSubject();
-    }
-
-    public String getEmailFromTokenWithPublicKey(String token, Key key) {
-        Claims claims = getClaimsFromTokenWithKey(token, key);
-        return claims.get("email", String.class);
-//        return getClaimsFromTokenWithKey(token, key).get("email", String.class);
-    }
-
-    public boolean validateToken(String token) {
-        try {
-            Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(token);
-            return true;
         } catch (JwtException e) {
-            log.debug("Exception from validateToken: " + e);
-            return false;
+            throw new InvalidTokenException(token);
         }
     }
 
@@ -127,5 +111,10 @@ public class JwtTokenProvider {
     public String getEmailFromRequest(HttpServletRequest request) {
         String token = getTokenFromRequest(request);
         return getEmailFromToken(token);
+    }
+
+    public String getEmailFromToken(String token) {
+        return getClaimsFromTokenWithKey(token, secretKey)
+                .getSubject();
     }
 }

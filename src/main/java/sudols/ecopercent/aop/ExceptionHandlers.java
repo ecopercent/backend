@@ -55,7 +55,19 @@ public class ExceptionHandlers {
 
     @ExceptionHandler(NicknameAlreadyExistsException.class)
     public ResponseEntity<?> handleNicknameAlreadyExistsException(NicknameAlreadyExistsException e) {
-        log.debug("Handling: exception: " + e);
+        log.debug("Handling exception: " + e);
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<?> handleInvalidTokenException(InvalidTokenException e) {
+        log.debug("Handling exception: " + e);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @ExceptionHandler(ForbiddenTokenException.class)
+    public ResponseEntity<?> handleForbiddenTokenException(ForbiddenTokenException e) {
+        log.debug("Handling exception: " + e);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 }

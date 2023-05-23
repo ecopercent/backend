@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.item.CreateItemRequest;
 import sudols.ecopercent.dto.item.ItemResponse;
-import sudols.ecopercent.dto.oauth2.apple.AppleSignInResponse;
+import sudols.ecopercent.dto.auth.apple.AppleSignInResponse;
 import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.dto.user.UpdateUserRequest;
 import sudols.ecopercent.dto.user.UserResponse;
@@ -24,7 +24,7 @@ import sudols.ecopercent.mapper.UserMapper;
 import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.JwtTokenProvider;
-import sudols.ecopercent.service.provider.OAuth2ResponseProvider;
+import sudols.ecopercent.security.TokenResponseProvider;
 
 import java.net.URL;
 import java.util.List;
@@ -41,7 +41,7 @@ public class UserService {
     private final ItemRepository itemRepository;
     private final UserMapper userMapper;
     private final JwtTokenProvider jwtTokenProvider;
-    private final OAuth2ResponseProvider OAuth2ResponseProvider;
+    private final TokenResponseProvider TokenResponseProvider;
 
     public UserResponse createKakaoUser(HttpServletRequest request, HttpServletResponse response,
                                         CreateUserRequest createUserRequest, MultipartFile profileImageMultipartFile,
@@ -65,9 +65,9 @@ public class UserService {
         final String referer = request.getHeader("Referer");
         try {
             final String domain = new URL(referer).getHost();
-            OAuth2ResponseProvider.generateTokensAndAddCookieForWeb(response, user, domain);
-        } catch (Exception ignore) {
-            OAuth2ResponseProvider.generateTokensAndAddCookieForIos(response, user);
+            TokenResponseProvider.generateTokensAndAddCookieForWeb(response, user, domain);
+        } catch (Exception e) {
+            TokenResponseProvider.generateTokensAndAddCookieForIos(response, user);
         }
         if (createTumblerRequest != null) {
             ItemResponse tumblerResponse = itemService.createItem(request, createTumblerRequest, tumblerImageMultipartFile);
@@ -97,7 +97,7 @@ public class UserService {
             user.setProfileImage(null);
         }
         userRepository.save(user);
-        AppleSignInResponse appleSignInResponse = OAuth2ResponseProvider.generateTokenAndGetTokenResponse(user);
+        AppleSignInResponse appleSignInResponse = TokenResponseProvider.generateTokenAndGetTokenResponse(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(appleSignInResponse);
     }
 
