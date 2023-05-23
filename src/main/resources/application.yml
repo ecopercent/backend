@@ -9,6 +9,7 @@ spring:
       on-profile: test
     import:
       - application-test.yml
+      - application-security.yml
 
 ---
 spring:
