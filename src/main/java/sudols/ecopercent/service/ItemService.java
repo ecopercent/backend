@@ -119,7 +119,7 @@ public class ItemService {
         final String category = "tumbler";
         return itemRepository.findByCategoryAndIsTitleTrueAndUser_Email(category, email)
                 .map(itemMapper::itemToItemResponse)
-                .orElseThrow(() -> new TitleItemNotFoundException(category));
+                .orElseThrow(() -> new TitleItemNotExistsException(category));
     }
 
     public ItemResponse getTitleEcobag(HttpServletRequest request) {
@@ -127,7 +127,7 @@ public class ItemService {
         final String category = "ecobag";
         return itemRepository.findByCategoryAndIsTitleTrueAndUser_Email(category, email)
                 .map(itemMapper::itemToItemResponse)
-                .orElseThrow(() -> new TitleItemNotFoundException(category));
+                .orElseThrow(() -> new TitleItemNotExistsException(category));
     }
 
     public void deleteItem(Long itemId) {
