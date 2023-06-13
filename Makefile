@@ -32,7 +32,7 @@ rebuild:
 
 .PHONY: start_api
 start_api:
-	java -jar ./build/libs/$(JAR_FILE)
+	java -jar ./build/libs/$(JAR_FILE) --spring.profiles.active=dev
 
 .PHONY: stop_api
 stop_api:
