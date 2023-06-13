@@ -5,15 +5,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import sudols.ecopercent.dto.auth.apple.AppleAuthorizationResponse;
-import sudols.ecopercent.service.*;
+import sudols.ecopercent.service.AppleOAuth2IosService;
+import sudols.ecopercent.service.AppleOAuth2WebService;
+import sudols.ecopercent.service.KakaoOAuth2Service;
+import sudols.ecopercent.service.TokenService;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -23,14 +25,12 @@ public class AuthController {
     private final TokenService tokenService;
 
     @PostMapping("/login/oauth2/kakao")
-    @ResponseBody
     public ResponseEntity<?> kakaoOAuth2Login(HttpServletRequest request,
                                               HttpServletResponse response) {
         return kakaoOAuth2Service.login(request, response);
     }
 
     @PostMapping("/login/oauth2/apple/ios")
-    @ResponseBody
     public ResponseEntity<?> appleOAuth2IosLogin(HttpServletRequest request) {
         return appleOAuth2IosService.login(request);
     }
@@ -42,7 +42,7 @@ public class AuthController {
     }
 
     @PostMapping("/token/access")
-    public void reissueAccessToken(HttpServletRequest request, HttpServletResponse response,@CookieValue("refresh") String refresh) {
+    public void reissueAccessToken(HttpServletRequest request, HttpServletResponse response, @CookieValue("refresh") String refresh) {
         String referer = request.getHeader("Referer");
         Cookie cookie = tokenService.reissueUserAccessTokenCookie(referer, refresh);
         response.addCookie(cookie);

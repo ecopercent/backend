@@ -13,14 +13,13 @@ import sudols.ecopercent.service.ItemService;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class ItemController {
 
     private final ItemService itemService;
 
     @PostMapping("/items")
-    @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
     public ItemResponse createItem(HttpServletRequest request,
                                    @RequestPart("itemData") CreateItemRequest createItemRequest,
@@ -29,20 +28,17 @@ public class ItemController {
     }
 
     @GetMapping("/items")
-    @ResponseBody
     public List<ItemResponse> getMyItemListByCategory(HttpServletRequest request,
                                                       @RequestParam(value = "category") String category) {
         return itemService.getMyItemListByCategory(request, category);
     }
 
     @GetMapping("/items/{itemId}")
-    @ResponseBody
     public ItemResponse getItem(@PathVariable("itemId") Long itemId) {
         return itemService.getItem(itemId);
     }
 
     @PatchMapping("/items/{itemId}")
-    @ResponseBody
     public ItemResponse updateItem(HttpServletRequest request,
                                    @PathVariable("itemId") Long itemId,
                                    @RequestPart(value = "itemData", required = false) UpdateItemRequest updateItemRequest,
@@ -51,54 +47,46 @@ public class ItemController {
     }
 
     @PatchMapping("/items/{itemId}/usage-count")
-    @ResponseBody
     public ItemResponse increaseUsageCount(HttpServletRequest request,
                                            @PathVariable("itemId") Long itemId) {
         return itemService.increaseUsageCount(request, itemId);
     }
 
     @PatchMapping("/items/{itemId}/title-tumbler")
-    @ResponseBody
     public ItemResponse changeTitleTumbler(HttpServletRequest request,
                                            @PathVariable("itemId") Long itemId) {
         return itemService.changeTitleTumbler(request, itemId);
     }
 
     @PatchMapping("/items/{itemId}/title-ecobag")
-    @ResponseBody
     public ItemResponse changeTitleEcobag(HttpServletRequest request,
                                           @PathVariable("itemId") Long itemId) {
         return itemService.changeTitleEcobag(request, itemId);
     }
 
     @GetMapping("/users/me/title-tumbler")
-    @ResponseBody
     public ItemResponse getTitleTumbler(HttpServletRequest request) {
         return itemService.getTitleTumbler(request);
     }
 
     @GetMapping("/users/me/title-ecobag")
-    @ResponseBody
     public ItemResponse getTitleEcobag(HttpServletRequest request) {
         return itemService.getTitleEcobag(request);
     }
 
     @DeleteMapping("/items/{itemId}")
-    @ResponseBody
     public void deleteItem(@PathVariable("itemId") Long itemId) {
         itemService.deleteItem(itemId);
     }
 
     // TEST API
     @GetMapping("/items/all")
-    @ResponseBody
     public List<ItemResponse> getAllItemList() {
         return itemService.getAllItemList();
     }
 
     // TEST API
     @DeleteMapping("/items")
-    @ResponseBody
     public void deleteAllItem() {
         itemService.deleteAllItem();
     }
