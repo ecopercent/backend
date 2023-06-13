@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sudols.ecopercent.dto.auth.apple.AppleAuthorizationResponse;
+import sudols.ecopercent.security.JwtTokenProvider;
 import sudols.ecopercent.service.AppleOAuth2IosService;
 import sudols.ecopercent.service.AppleOAuth2WebService;
 import sudols.ecopercent.service.KakaoOAuth2Service;
@@ -23,11 +24,14 @@ public class AuthController {
     private final AppleOAuth2IosService appleOAuth2IosService;
     private final AppleOAuth2WebService appleOAuth2WebService;
     private final TokenService tokenService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/login/oauth2/kakao")
     public ResponseEntity<?> kakaoOAuth2Login(HttpServletRequest request,
                                               HttpServletResponse response) {
-        return kakaoOAuth2Service.login(request, response);
+        String kakaoAccessToken = jwtTokenProvider.getTokenFromRequest(request);
+        final String referer = request.getHeader("Referer");
+        return kakaoOAuth2Service.login(response, kakaoAccessToken, referer);
     }
 
     @PostMapping("/login/oauth2/apple/ios")

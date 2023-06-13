@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import sudols.ecopercent.dto.item.CreateItemRequest;
 import sudols.ecopercent.dto.item.ItemResponse;
 import sudols.ecopercent.dto.item.UpdateItemRequest;
+import sudols.ecopercent.security.JwtTokenProvider;
 import sudols.ecopercent.service.ItemService;
 
 import java.util.List;
@@ -18,19 +19,22 @@ import java.util.List;
 public class ItemController {
 
     private final ItemService itemService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/items")
     @ResponseStatus(code = HttpStatus.CREATED)
     public ItemResponse createItem(HttpServletRequest request,
                                    @RequestPart("itemData") CreateItemRequest createItemRequest,
                                    @RequestPart(value = "itemImage", required = false) MultipartFile itemImageMultipartFile) {
-        return itemService.createItem(request, createItemRequest, itemImageMultipartFile);
+        String email = jwtTokenProvider.getEmailFromRequest(request);
+        return itemService.createItem(email, createItemRequest, itemImageMultipartFile);
     }
 
     @GetMapping("/items")
     public List<ItemResponse> getMyItemListByCategory(HttpServletRequest request,
                                                       @RequestParam(value = "category") String category) {
-        return itemService.getMyItemListByCategory(request, category);
+        String email = jwtTokenProvider.getEmailFromRequest(request);
+        return itemService.getMyItemListByCategory(email, category);
     }
 
     @GetMapping("/items/{itemId}")
@@ -43,40 +47,48 @@ public class ItemController {
                                    @PathVariable("itemId") Long itemId,
                                    @RequestPart(value = "itemData", required = false) UpdateItemRequest updateItemRequest,
                                    @RequestPart(value = "itemImage", required = false) MultipartFile itemImageMultipartFile) {
-        return itemService.updateItem(request, itemId, updateItemRequest, itemImageMultipartFile);
+        String email = jwtTokenProvider.getEmailFromRequest(request);
+        return itemService.updateItem(email, itemId, updateItemRequest, itemImageMultipartFile);
     }
 
     @PatchMapping("/items/{itemId}/usage-count")
     public ItemResponse increaseUsageCount(HttpServletRequest request,
                                            @PathVariable("itemId") Long itemId) {
-        return itemService.increaseUsageCount(request, itemId);
+        String email = jwtTokenProvider.getEmailFromRequest(request);
+        return itemService.increaseUsageCount(email, itemId);
     }
 
     @PatchMapping("/items/{itemId}/title-tumbler")
     public ItemResponse changeTitleTumbler(HttpServletRequest request,
                                            @PathVariable("itemId") Long itemId) {
-        return itemService.changeTitleTumbler(request, itemId);
+        String email = jwtTokenProvider.getEmailFromRequest(request);
+        return itemService.changeTitleTumbler(email, itemId);
     }
 
     @PatchMapping("/items/{itemId}/title-ecobag")
     public ItemResponse changeTitleEcobag(HttpServletRequest request,
                                           @PathVariable("itemId") Long itemId) {
-        return itemService.changeTitleEcobag(request, itemId);
+        String email = jwtTokenProvider.getEmailFromRequest(request);
+        return itemService.changeTitleEcobag(email, itemId);
     }
 
     @GetMapping("/users/me/title-tumbler")
     public ItemResponse getTitleTumbler(HttpServletRequest request) {
-        return itemService.getTitleTumbler(request);
+        String email = jwtTokenProvider.getEmailFromRequest(request);
+        return itemService.getTitleTumbler(email);
     }
 
     @GetMapping("/users/me/title-ecobag")
     public ItemResponse getTitleEcobag(HttpServletRequest request) {
-        return itemService.getTitleEcobag(request);
+        String email = jwtTokenProvider.getEmailFromRequest(request);
+        return itemService.getTitleEcobag(email);
     }
 
     @DeleteMapping("/items/{itemId}")
-    public void deleteItem(@PathVariable("itemId") Long itemId) {
-        itemService.deleteItem(itemId);
+    public void deleteItem(HttpServletRequest request,
+                           @PathVariable("itemId") Long itemId) {
+        String email = jwtTokenProvider.getEmailFromRequest(request);
+        itemService.deleteItem(email, itemId);
     }
 
     // TEST API

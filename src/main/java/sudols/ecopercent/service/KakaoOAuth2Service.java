@@ -22,12 +22,10 @@ import java.util.Optional;
 public class KakaoOAuth2Service {
 
     private final UserRepository userRepository;
-    private final JwtTokenProvider jwtTokenProvider;
     private final TokenResponseProvider tokenResponseProvider;
     private final KakaoOAuth2Provider kakaoOAuth2Provider;
 
-    public ResponseEntity<?> login(HttpServletRequest request, HttpServletResponse response) {
-        String kakaoAccessToken = jwtTokenProvider.getTokenFromRequest(request);
+    public ResponseEntity<?> login(HttpServletResponse response, String kakaoAccessToken, String referer) {
         KakaoAccountResponse.KakaoAccount kakaoUserDetail = kakaoOAuth2Provider.requestUserDetailByAccessToken(kakaoAccessToken);
         String email = kakaoUserDetail.getEmail();
         Optional<User> optionalUser = userRepository.findByEmail(email);
@@ -36,7 +34,6 @@ public class KakaoOAuth2Service {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(signupResponse);
         }
         try {
-            final String referer = request.getHeader("Referer");
             final String HostOfReferer = new URL(referer).getHost();
             tokenResponseProvider.generateTokensAndAddCookieForWeb(response, optionalUser.get(), HostOfReferer);
         } catch (Exception e) {
