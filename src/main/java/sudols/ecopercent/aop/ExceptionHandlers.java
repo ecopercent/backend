@@ -22,6 +22,12 @@ public class ExceptionHandlers {
                 .body(new ExceptionResponse(errorCode));
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ExceptionResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        log.debug("Handling exception: " + e);
+        return buildResponseEntity(ErrorCode.INVALID_REQUEST);
+    }
+
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ExceptionResponse> handleUserAlreadyExistsException(UserAlreadyExistsException e) {
         log.debug("Handling exception: " + e);

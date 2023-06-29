@@ -5,6 +5,9 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum ErrorCode {
+    // Common
+    INVALID_REQUEST(HttpStatus.BAD_REQUEST.value(), "COMMON-001", "Invalid request"),
+
     // User
     USER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST.value(), "USER-001", "User already exists"),
     USER_NOT_EXISTS(HttpStatus.NOT_FOUND.value(), "USER-002", "Uer not exists"),
@@ -30,4 +33,4 @@ public enum ErrorCode {
         this.code = code;
         this.message = message;
     }
-    }
+}
