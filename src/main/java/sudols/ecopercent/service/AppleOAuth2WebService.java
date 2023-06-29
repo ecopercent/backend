@@ -22,25 +22,23 @@ import java.util.Optional;
 public class AppleOAuth2WebService {
 
     private final UserRepository userRepository;
-    private final JwtTokenProvider jwtTokenProvider;
     private final TokenResponseProvider tokenResponseProvider;
     private final AppleOAuth2Provider appleOAuth2Provider;
 
-    public ResponseEntity<?> login(HttpServletResponse response, AppleAuthorizationResponse appleAuthorizationResponse) {
+    public ResponseEntity<?> login(HttpServletResponse response, String referer, String identityToken) {
         // TODO: 하드코딩
         final String domain = "https://www.ecopercent.com";
-        final String cookieDomain = "ecopercent.com";
-        String identityToken = appleAuthorizationResponse.getId_token();
+
         PublicKey publicKey = appleOAuth2Provider.getPublicKey(identityToken);
         String email = appleOAuth2Provider.getEmailFromTokenWithPublicKey(identityToken, publicKey);
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
-            tokenResponseProvider.generateAccessTokenAndAddCookieForWeb(response, email, cookieDomain);
+            tokenResponseProvider.generateSignupAccessTokenAndAddCookie(response, referer, email);
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setLocation(URI.create(domain + "/signup"));
             return new ResponseEntity<>(httpHeaders, HttpStatus.MOVED_PERMANENTLY);
         }
-        tokenResponseProvider.generateTokensAndAddCookieForWeb(response, optionalUser.get(), cookieDomain);
+        tokenResponseProvider.generateTokensAndAddCookie(response, referer, optionalUser.get());
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(URI.create(domain + "/welcome"));
         return new ResponseEntity<>(httpHeaders, HttpStatus.MOVED_PERMANENTLY);

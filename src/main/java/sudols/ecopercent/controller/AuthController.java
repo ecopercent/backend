@@ -31,18 +31,22 @@ public class AuthController {
                                               HttpServletResponse response) {
         String kakaoAccessToken = jwtTokenProvider.getTokenFromRequest(request);
         final String referer = request.getHeader("Referer");
-        return kakaoOAuth2Service.login(response, kakaoAccessToken, referer);
+        return kakaoOAuth2Service.login(response, referer, kakaoAccessToken);
     }
 
     @PostMapping("/login/oauth2/apple/ios")
     public ResponseEntity<?> appleOAuth2IosLogin(HttpServletRequest request) {
-        return appleOAuth2IosService.login(request);
+        String identityToken = jwtTokenProvider.getTokenFromRequest(request);
+        return appleOAuth2IosService.login(identityToken);
     }
 
     @PostMapping("/login/oauth2/apple/web")
-    public ResponseEntity<?> appleOAuth2LoginWeb(HttpServletResponse response,
+    public ResponseEntity<?> appleOAuth2LoginWeb(HttpServletRequest request,
+                                                 HttpServletResponse response,
                                                  @ModelAttribute AppleAuthorizationResponse appleAuthorizationResponse) {
-        return appleOAuth2WebService.login(response, appleAuthorizationResponse);
+        String referer = request.getHeader("Referer");
+        String identityToken = appleAuthorizationResponse.getId_token();
+        return appleOAuth2WebService.login(response, referer, identityToken);
     }
 
     @PostMapping("/token/access")

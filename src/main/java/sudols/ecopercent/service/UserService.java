@@ -20,7 +20,6 @@ import sudols.ecopercent.exception.UserNotExistsException;
 import sudols.ecopercent.mapper.UserMapper;
 import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
-import sudols.ecopercent.security.JwtTokenProvider;
 import sudols.ecopercent.security.TokenResponseProvider;
 
 import java.net.URL;
@@ -57,12 +56,7 @@ public class UserService {
             user.setProfileImage(null);
         }
         userRepository.save(user);
-        try {
-            final String domain = new URL(referer).getHost();
-            TokenResponseProvider.generateTokensAndAddCookieForWeb(response, user, domain);
-        } catch (Exception e) {
-            TokenResponseProvider.generateTokensAndAddCookieForIos(response, user);
-        }
+        TokenResponseProvider.generateTokensAndAddCookie(response, referer, user);
         if (createTumblerRequest != null) {
             ItemResponse tumblerResponse = itemService.createItem(email, createTumblerRequest, tumblerImageMultipartFile);
             itemService.changeTitleTumbler(email, tumblerResponse.getId());
@@ -89,7 +83,7 @@ public class UserService {
             user.setProfileImage(null);
         }
         userRepository.save(user);
-        return TokenResponseProvider.generateTokenAndGetTokenResponse(user);
+        return TokenResponseProvider.generateTokensAndGetTokenResponse(user);
     }
 
     public UserResponse getMyInfo(String email) {
