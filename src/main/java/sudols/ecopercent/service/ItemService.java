@@ -76,8 +76,8 @@ public class ItemService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotExistsException(itemId));
         isItemOwnedUserByEmail(item, email);
-        item.setCurrentUsageCount(item.getCurrentUsageCount() + 1);
         if (item.getUsageCountPerDay() < 3) {
+            item.setCurrentUsageCount(item.getCurrentUsageCount() + 1);
             item.setUsageCountPerDay(item.getUsageCountPerDay() + 1);
         }
         item.setLatestDate(timeUtil.getKSTDateTime());
