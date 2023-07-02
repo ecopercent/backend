@@ -25,7 +25,7 @@ public enum CacheType {
 
         static final int maximumSize = 10000;
         //        @Value("${jwt.refresh-token-expiry-date}")
-        static final int expireAfterWrite = 60000;
+        static final int expireAfterWrite = 60000000;
     }
 
 }
