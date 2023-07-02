@@ -30,6 +30,8 @@ public class ItemResponse {
 
     private Long currentUsageCount;
 
+    private Long usageCountPerDay;
+
     private LocalDate purchaseDate;
 
     private LocalDateTime registrationDate;

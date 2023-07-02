@@ -16,6 +16,7 @@ import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.util.TimeUtil;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -75,7 +76,10 @@ public class ItemService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotExistsException(itemId));
         isItemOwnedUserByEmail(item, email);
-        item.setCurrentUsageCount(item.getCurrentUsageCount() + 1);
+        if (item.getUsageCountPerDay() < 3) {
+            item.setCurrentUsageCount(item.getCurrentUsageCount() + 1);
+            item.setUsageCountPerDay(item.getUsageCountPerDay() + 1);
+        }
         item.setLatestDate(timeUtil.getKSTDateTime());
         Item updatedItem = itemRepository.save(item);
         return itemMapper.itemToItemResponse(updatedItem);
@@ -108,15 +112,24 @@ public class ItemService {
 
     public ItemResponse getTitleTumbler(String email) {
         final String category = "tumbler";
-        return itemRepository.findByCategoryAndIsTitleTrueAndUser_Email(category, email)
-                .map(itemMapper::itemToItemResponse)
-                .orElseThrow(() -> new TitleItemNotExistsException(category));
+        return getTitleItem(email, category);
     }
 
     public ItemResponse getTitleEcobag(String email) {
         final String category = "ecobag";
+        return getTitleItem(email, category);
+
+    }
+
+    private ItemResponse getTitleItem(String email, String category) {
         return itemRepository.findByCategoryAndIsTitleTrueAndUser_Email(category, email)
-                .map(itemMapper::itemToItemResponse)
+                .map(item -> {
+                    if (item.getLatestDate() != null && !LocalDate.from(item.getLatestDate()).equals(LocalDate.from(timeUtil.getKSTDateTime()))) {
+                        item.setUsageCountPerDay(0L);
+                        itemRepository.save(item);
+                    }
+                    return itemMapper.itemToItemResponse(item);
+                })
                 .orElseThrow(() -> new TitleItemNotExistsException(category));
     }
 

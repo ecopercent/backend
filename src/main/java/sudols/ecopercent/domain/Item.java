@@ -48,6 +48,9 @@ public class Item {
     @Column(name = "current_usage_count")
     private Long currentUsageCount;
 
+    @Column(name = "usage_count_per_day")
+    private Long usageCountPerDay;
+
     @Column(name = "purchase_data")
     private LocalDate purchaseDate;
 
