@@ -17,7 +17,7 @@ public enum ErrorCode {
     // Item
     ITEM_NOT_EXISTS(HttpStatus.NOT_FOUND.value(), "ITEM-001", "Item not exists"),
     ITEM_CATEGORY_NOT_EXISTS(HttpStatus.NOT_FOUND.value(), "ITEM-002", "Item category not exists"),
-    TITLE_ITEM_NOT_EXISTS(HttpStatus.NOT_FOUND.value(), "ITEM-003", "Title item not exists"),
+    TITLE_ITEM_NOT_EXISTS(HttpStatus.NO_CONTENT.value(), "ITEM-003", "Title item not exists"),
     CATEGORY_MISMATCH(HttpStatus.BAD_REQUEST.value(), "ITEM-004", "Category mismatch"),
 
     // Token
