@@ -6,16 +6,13 @@ import sudols.ecopercent.common.ErrorCode;
 
 @Getter
 @Setter
-public class ErrorResponse {
-
-    private final Integer status;
+public class ExceptionResponse {
 
     private final String code;
 
     private final String message;
 
-    public ErrorResponse(ErrorCode errorCode) {
-        this.status = errorCode.getStatus();
+    public ExceptionResponse(ErrorCode errorCode) {
         this.code = errorCode.getCode();
         this.message = errorCode.getMessage();
     }

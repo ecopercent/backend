@@ -29,19 +29,14 @@ public class TokenService {
         if (!refresh.equals(cacheService.getRefreshToken(email))) {
             throw new ForbiddenTokenException(refresh);
         }
-        try {
-            final String hostOfReferer = new URL(referer).getHost();
-            return tokenResponseProvider.generateUserAccessTokenCookieForWeb(email, hostOfReferer);
-        } catch (Exception e) {
-            return tokenResponseProvider.generateUserAccessTokenCookieForIos(email);
-        }
+        return tokenResponseProvider.generateUserAccessTokenCookie(referer, email);
     }
 
     public Cookie revokeRefreshTokenAndReturnExpiredRefreshCookie(String referer, String refresh) {
         try {
             String email = jwtTokenProvider.getEmailFromToken(refresh);
             cacheService.deleteRefreshToken(email);
-            return tokenResponseProvider.generateExpiredRefreshTokenCookie(email, referer);
+            return tokenResponseProvider.generateExpiredRefreshTokenCookie(referer, email);
         } catch (Exception e) {
             return null;
         }

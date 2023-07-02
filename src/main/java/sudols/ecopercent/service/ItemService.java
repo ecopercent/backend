@@ -1,6 +1,5 @@
 package sudols.ecopercent.service;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,6 @@ import sudols.ecopercent.exception.*;
 import sudols.ecopercent.mapper.ItemMapper;
 import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
-import sudols.ecopercent.security.JwtTokenProvider;
 import sudols.ecopercent.util.TimeUtil;
 
 import java.util.List;
@@ -29,11 +27,9 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final ItemMapper itemMapper;
-    private final JwtTokenProvider jwtTokenProvider;
     private final TimeUtil timeUtil;
 
-    public ItemResponse createItem(HttpServletRequest request, CreateItemRequest createItemRequest, MultipartFile itemImageMultipartFile) {
-        String email = jwtTokenProvider.getEmailFromRequest(request);
+    public ItemResponse createItem(String email, CreateItemRequest createItemRequest, MultipartFile itemImageMultipartFile) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotExistsException(email));
         Item item = itemMapper.createItemRequestToItem(createItemRequest, user);
@@ -46,11 +42,10 @@ public class ItemService {
         return itemMapper.itemToItemResponse(item);
     }
 
-    public List<ItemResponse> getMyItemListByCategory(HttpServletRequest request, String category) {
+    public List<ItemResponse> getMyItemListByCategory(String email, String category) {
         if (!isValidCategory(category)) {
             throw new ItemCategoryNotExistsException(category);
         }
-        String email = jwtTokenProvider.getEmailFromRequest(request);
         return itemRepository.findByCategoryAndUser_EmailOrderById(category, email)
                 .stream()
                 .map(itemMapper::itemToItemResponse)
@@ -63,10 +58,9 @@ public class ItemService {
         return itemMapper.itemToItemResponse(item);
     }
 
-    public ItemResponse updateItem(HttpServletRequest request, Long itemId, UpdateItemRequest updateItemRequest, MultipartFile itemImageMultipartFile) {
+    public ItemResponse updateItem(String email, Long itemId, UpdateItemRequest updateItemRequest, MultipartFile itemImageMultipartFile) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotExistsException(itemId));
-        String email = jwtTokenProvider.getEmailFromRequest(request);
         isItemOwnedUserByEmail(item, email);
         BeanUtils.copyProperties(updateItemRequest, item);
         try {
@@ -77,10 +71,9 @@ public class ItemService {
         return itemMapper.itemToItemResponse(updateditem);
     }
 
-    public ItemResponse increaseUsageCount(HttpServletRequest request, Long itemId) {
+    public ItemResponse increaseUsageCount(String email, Long itemId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotExistsException(itemId));
-        String email = jwtTokenProvider.getEmailFromRequest(request);
         isItemOwnedUserByEmail(item, email);
         item.setCurrentUsageCount(item.getCurrentUsageCount() + 1);
         item.setLatestDate(timeUtil.getKSTDateTime());
@@ -88,16 +81,15 @@ public class ItemService {
         return itemMapper.itemToItemResponse(updatedItem);
     }
 
-    public ItemResponse changeTitleTumbler(HttpServletRequest request, Long itemId) {
-        return setTitleItem(request, itemId, "tumbler");
+    public ItemResponse changeTitleTumbler(String email, Long itemId) {
+        return setTitleItem(email, itemId, "tumbler");
     }
 
-    public ItemResponse changeTitleEcobag(HttpServletRequest request, Long itemId) {
-        return setTitleItem(request, itemId, "ecobag");
+    public ItemResponse changeTitleEcobag(String email, Long itemId) {
+        return setTitleItem(email, itemId, "ecobag");
     }
 
-    private ItemResponse setTitleItem(HttpServletRequest request, Long itemId, String category) {
-        String email = jwtTokenProvider.getEmailFromRequest(request);
+    private ItemResponse setTitleItem(String email, Long itemId, String category) {
         itemRepository.findByCategoryAndIsTitleTrueAndUser_Email(category, email)
                 .ifPresent(prevTitleItem -> {
                     prevTitleItem.setIsTitle(false);
@@ -114,27 +106,30 @@ public class ItemService {
                 .orElseThrow(() -> new ItemNotExistsException(itemId));
     }
 
-    public ItemResponse getTitleTumbler(HttpServletRequest request) {
-        String email = jwtTokenProvider.getEmailFromRequest(request);
+    public ItemResponse getTitleTumbler(String email) {
         final String category = "tumbler";
         return itemRepository.findByCategoryAndIsTitleTrueAndUser_Email(category, email)
                 .map(itemMapper::itemToItemResponse)
-                .orElseThrow(() -> new TitleItemNotFoundException(category));
+                .orElseThrow(() -> new TitleItemNotExistsException(category));
     }
 
-    public ItemResponse getTitleEcobag(HttpServletRequest request) {
-        String email = jwtTokenProvider.getEmailFromRequest(request);
+    public ItemResponse getTitleEcobag(String email) {
         final String category = "ecobag";
         return itemRepository.findByCategoryAndIsTitleTrueAndUser_Email(category, email)
                 .map(itemMapper::itemToItemResponse)
-                .orElseThrow(() -> new TitleItemNotFoundException(category));
+                .orElseThrow(() -> new TitleItemNotExistsException(category));
     }
 
-    public void deleteItem(Long itemId) {
+    public void deleteItem(String email, Long itemId) {
         if (!itemRepository.existsById(itemId)) {
             throw new ItemNotExistsException(itemId);
         }
-        itemRepository.deleteById(itemId);
+        itemRepository.findById(itemId)
+                .map(item -> {
+                    isItemOwnedUserByEmail(item, email);
+                    itemRepository.delete(item);
+                    return null;
+                });
     }
 
     public List<ItemResponse> getAllItemList() {

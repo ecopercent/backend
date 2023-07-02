@@ -18,59 +18,50 @@ public class TokenResponseProvider {
     private final JwtTokenProvider jwtTokenProvider;
     private final CacheService cacheService;
 
-    public void generateAccessTokenAndAddCookieForWeb(HttpServletResponse response, String email, String domain) {
-        String access = jwtTokenProvider.generateAccessToken(email, "USER");
+    public void generateSignupAccessTokenAndAddCookie(HttpServletResponse response, String referer, String email) {
+        String access = jwtTokenProvider.generateAccessToken(email, "SIGNUP");
         Cookie accessTokenCookie = new Cookie("access", access);
-        accessTokenCookie.setDomain(domain);
+        try {
+            final String domain = new URL(referer).getHost();
+            accessTokenCookie.setDomain(domain);
+        } catch (Exception ignore) {
+        }
         accessTokenCookie.setPath("/");
         accessTokenCookie.setSecure(true);
         response.addCookie(accessTokenCookie);
     }
 
-    public SignupResponse generateAccessTokenAndGetSignupResponse(String email) {
-        String accessToken = jwtTokenProvider.generateAccessToken(email, "USER");
+    public SignupResponse generateSignupAccessTokenAndGetSignupResponse(String email) {
+        String accessToken = jwtTokenProvider.generateAccessToken(email, "SIGNUP");
         return SignupResponse.builder()
                 .access(accessToken)
                 .build();
     }
 
-    public void generateTokensAndAddCookieForWeb(HttpServletResponse response, User user, String domain) {
+    public void generateTokensAndAddCookie(HttpServletResponse response, String referer, User user) {
         String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail(), "USER");
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
         cacheService.saveRefreshToken(user.getEmail(), refreshToken);
 
         Cookie accessTokenCookie = new Cookie("access", accessToken);
-        accessTokenCookie.setDomain(domain);
         accessTokenCookie.setPath("/");
 
         Cookie refreshTokenCookie = new Cookie("refresh", refreshToken);
-        refreshTokenCookie.setDomain(domain);
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setPath("/");
+
+        try {
+            final String domain = new URL(referer).getHost();
+            accessTokenCookie.setDomain(domain);
+            refreshTokenCookie.setDomain(domain);
+        } catch (Exception ignore) {
+        }
 
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
     }
 
-    public void generateTokensAndAddCookieForIos(HttpServletResponse response, User user) {
-        String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail(), "USER");
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
-        cacheService.saveRefreshToken(user.getEmail(),refreshToken);
-
-        Cookie accessTokenCookie = new Cookie("access", accessToken);
-        accessTokenCookie.setPath("/");
-
-        Cookie refreshTokenCookie = new Cookie("refresh", refreshToken);
-
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setPath("/");
-
-        response.addCookie(accessTokenCookie);
-        response.addCookie(refreshTokenCookie);
-    }
-
-
-    public AppleSignInResponse generateTokenAndGetTokenResponse(User user) {
+    public AppleSignInResponse generateTokensAndGetTokenResponse(User user) {
         String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail(), "USER");
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
         cacheService.saveRefreshToken(user.getEmail(),refreshToken);
@@ -80,18 +71,15 @@ public class TokenResponseProvider {
                 .build();
     }
 
-    public Cookie generateUserAccessTokenCookieForIos(String email) {
+    public Cookie generateUserAccessTokenCookie(String referer, String email) {
         String accessToken = jwtTokenProvider.generateAccessToken(email, "USER");
         Cookie accessTokenCookie = new Cookie("access", accessToken);
         accessTokenCookie.setPath("/");
-        return accessTokenCookie;
-    }
-
-    public Cookie generateUserAccessTokenCookieForWeb(String email, String domain) {
-        String accessToken = jwtTokenProvider.generateAccessToken(email, "USER");
-        Cookie accessTokenCookie = new Cookie("access", accessToken);
-        accessTokenCookie.setPath("/");
-        accessTokenCookie.setDomain(domain);
+        try {
+            final String domain = new URL(referer).getHost();
+            accessTokenCookie.setDomain(domain);
+        } catch (Exception ignore) {
+        }
         return accessTokenCookie;
     }
 
