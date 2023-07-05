@@ -43,13 +43,13 @@ public class Item {
     private Integer price;
 
     @Column(name = "goal_usage_count")
-    private Long goalUsageCount;
+    private Integer goalUsageCount;
 
     @Column(name = "current_usage_count")
-    private Long currentUsageCount;
+    private Integer currentUsageCount;
 
     @Column(name = "usage_count_per_day")
-    private Long usageCountPerDay;
+    private Integer usageCountPerDay;
 
     @Column(name = "purchase_data")
     private LocalDate purchaseDate;

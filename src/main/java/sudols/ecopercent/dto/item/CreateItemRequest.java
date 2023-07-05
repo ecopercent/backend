@@ -17,5 +17,7 @@ public class CreateItemRequest {
 
     private Integer price;
 
+    private Integer goalUsageCount;
+
     private LocalDate purchaseDate;
 }

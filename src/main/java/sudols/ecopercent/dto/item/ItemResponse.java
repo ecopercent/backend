@@ -26,11 +26,11 @@ public class ItemResponse {
 
     private Integer price;
 
-    private Long goalUsageCount;
+    private Integer goalUsageCount;
 
-    private Long currentUsageCount;
+    private Integer currentUsageCount;
 
-    private Long usageCountPerDay;
+    private Integer usageCountPerDay;
 
     private LocalDate purchaseDate;
 

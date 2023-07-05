@@ -125,7 +125,7 @@ public class ItemService {
         return itemRepository.findByCategoryAndIsTitleTrueAndUser_Email(category, email)
                 .map(item -> {
                     if (item.getLatestDate() != null && !LocalDate.from(item.getLatestDate()).equals(LocalDate.from(timeUtil.getKSTDateTime()))) {
-                        item.setUsageCountPerDay(0L);
+                        item.setUsageCountPerDay(0);
                         itemRepository.save(item);
                     }
                     return itemMapper.itemToItemResponse(item);

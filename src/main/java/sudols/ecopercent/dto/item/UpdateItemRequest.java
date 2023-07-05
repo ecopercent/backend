@@ -14,5 +14,7 @@ public class UpdateItemRequest {
 
     private Integer price;
 
+    private Integer goalUsageCount;
+
     private LocalDate purchaseDate;
 }
