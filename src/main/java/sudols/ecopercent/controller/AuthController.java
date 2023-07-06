@@ -35,9 +35,10 @@ public class AuthController {
     }
 
     @PostMapping("/login/oauth2/apple/ios")
-    public ResponseEntity<?> appleOAuth2IosLogin(HttpServletRequest request) {
+    public ResponseEntity<?> appleOAuth2IosLogin(HttpServletRequest request, HttpServletResponse response) {
         String identityToken = jwtTokenProvider.getTokenFromRequest(request);
-        return appleOAuth2IosService.login(identityToken);
+        final String referer = request.getHeader("Referer");
+        return appleOAuth2IosService.login(response, referer, identityToken);
     }
 
     @PostMapping("/login/oauth2/apple/web")
