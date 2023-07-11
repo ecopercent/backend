@@ -76,10 +76,11 @@ public class ItemService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotExistsException(itemId));
         isItemOwnedUserByEmail(item, email);
-        if (item.getUsageCountPerDay() < 3) {
-            item.setCurrentUsageCount(item.getCurrentUsageCount() + 1);
-            item.setUsageCountPerDay(item.getUsageCountPerDay() + 1);
+        if (item.getUsageCountPerDay() >= 3) {
+            return itemMapper.itemToItemResponse(item);
         }
+        item.setCurrentUsageCount(item.getCurrentUsageCount() + 1);
+        item.setUsageCountPerDay(item.getUsageCountPerDay() + 1);
         item.setLatestDate(timeUtil.getKSTDateTime());
         Item updatedItem = itemRepository.save(item);
         return itemMapper.itemToItemResponse(updatedItem);
@@ -118,7 +119,6 @@ public class ItemService {
     public ItemResponse getTitleEcobag(String email) {
         final String category = "ecobag";
         return getTitleItem(email, category);
-
     }
 
     private ItemResponse getTitleItem(String email, String category) {
