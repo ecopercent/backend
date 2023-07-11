@@ -41,7 +41,7 @@ public class TokenResponseProvider {
     public void generateTokensAndAddCookie(HttpServletResponse response, String referer, User user) {
         String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail(), "USER");
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
-        cacheService.saveRefreshToken(user.getEmail(), refreshToken);
+        cacheService.saveRefreshTokenToCache(user.getEmail(), refreshToken);
 
         Cookie accessTokenCookie = new Cookie("access", accessToken);
         accessTokenCookie.setPath("/");
@@ -64,7 +64,7 @@ public class TokenResponseProvider {
     public AppleSignInResponse generateTokensAndGetTokenResponse(User user) {
         String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail(), "USER");
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
-        cacheService.saveRefreshToken(user.getEmail(),refreshToken);
+        cacheService.saveRefreshTokenToCache(user.getEmail(),refreshToken);
         return AppleSignInResponse.builder()
                 .access(accessToken)
                 .refresh(refreshToken)

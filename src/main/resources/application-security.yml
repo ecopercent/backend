@@ -1,8 +1,8 @@
 # JWT
 jwt:
   secret-key: ${JWT_SECRET-KEY}
-  access-token-expiry-date: 30000000
-  refresh-token-expiry-date: 60000000
+  access-token-expiry-date: 300000
+  refresh-token-expiry-date: 600000
 
 # KaKao OAuth2
 kakao:

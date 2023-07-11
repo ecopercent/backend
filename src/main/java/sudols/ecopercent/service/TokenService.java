@@ -24,7 +24,7 @@ public class TokenService {
         }
         jwtTokenProvider.validateToken(refresh);
         String email = jwtTokenProvider.getEmailFromToken(refresh);
-        if (!refresh.equals(cacheService.getRefreshToken(email))) {
+        if (!refresh.equals(cacheService.getRefreshTokenFromCache(email))) {
             throw new ForbiddenTokenException(refresh);
         }
         return tokenResponseProvider.generateUserAccessTokenCookie(referer, email);
@@ -33,7 +33,7 @@ public class TokenService {
     public Cookie revokeRefreshTokenAndReturnExpiredRefreshCookie(String referer, String refresh) {
         try {
             String email = jwtTokenProvider.getEmailFromToken(refresh);
-            cacheService.deleteRefreshToken(email);
+            cacheService.deleteRefreshTokenFromCache(email);
             return tokenResponseProvider.generateExpiredRefreshTokenCookie(referer, email);
         } catch (Exception e) {
             return null;
