@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sudols.ecopercent.dto.auth.apple.AppleAuthorizationResponse;
 import sudols.ecopercent.security.provider.JwtTokenProvider;
-import sudols.ecopercent.service.AppleOAuth2IosService;
-import sudols.ecopercent.service.AppleOAuth2WebService;
-import sudols.ecopercent.service.KakaoOAuth2Service;
+import sudols.ecopercent.service.auth.AppleOAuth2IosService;
+import sudols.ecopercent.service.auth.AppleOAuth2WebService;
+import sudols.ecopercent.service.auth.KakaoOAuth2Service;
 import sudols.ecopercent.service.TokenService;
 
 @RestController

@@ -1,9 +1,11 @@
 package sudols.ecopercent.common;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
+@AllArgsConstructor
 public enum ErrorCode {
     // Common
     INVALID_REQUEST(HttpStatus.BAD_REQUEST.value(), "COMMON-001", "Invalid request"),
@@ -25,12 +27,8 @@ public enum ErrorCode {
     FORBIDDEN_TOKEN(HttpStatus.FORBIDDEN.value(), "TOKEN-002", "Expired token");
 
     private final Integer status;
-    private final String code;
-    private final String message;
 
-    ErrorCode(int status, String code, String message) {
-        this.status = status;
-        this.code = code;
-        this.message = message;
-    }
+    private final String code;
+
+    private final String message;
 }
