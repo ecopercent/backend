@@ -23,9 +23,6 @@ public class JwtTokenProvider {
     @Value("${jwt.secret-key}")
     private String key;
 
-    @Value("${jwt.signup-access-token-expiry-date}")
-    private Long signupAccessTokenExpiryDate;
-
     @Value("${jwt.access-token-expiry-date}")
     private Long accessTokenExpiryDate;
 

@@ -11,8 +11,6 @@ import sudols.ecopercent.dto.auth.kakao.KakaoAccountResponse;
 @RequiredArgsConstructor
 public class KakaoOAuth2Provider {
 
-    private final JwtTokenProvider jwtTokenProvider;
-
     @Value("${kakao.kapi-uri}")
     private String kapiUri;
 

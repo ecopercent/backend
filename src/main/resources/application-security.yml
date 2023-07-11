@@ -1,7 +1,6 @@
 # JWT
 jwt:
   secret-key: ${JWT_SECRET-KEY}
-  signup-access-token-expiry-date: 30000000
   access-token-expiry-date: 30000000
   refresh-token-expiry-date: 60000000
 
