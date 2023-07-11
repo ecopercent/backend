@@ -6,10 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sudols.ecopercent.exception.ForbiddenTokenException;
-import sudols.ecopercent.security.JwtTokenProvider;
-import sudols.ecopercent.security.TokenResponseProvider;
-
-import java.net.URL;
+import sudols.ecopercent.security.provider.JwtTokenProvider;
+import sudols.ecopercent.security.provider.TokenResponseProvider;
 
 @Service
 @RequiredArgsConstructor

@@ -1,4 +1,4 @@
-package sudols.ecopercent.security;
+package sudols.ecopercent.security.provider;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;

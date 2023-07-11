@@ -7,11 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import sudols.ecopercent.domain.User;
-import sudols.ecopercent.dto.auth.apple.AppleAuthorizationResponse;
 import sudols.ecopercent.repository.UserRepository;
-import sudols.ecopercent.security.JwtTokenProvider;
-import sudols.ecopercent.security.auth.AppleOAuth2Provider;
-import sudols.ecopercent.security.TokenResponseProvider;
+import sudols.ecopercent.security.provider.AppleOAuth2Provider;
+import sudols.ecopercent.security.provider.TokenResponseProvider;
 
 import java.net.URI;
 import java.security.PublicKey;

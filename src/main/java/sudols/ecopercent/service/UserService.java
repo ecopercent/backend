@@ -20,7 +20,7 @@ import sudols.ecopercent.exception.UserNotExistsException;
 import sudols.ecopercent.mapper.UserMapper;
 import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
-import sudols.ecopercent.security.TokenResponseProvider;
+import sudols.ecopercent.security.provider.TokenResponseProvider;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -1,4 +1,4 @@
-package sudols.ecopercent.security.auth;
+package sudols.ecopercent.security.provider;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import sudols.ecopercent.dto.auth.kakao.KakaoAccountResponse;
-import sudols.ecopercent.security.JwtTokenProvider;
 
 @Component
 @RequiredArgsConstructor

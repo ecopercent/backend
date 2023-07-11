@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.auth.SignupResponse;
 import sudols.ecopercent.repository.UserRepository;
-import sudols.ecopercent.security.TokenResponseProvider;
-import sudols.ecopercent.security.auth.AppleOAuth2Provider;
+import sudols.ecopercent.security.provider.TokenResponseProvider;
+import sudols.ecopercent.security.provider.AppleOAuth2Provider;
 
 import java.security.PublicKey;
 import java.util.Optional;

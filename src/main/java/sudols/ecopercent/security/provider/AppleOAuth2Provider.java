@@ -1,4 +1,4 @@
-package sudols.ecopercent.security.auth;
+package sudols.ecopercent.security.provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
@@ -10,7 +10,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import sudols.ecopercent.dto.auth.apple.AppleIdentityToken;
 import sudols.ecopercent.dto.auth.apple.AppleJWKSetResponse;
 import sudols.ecopercent.exception.AppleOAuth2Exception;
-import sudols.ecopercent.security.JwtTokenProvider;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;

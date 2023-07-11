@@ -9,8 +9,8 @@ import sudols.ecopercent.domain.User;
 import sudols.ecopercent.dto.auth.SignupResponse;
 import sudols.ecopercent.dto.auth.kakao.KakaoAccountResponse;
 import sudols.ecopercent.repository.UserRepository;
-import sudols.ecopercent.security.TokenResponseProvider;
-import sudols.ecopercent.security.auth.KakaoOAuth2Provider;
+import sudols.ecopercent.security.provider.TokenResponseProvider;
+import sudols.ecopercent.security.provider.KakaoOAuth2Provider;
 
 import java.util.Optional;
 

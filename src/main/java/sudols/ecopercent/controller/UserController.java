@@ -11,7 +11,7 @@ import sudols.ecopercent.dto.item.CreateItemRequest;
 import sudols.ecopercent.dto.user.CreateUserRequest;
 import sudols.ecopercent.dto.user.UpdateUserRequest;
 import sudols.ecopercent.dto.user.UserResponse;
-import sudols.ecopercent.security.JwtTokenProvider;
+import sudols.ecopercent.security.provider.JwtTokenProvider;
 import sudols.ecopercent.service.UserService;
 
 import java.util.List;

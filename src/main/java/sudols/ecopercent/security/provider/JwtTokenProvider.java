@@ -1,4 +1,4 @@
-package sudols.ecopercent.security;
+package sudols.ecopercent.security.provider;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;

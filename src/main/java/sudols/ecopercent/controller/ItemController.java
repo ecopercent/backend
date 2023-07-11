@@ -3,13 +3,12 @@ package sudols.ecopercent.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import sudols.ecopercent.dto.item.CreateItemRequest;
 import sudols.ecopercent.dto.item.ItemResponse;
 import sudols.ecopercent.dto.item.UpdateItemRequest;
-import sudols.ecopercent.security.JwtTokenProvider;
+import sudols.ecopercent.security.provider.JwtTokenProvider;
 import sudols.ecopercent.service.ItemService;
 
 import java.util.List;
