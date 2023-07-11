@@ -22,7 +22,6 @@ import sudols.ecopercent.repository.ItemRepository;
 import sudols.ecopercent.repository.UserRepository;
 import sudols.ecopercent.security.TokenResponseProvider;
 
-import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -108,12 +107,11 @@ public class UserService {
     }
 
     public void deleteUser(String email) {
-        if (userRepository.existsByEmail(email)) {
-            itemRepository.deleteByUser_Email(email);
-            userRepository.deleteByEmail(email);
-        } else {
+        if (!userRepository.existsByEmail(email)) {
             throw new UserNotExistsException(email);
         }
+        itemRepository.deleteByUser_Email(email);
+        userRepository.deleteByEmail(email);
     }
 
     public List<UserResponse> getAllUser() {
