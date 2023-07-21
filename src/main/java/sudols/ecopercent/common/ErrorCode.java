@@ -1,11 +1,9 @@
 package sudols.ecopercent.common;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-@AllArgsConstructor
 public enum ErrorCode {
     // Common
     INVALID_REQUEST(HttpStatus.BAD_REQUEST.value(), "COMMON-001", "Invalid request"),
@@ -31,4 +29,17 @@ public enum ErrorCode {
     private final String code;
 
     private final String message;
+
+    private String detail;
+
+    ErrorCode(Integer status, String code, String message) {
+        this.status = status;
+        this.code = code;
+        this.message = message;
+        this.detail = "";
+    }
+
+    public void setDetail(String detail) {
+        this.detail = detail;
+    }
 }

@@ -1,7 +1,6 @@
 package sudols.ecopercent.aop;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -20,12 +19,6 @@ public class ExceptionHandlers {
                 .status(errorCode.getStatus())
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ExceptionResponse(errorCode));
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ExceptionResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.debug("Handling exception: " + e);
-        return buildResponseEntity(ErrorCode.INVALID_REQUEST);
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
