@@ -2,6 +2,7 @@ package sudols.ecopercent.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class UserController {
 
     @PostMapping("/users/kakao")
     public UserResponse createKakaoUser(HttpServletRequest request, HttpServletResponse response,
-                                        @RequestPart("userData") CreateUserRequest createUserRequest,
+                                        @Valid @RequestPart("userData") CreateUserRequest createUserRequest,
                                         @RequestPart(value = "profileImage", required = false) MultipartFile profileImageMultipartFile,
                                         @RequestPart(value = "tumblerData", required = false) CreateItemRequest createTumblerRequest,
                                         @RequestPart(value = "tumblerImage", required = false) MultipartFile tumblerImageMultipartFile,
@@ -43,8 +44,8 @@ public class UserController {
     @PostMapping("/users/apple")
     @ResponseStatus(HttpStatus.CREATED)
     public AppleSignInResponse createAppleUser(HttpServletRequest request,
-                                                               @RequestPart("userData") CreateUserRequest createUserRequest,
-                                                               @RequestPart(value = "profileImage", required = false) MultipartFile profileImageMultipartFile) {
+                                               @Valid @RequestPart("userData") CreateUserRequest createUserRequest,
+                                               @RequestPart(value = "profileImage", required = false) MultipartFile profileImageMultipartFile) {
         String email = jwtTokenProvider.getEmailFromRequest(request);
         return userService.createAppleUser(email, createUserRequest, profileImageMultipartFile);
     }
@@ -57,7 +58,7 @@ public class UserController {
 
     @PatchMapping("/users")
     public UserResponse updateUser(HttpServletRequest request,
-                                   @RequestPart(value = "userData", required = false) UpdateUserRequest updateUserRequest,
+                                   @Valid @RequestPart(value = "userData", required = false) UpdateUserRequest updateUserRequest,
                                    @RequestPart(value = "profileImage", required = false) MultipartFile profileImageMultipartFile) {
         String email = jwtTokenProvider.getEmailFromRequest(request);
         return userService.updateUser(email, updateUserRequest, profileImageMultipartFile);

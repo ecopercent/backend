@@ -1,6 +1,7 @@
 package sudols.ecopercent.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class ItemController {
     @PostMapping("/items")
     @ResponseStatus(code = HttpStatus.CREATED)
     public ItemResponse createItem(HttpServletRequest request,
-                                   @RequestPart("itemData") CreateItemRequest createItemRequest,
+                                   @Valid @RequestPart("itemData") CreateItemRequest createItemRequest,
                                    @RequestPart(value = "itemImage", required = false) MultipartFile itemImageMultipartFile) {
         String email = jwtTokenProvider.getEmailFromRequest(request);
         return itemService.createItem(email, createItemRequest, itemImageMultipartFile);
@@ -44,7 +45,7 @@ public class ItemController {
     @PatchMapping("/items/{itemId}")
     public ItemResponse updateItem(HttpServletRequest request,
                                    @PathVariable("itemId") Long itemId,
-                                   @RequestPart(value = "itemData", required = false) UpdateItemRequest updateItemRequest,
+                                   @Valid @RequestPart(value = "itemData", required = false) UpdateItemRequest updateItemRequest,
                                    @RequestPart(value = "itemImage", required = false) MultipartFile itemImageMultipartFile) {
         String email = jwtTokenProvider.getEmailFromRequest(request);
         return itemService.updateItem(email, itemId, updateItemRequest, itemImageMultipartFile);
