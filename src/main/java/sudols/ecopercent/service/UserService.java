@@ -92,11 +92,11 @@ public class UserService {
     }
 
     public UserResponse updateUser(String email, UpdateUserRequest updateUserRequest, MultipartFile profileImageMultipartFile) {
-        if (userRepository.existsByNickname(updateUserRequest.getNickname())) {
-            throw new NicknameAlreadyExistsException(updateUserRequest.getNickname());
-        }
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotExistsException(email));
+        if (!updateUserRequest.getNickname().equals(user.getNickname()) && userRepository.existsByNickname(updateUserRequest.getNickname())) {
+            throw new NicknameAlreadyExistsException(updateUserRequest.getNickname());
+        }
         BeanUtils.copyProperties(updateUserRequest, user);
         try {
             user.setProfileImage(profileImageMultipartFile.getBytes());
