@@ -15,7 +15,7 @@ public class CreateItemRequest {
 
     private String category;
 
-    @NotBlank
+//    @NotBlank
 //    @Pattern(regexp = "^(플라스틱|유리|스테인리스|실리콘|면|PVC|종이|기타)$", message = "Invalid type. Allowed values: 플라스틱, 유리, 스테인리스, 실리콘, 면, PVC, 종이 등등")
     private String type;
 

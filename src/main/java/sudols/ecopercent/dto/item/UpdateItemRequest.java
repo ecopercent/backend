@@ -12,7 +12,8 @@ public class UpdateItemRequest {
     @Pattern(regexp = "^(?!\\s)(?!.*\\s$)[\\s\\S]*$", message = "Item nickname cannot contain spaces at the beginning or end.")
     private String nickname;
 
-    @NotBlank
+//    @NotBlank
+//    @Pattern(regexp = "^(플라스틱|유리|스테인리스|실리콘|면|PVC|종이|기타)$", message = "Invalid type. Allowed values: 플라스틱, 유리, 스테인리스, 실리콘, 면, PVC, 종이 등등")
     private String type;
 
     @Size(max = 10, message = "Brand can have a maximum of 10 characters.")
