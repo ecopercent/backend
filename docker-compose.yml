@@ -1,0 +1,53 @@
+version: '3'
+services:
+  builder:
+    container_name: builder
+    image: amazoncorretto:17
+    volumes:
+      - .:/opt/build
+      - app_home:/opt/app
+    working_dir: /opt/build
+    command: "./gradlew -P${BUILD_PROFILE} copy -x test"
+
+  db:
+    container_name: db
+    image: postgres:latest
+    volumes:
+      - ./database/initdb.d:/docker-entrypoint-initdb.d
+      - db_data:/var/lib/mysql
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      TZ: "Asia/Seoul"
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    platform: linux/x86_64
+    restart: always
+
+  api:
+    container_name: api
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_started
+    volumes:
+      - app_home:/opt/app
+    environment:
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_PORT: ${DB_PORT}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      BUILD_PROFILE: ${BUILD_PROFILE}
+      SERVER_HOST: ${SERVER_HOST}
+      TZ: "Asia/Seoul"
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    restart: always
+
+volumes:
+  app_home:
+  db_data:

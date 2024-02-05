@@ -35,10 +35,23 @@ dependencies {
     implementation 'io.netty:netty-resolver-dns-native-macos:4.1.72.Final:osx-aarch_64'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+tasks.register('copy', Copy) {
+    if (project.hasProperty('dev')) {
+        println 'Build profile: dev'
+        from(sourceSets.main.runtimeClasspath)
+        into('/opt/app/api/classes')
+    } else if (project.hasProperty('prod')) {
+        println 'Build profile: prod'
+        from jar
+        into('/opt/app/api/build/lib')
+    }
 }
