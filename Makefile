@@ -63,7 +63,7 @@ fclean: clean
 .PHONY: ps
 ps:
 	@echo $(green)Executed: docker compose ps -a $(default)
-	@docker compose ps -a
+	@docker ps -a
 	@echo ""
 
 
@@ -86,7 +86,7 @@ logs: ps
 	@printf "[logs] 서비스 이름: "; \
 	read service; \
 	echo $(green)Executed: docker compose logs $$service $(default); \
-	docker compose logs $$service | less
+	docker compose logs -f $$service
 
 
 # 입력한 서비스의 정보 출력
